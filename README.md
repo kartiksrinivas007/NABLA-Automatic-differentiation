@@ -1,3 +1,8 @@
-# compilers-2-project-team-9-aug22
+# Nabla
 
-compilers-2-project-team-9-aug22 created by GitHub Classroom
+Nabla is a Domain specific langauge built for the purpose of Tensor Operations and Automatic differentiation
+<br>
+It uses statically built compputational graphs for backpropagation
+
+
+
