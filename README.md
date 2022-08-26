@@ -5,7 +5,7 @@
 Nabla is a Domain specific langauge built for the purpose of Tensor Operations and Automatic differentiation
 <br>
 It uses dynamically built computational graphs for back-propagation.
-Take a look at the codw below
+Take a look at the code below
 
 ```python
 var Tensor a[2][2]  = [[2.0, 3.0],[4.0, 5.0]];
@@ -45,7 +45,7 @@ print(grad(a));
 print(grad(m));
 ```
 
-The code below will be converted into a computational graph(internally) of the form:-
+The code will be converted into a computational graph(internally) of the form:-
 After this we will be able to use the chain rule to calculate the gradients of the Final variable in terms of the beginning variables
 
 ![alt text](Whitepaper/images/comp-graph.png)
