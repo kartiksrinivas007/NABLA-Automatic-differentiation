@@ -575,8 +575,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "p1.l"
-#line 9 "p1.l"
+#line 1 "lexer.l"
+#line 9 "lexer.l"
 #include <stdio.h>
 static void count();
 static void comment();
@@ -798,7 +798,7 @@ YY_DECL
 		}
 
 	{
-#line 15 "p1.l"
+#line 15 "lexer.l"
 
 #line 804 "lex.yy.c"
 
@@ -859,420 +859,420 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 16 "p1.l"
+#line 16 "lexer.l"
 { comment(); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 17 "p1.l"
+#line 17 "lexer.l"
 { /* consume //-comment */ }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 18 "p1.l"
+#line 18 "lexer.l"
 { count(); printf("CHAR"); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 19 "p1.l"
+#line 19 "lexer.l"
 { count(); printf("CNS"); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 20 "p1.l"
+#line 20 "lexer.l"
 { count(); printf("ELIF"); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 21 "p1.l"
+#line 21 "lexer.l"
 { count(); printf("ELSE"); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 22 "p1.l"
+#line 22 "lexer.l"
 {count(); printf("ENDIF");}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 23 "p1.l"
+#line 23 "lexer.l"
 { count(); printf("FLOAT"); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 24 "p1.l"
+#line 24 "lexer.l"
 { count(); printf("LOOP"); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 25 "p1.l"
+#line 25 "lexer.l"
 { count(); printf("IF"); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 26 "p1.l"
+#line 26 "lexer.l"
 { count(); printf("INT"); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 27 "p1.l"
+#line 27 "lexer.l"
 { count(); printf("TENSOR"); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 28 "p1.l"
+#line 28 "lexer.l"
 { count(); printf("VAR"); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 29 "p1.l"
+#line 29 "lexer.l"
 { count(); printf("BOOL");}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 31 "p1.l"
+#line 31 "lexer.l"
 { count(); printf("SIZEOF");}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 32 "p1.l"
+#line 32 "lexer.l"
 { count(); printf("GRAD");}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 33 "p1.l"
+#line 33 "lexer.l"
 { count(); printf("BACKWARD");}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 34 "p1.l"
+#line 34 "lexer.l"
 { count(); printf("COS");}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 35 "p1.l"
+#line 35 "lexer.l"
 { count(); printf("SIN");}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 36 "p1.l"
+#line 36 "lexer.l"
 {count(); printf("EXP");}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 37 "p1.l"
+#line 37 "lexer.l"
 {count(); printf("LOG");}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 38 "p1.l"
+#line 38 "lexer.l"
 {count(); printf("PRINT");}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 39 "p1.l"
+#line 39 "lexer.l"
 { count(); printf("IDENTIFIER");}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 40 "p1.l"
+#line 40 "lexer.l"
 { count(); printf("CONSTANT"); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 41 "p1.l"
+#line 41 "lexer.l"
 { count(); printf("CONSTANT"); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 42 "p1.l"
+#line 42 "lexer.l"
 { count(); printf("CONSTANT"); }
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 43 "p1.l"
+#line 43 "lexer.l"
 { count(); printf("CONSTANT"); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 44 "p1.l"
+#line 44 "lexer.l"
 { count(); printf("CONSTANT"); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 45 "p1.l"
+#line 45 "lexer.l"
 { count(); printf("CONSTANT"); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 46 "p1.l"
+#line 46 "lexer.l"
 { count(); printf("CONSTANT"); }
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 47 "p1.l"
+#line 47 "lexer.l"
 { count(); printf("STRING_LITERAL"); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 49 "p1.l"
+#line 49 "lexer.l"
 { count(); printf("AT_OP"); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 50 "p1.l"
+#line 50 "lexer.l"
 { count(); printf("ELLIPSIS"); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 51 "p1.l"
+#line 51 "lexer.l"
 { count(); printf("RIGHT_ASSIGN"); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 52 "p1.l"
+#line 52 "lexer.l"
 { count(); printf("LEFT_ASSIGN"); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 53 "p1.l"
+#line 53 "lexer.l"
 { count(); printf("ADD_ASSIGN"); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 54 "p1.l"
+#line 54 "lexer.l"
 { count(); printf("SUB_ASSIGN"); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 55 "p1.l"
+#line 55 "lexer.l"
 { count(); printf("MUL_ASSIGN"); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 56 "p1.l"
+#line 56 "lexer.l"
 { count(); printf("DIV_ASSIGN"); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 57 "p1.l"
+#line 57 "lexer.l"
 { count(); printf("MOD_ASSIGN"); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 58 "p1.l"
+#line 58 "lexer.l"
 { count(); printf("AND_ASSIGN"); }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 59 "p1.l"
+#line 59 "lexer.l"
 { count(); printf("XOR_ASSIGN"); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 60 "p1.l"
+#line 60 "lexer.l"
 { count(); printf("OR_ASSIGN"); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 61 "p1.l"
+#line 61 "lexer.l"
 { count(); printf("AT_ASSIGN");}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 62 "p1.l"
+#line 62 "lexer.l"
 { count(); printf("RIGHT_OP"); }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 63 "p1.l"
+#line 63 "lexer.l"
 { count(); printf("LEFT_OP"); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 64 "p1.l"
+#line 64 "lexer.l"
 { count(); printf("INC_OP"); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 65 "p1.l"
+#line 65 "lexer.l"
 { count(); printf("DEC_OP"); }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 66 "p1.l"
+#line 66 "lexer.l"
 { count(); printf("PTR_OP"); }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 67 "p1.l"
+#line 67 "lexer.l"
 { count(); printf("AND_OP"); }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 68 "p1.l"
+#line 68 "lexer.l"
 { count(); printf("OR_OP"); }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 69 "p1.l"
+#line 69 "lexer.l"
 { count(); printf("LE_OP"); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 70 "p1.l"
+#line 70 "lexer.l"
 { count(); printf("GE_OP"); }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 71 "p1.l"
+#line 71 "lexer.l"
 { count(); printf("EQ_OP"); }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 72 "p1.l"
+#line 72 "lexer.l"
 { count(); printf("NE_OP"); }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 73 "p1.l"
+#line 73 "lexer.l"
 { count(); printf(";"); }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 74 "p1.l"
+#line 74 "lexer.l"
 { count(); printf("{"); }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 75 "p1.l"
+#line 75 "lexer.l"
 { count(); printf("}"); }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 76 "p1.l"
+#line 76 "lexer.l"
 { count(); printf(","); }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 77 "p1.l"
+#line 77 "lexer.l"
 { count(); printf(":"); }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 78 "p1.l"
+#line 78 "lexer.l"
 { count(); printf("="); }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 79 "p1.l"
+#line 79 "lexer.l"
 { count(); printf("("); }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 80 "p1.l"
+#line 80 "lexer.l"
 { count(); printf(")"); }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 81 "p1.l"
+#line 81 "lexer.l"
 { count(); printf("["); }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 82 "p1.l"
+#line 82 "lexer.l"
 { count(); printf("]"); }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 83 "p1.l"
+#line 83 "lexer.l"
 { count(); printf("."); }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 84 "p1.l"
+#line 84 "lexer.l"
 { count(); printf("&"); }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 85 "p1.l"
+#line 85 "lexer.l"
 { count(); printf("!"); }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 86 "p1.l"
+#line 86 "lexer.l"
 { count(); printf("~"); }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 87 "p1.l"
+#line 87 "lexer.l"
 { count(); printf("-"); }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 88 "p1.l"
+#line 88 "lexer.l"
 { count(); printf("+"); }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 89 "p1.l"
+#line 89 "lexer.l"
 { count(); printf("*"); }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 90 "p1.l"
+#line 90 "lexer.l"
 { count(); printf("/"); }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 91 "p1.l"
+#line 91 "lexer.l"
 { count(); printf("%%"); }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 92 "p1.l"
+#line 92 "lexer.l"
 { count(); printf("<"); }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 93 "p1.l"
+#line 93 "lexer.l"
 { count(); printf(">"); }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 94 "p1.l"
+#line 94 "lexer.l"
 { count(); printf("^"); }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 95 "p1.l"
+#line 95 "lexer.l"
 { count(); printf("|"); }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 96 "p1.l"
+#line 96 "lexer.l"
 { count(); printf("?"); }
 	YY_BREAK
 case 80:
 /* rule 80 can match eol */
 YY_RULE_SETUP
-#line 97 "p1.l"
+#line 97 "lexer.l"
 { printf("\n"); }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 98 "p1.l"
+#line 98 "lexer.l"
 { /*count(); eat these chars*/ }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 99 "p1.l"
+#line 99 "lexer.l"
 { /* ignore bad characters */ }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 101 "p1.l"
+#line 101 "lexer.l"
 ECHO;
 	YY_BREAK
 #line 1279 "lex.yy.c"
@@ -2280,7 +2280,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 101 "p1.l"
+#line 101 "lexer.l"
 
 
 int yywrap()
