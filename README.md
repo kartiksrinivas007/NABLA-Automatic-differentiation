@@ -8,6 +8,7 @@ It uses dynamically built computational graphs for back-propagation.
 Take a look at the code below
 
 ```python
+{
 var Tensor a[2][2]  = [[2.0, 3.0],[4.0, 5.0]];
 var Tensor b[2][1]  = [3, 1];
 var Tensor c[2][1]  = [4,6];
@@ -30,6 +31,8 @@ elif(k < 0){
 else{
         c = a;
 }
+endif
+
 loop(int i = 0; i< 10; i++){
     c = c + a;
 }
@@ -43,6 +46,7 @@ Final = cos(p + z);
 backward(Final);
 print(grad(a));
 print(grad(m));
+}
 ```
 
 The code will be converted into a computational graph(internally) of the form:-

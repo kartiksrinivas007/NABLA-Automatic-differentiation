@@ -9,6 +9,7 @@
     elif(c == 0){
         b = (c + 1)*a; 
     }
+    endif
 
     loop(int i =0; i< 10 ; i++){
         // by default cns
