@@ -1,0 +1,12 @@
+{
+    {
+
+    } 
+    //Lexing
+    "is ok"
+    /* Lexer */ 
+}
+
+{
+   var x= x*y;
+}   
