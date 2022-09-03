@@ -7,6 +7,7 @@ IS			(u|U|l|L)*
 
 %{
 #include <stdio.h>
+#include "y.tab.h"
 static void count();
 static void comment();
 %}
@@ -15,86 +16,86 @@ static void comment();
 %%
 "/*"			{ comment(); }
 "//"[^\n]*      { /* consume //-comment */ }
-"char"			{ count(); printf("CHAR"); }
-"cns"			{ count(); printf("CNS"); }
-"elif"			{ count(); printf("ELIF"); }
-"else"			{ count(); printf("ELSE"); }
-"endif"			{count(); printf("ENDIF");}
-"float"			{ count(); printf("FLOAT"); }
-"loop"			{ count(); printf("LOOP"); }
-"if"			{ count(); printf("IF"); }
-"int"			{ count(); printf("INT"); }
-"Tensor"		{ count(); printf("TENSOR"); }
-"var"			{ count(); printf("VAR"); }
-"bool"			{ count(); printf("BOOL");}
+"char"			{ count(); return CHAR; }
+"cns"			{ count(); return CNS; }
+"elif"			{ count(); return ELIF; }
+"else"			{ count(); return ELSE; }
+"endif"			{count(); return ENDIF;}
+"float"			{ count(); return FLOAT; }
+"loop"			{ count(); return LOOP; }
+"if"			{ count(); return IF; }
+"int"			{ count(); return INT; }
+"Tensor"		{ count(); return TENSOR; }
+"var"			{ count(); return VAR; }
+"bool"			{ count(); return BOOL;}
 
-"sizeof"		{ count(); printf("SIZEOF");}
-"grad"			{ count(); printf("GRAD");}
-"backward"		{ count(); printf("BACKWARD");}
-"cos"			{ count(); printf("COS");}
-"sin"			{ count(); printf("SIN");}
-"exp"			{count(); printf("EXP");}
-"log"			{count(); printf("LOG");}
-"print" 		{count(); printf("PRINT");}
-{L}({L}|{D})*		{ count(); printf("IDENTIFIER");}
-0[xX]{H}+{IS}?		{ count(); printf("CONSTANT"); }
-0{D}+{IS}?		{ count(); printf("CONSTANT"); }
-{D}+{IS}?		{ count(); printf("CONSTANT"); }
-L?'(\\.|[^\\'])+'	{ count(); printf("CONSTANT"); }
-{D}+{E}{FS}?		{ count(); printf("CONSTANT"); }
-{D}*"."{D}+({E})?{FS}?	{ count(); printf("CONSTANT"); }
-{D}+"."{D}*({E})?{FS}?	{ count(); printf("CONSTANT"); }
-L?\"(\\.|[^\\"])*\"	{ count(); printf("STRING_LITERAL"); }
+"sizeof"		{ count(); return SIZEOF;}
+"grad"			{ count(); return GRAD;}
+"backward"		{ count(); return BACKWARD;}
+"cos"			{ count(); return COS;}
+"sin"			{ count(); return SIN;}
+"exp"			{count(); return EXP;}
+"log"			{count(); return LOG;}
+"print" 		{count(); return PRINT;}
+{L}({L}|{D})*		{ count(); return IDENTIFIER;}
+0[xX]{H}+{IS}?		{ count(); return CONSTANT; }
+0{D}+{IS}?		{ count(); return CONSTANT; }
+{D}+{IS}?		{ count(); return CONSTANT; }
+L?'(\\.|[^\\'])+'	{ count(); return CONSTANT; }
+{D}+{E}{FS}?		{ count(); return CONSTANT; }
+{D}*"."{D}+({E})?{FS}?	{ count(); return CONSTANT; }
+{D}+"."{D}*({E})?{FS}?	{ count(); return CONSTANT; }
+L?\"(\\.|[^\\"])*\"	{ count(); return STRING_LITERAL; }
 
-"@"			{ count(); printf("AT_OP"); }
-"..."			{ count(); printf("ELLIPSIS"); }
-">>="			{ count(); printf("RIGHT_ASSIGN"); }
-"<<="			{ count(); printf("LEFT_ASSIGN"); }
-"+="			{ count(); printf("ADD_ASSIGN"); }
-"-="			{ count(); printf("SUB_ASSIGN"); }
-"*="			{ count(); printf("MUL_ASSIGN"); }
-"/="			{ count(); printf("DIV_ASSIGN"); }
-"%="			{ count(); printf("MOD_ASSIGN"); }
-"&="			{ count(); printf("AND_ASSIGN"); }
-"^="			{ count(); printf("XOR_ASSIGN"); }
-"|="			{ count(); printf("OR_ASSIGN"); }
-"@="			{ count(); printf("AT_ASSIGN");}
-">>"			{ count(); printf("RIGHT_OP"); }
-"<<"			{ count(); printf("LEFT_OP"); }
-"++"			{ count(); printf("INC_OP"); }
-"--"			{ count(); printf("DEC_OP"); }
-"->"			{ count(); printf("PTR_OP"); }
-"&&"			{ count(); printf("AND_OP"); }
-"||"			{ count(); printf("OR_OP"); }
-"<="			{ count(); printf("LE_OP"); }
-">="			{ count(); printf("GE_OP"); }
-"=="			{ count(); printf("EQ_OP"); }
-"!="			{ count(); printf("NE_OP"); }
-";"			{ count(); printf(";"); }
-"{"			{ count(); printf("{"); }
-"}"			{ count(); printf("}"); }
-","			{ count(); printf(","); }
-":"			{ count(); printf(":"); }
-"="			{ count(); printf("="); }
-"("			{ count(); printf("("); }
-")"			{ count(); printf(")"); }
-"["			{ count(); printf("["); }
-"]"			{ count(); printf("]"); }
-"."			{ count(); printf("."); }
-"&"			{ count(); printf("&"); }
-"!"			{ count(); printf("!"); }
-"~"			{ count(); printf("~"); }
-"-"			{ count(); printf("-"); }
-"+"			{ count(); printf("+"); }
-"*"			{ count(); printf("*"); }
-"/"			{ count(); printf("/"); }
-"%"			{ count(); printf("%%"); }
-"<"			{ count(); printf("<"); }
-">"			{ count(); printf(">"); }
-"^"			{ count(); printf("^"); }
-"|"			{ count(); printf("|"); }
-"?"			{ count(); printf("?"); }
-[\n]			{ printf("\n"); }
+"@"			{ count(); return AT_OP; }
+"..."			{ count(); return ELLIPSIS; }
+">>="			{ count(); return RIGHT_ASSIGN; }
+"<<="			{ count(); return LEFT_ASSIGN; }
+"+="			{ count(); return ADD_ASSIGN; }
+"-="			{ count(); return SUB_ASSIGN; }
+"*="			{ count(); return MUL_ASSIGN; }
+"/="			{ count(); return DIV_ASSIGN; }
+"%="			{ count(); return MOD_ASSIGN; }
+"&="			{ count(); return AND_ASSIGN; }
+"^="			{ count(); return XOR_ASSIGN; }
+"|="			{ count(); return OR_ASSIGN; }
+"@="			{ count(); return AT_ASSIGN;}
+">>"			{ count(); return RIGHT_OP; }
+"<<"			{ count(); return LEFT_OP; }
+"++"			{ count(); return INC_OP; }
+"--"			{ count(); return DEC_OP; }
+"->"			{ count(); return PTR_OP; }
+"&&"			{ count(); return AND_OP; }
+"||"			{ count(); return OR_OP; }
+"<="			{ count(); return LE_OP; }
+">="			{ count(); return GE_OP; }
+"=="			{ count(); return EQ_OP; }
+"!="			{ count(); return NE_OP; }
+";"			{ count(); return ';'; }
+"{"			{ count(); return '{'; }
+"}"			{ count(); return '}'; }
+","			{ count(); return ','; }
+":"			{ count(); return ':'; }
+"="			{ count(); return '='; }
+"("			{ count(); return '('; }
+")"			{ count(); return ')'; }
+"["			{ count(); return '['; }
+"]"			{ count(); return ']'; }
+"."			{ count(); return '.'; }
+"&"			{ count(); return '&'; }
+"!"			{ count(); return '!'; }
+"~"			{ count(); return '~'; }
+"-"			{ count(); return '-'; }
+"+"			{ count(); return '+'; }
+"*"			{ count(); return '*'; }
+"/"			{ count(); return '/'; }
+"%"			{ count(); return '%%'; }
+"<"			{ count(); return '<'; }
+">"			{ count(); return '>'; }
+"^"			{ count(); return '^'; }
+"|"			{ count(); return '|'; }
+"?"			{ count(); return '?'; }
+[\n]			{ return '\n'; }
 [ \t\v\f]		{ /*count(); eat these chars*/ }
 .			{ /* ignore bad characters */ }
 
