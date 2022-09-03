@@ -10,6 +10,7 @@ IS			(u|U|l|L)*
 #include "y.tab.h"
 static void count();
 static void comment();
+void yyerror(char *);
 %}
 
 
@@ -26,7 +27,7 @@ static void comment();
 "if"			{ count(); return IF; }
 "int"			{ count(); return INT; }
 "Tensor"		{ count(); return TENSOR; }
-"var"			{ count(); return VAR; }
+"var"			{ count(); printf("Hello here\n"); return VAR; }
 "bool"			{ count(); return BOOL;}
 
 "sizeof"		{ count(); return SIZEOF;}
@@ -48,7 +49,6 @@ L?'(\\.|[^\\'])+'	{ count(); return CONSTANT; }
 L?\"(\\.|[^\\"])*\"	{ count(); return STRING_LITERAL; }
 
 "@"			{ count(); return AT_OP; }
-"..."			{ count(); return ELLIPSIS; }
 ">>="			{ count(); return RIGHT_ASSIGN; }
 "<<="			{ count(); return LEFT_ASSIGN; }
 "+="			{ count(); return ADD_ASSIGN; }
@@ -64,7 +64,6 @@ L?\"(\\.|[^\\"])*\"	{ count(); return STRING_LITERAL; }
 "<<"			{ count(); return LEFT_OP; }
 "++"			{ count(); return INC_OP; }
 "--"			{ count(); return DEC_OP; }
-"->"			{ count(); return PTR_OP; }
 "&&"			{ count(); return AND_OP; }
 "||"			{ count(); return OR_OP; }
 "<="			{ count(); return LE_OP; }
@@ -89,13 +88,13 @@ L?\"(\\.|[^\\"])*\"	{ count(); return STRING_LITERAL; }
 "+"			{ count(); return '+'; }
 "*"			{ count(); return '*'; }
 "/"			{ count(); return '/'; }
-"%"			{ count(); return '%%'; }
+"%"			{ count(); return '%'; }
 "<"			{ count(); return '<'; }
 ">"			{ count(); return '>'; }
 "^"			{ count(); return '^'; }
 "|"			{ count(); return '|'; }
 "?"			{ count(); return '?'; }
-[\n]			{ return '\n'; }
+[\n]			{ /*Nothing bro*/}
 [ \t\v\f]		{ /*count(); eat these chars*/ }
 .			{ /* ignore bad characters */ }
 
@@ -157,7 +156,7 @@ void count()
 // }
 
 
-int main(int argc,char** argv)
+/* int main(int argc,char** argv)
 {
 	if( argc >=2 ){
 		yyin = fopen(argv[1] , "r");
@@ -172,5 +171,5 @@ int main(int argc,char** argv)
 	}
 	yylex();
 	return 0;
-}
+} */
 

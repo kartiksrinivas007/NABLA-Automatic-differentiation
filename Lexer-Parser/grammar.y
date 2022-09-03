@@ -3,13 +3,14 @@
 #include<stdlib.h>
 
 extern int yylex();
+void yyerror(char *);
 %}
 
 // TODOs: 
 // 1. Some parts here have to added to pdf. Search for "TODO" in this file.
 // 2.
 
-%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD INT_CONST FLOAT_CONST CHAR_CONST
+%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD INT_CONST FLOAT_CONST CHAR_CONST PRINT
 %token INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP AT_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN AT_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
@@ -117,7 +118,7 @@ init_declarator
 declarator
 	: IDENTIFIER
 	| '('declarator')'
-	| '('declarator[const_exp]')'
+	| declarator '[' const_exp ']'
 	;
 
 initializer
@@ -161,7 +162,9 @@ conditional_exp
 	: logical_or_exp
 	| logical_or_exp '?' exp ':' conditional_exp
 	;
-
+const_exp
+	: conditional_exp // TODO: Add this in pdf, was missing there
+	;
 logical_or_exp
 	: logical_and_exp
 	| logical_or_exp OR_OP logical_and_exp
@@ -243,6 +246,7 @@ lib_funcs
 	| LOG
 	| BACKWARD
 	| SIZEOF
+	| PRINT
 	;
 
 unary_operator
@@ -273,4 +277,18 @@ constant
 	: INT_CONST
 	| CHAR_CONST
 	| FLOAT_CONST
+	| CONSTANT
 	;
+
+%%
+
+void yyerror(char *s)
+{
+	fprintf(stderr, "%s\n", s);
+}
+
+int main(void)
+{
+	yyparse();
+	return 0;
+}
