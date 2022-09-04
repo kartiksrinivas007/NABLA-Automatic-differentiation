@@ -1,0 +1,12 @@
+ {
+ {
+
+ }
+
+ STRING_LITERAL
+
+ }
+
+ {
+ VAR IDENTIFIER = IDENTIFIER * IDENTIFIER ;
+ }

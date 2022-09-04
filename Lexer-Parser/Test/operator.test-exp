@@ -1,0 +1,11 @@
+ < PTR_OP
+ ( LEFT_OP
+ RIGHT_OP )
+ LEFT_OP > > { }
+ RIGHT_OP
+
+ IDENTIFIER [ ] [ ] RIGHT_OP LEFT_OP
+ IDENTIFIER [ ] [ ]
+ IDENTIFIER
+
+ < RIGHT_OP <
