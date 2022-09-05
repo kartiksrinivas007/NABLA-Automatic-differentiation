@@ -8,6 +8,7 @@ IS			(u|U|l|L)*
 %{
 #include <stdio.h>
 #include "y.tab.h"
+
 static void count();
 static void comment();
 void yyerror(char *);
