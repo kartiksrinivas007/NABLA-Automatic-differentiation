@@ -5,16 +5,14 @@ EXEC := test_lexer.out
 
 $(EXEC) :
 		lex test_lexer.l
-		gcc -o $(EXEC) lex.yy.c -lfl
+		gcc -o $(EXEC) lex.yy.c 
 
 test : $(EXEC) $(all-tests) 
 		@echo "\e[32mSuccess, all tests passed.\e[0m"
 
 %.test : %.test-in %.test-exp $(EXEC)
-		
 		./$(EXEC) $< | diff -q $(word 2, $?) - >/dev/null || \
     (@echo "\e[31mTest $@ failed\e[0m" && exit 1)	
-
 
 clean:
 	rm *.yy.c ||:

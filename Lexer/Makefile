@@ -4,7 +4,7 @@ TEST-DIR := Test
 
 p1:
 	lex lexer.l
-	gcc -o lexer.out lex.yy.c -lfl
+	gcc -o lexer.out lex.yy.c
 
 test :
 		@echo "Testing Lexer"
