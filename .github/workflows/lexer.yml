@@ -2,7 +2,8 @@ name: Lexer Build and Test
 
 on:
   push:
-    branches: [ "main" ]
+    paths:
+      - 'Lexer/**'
   pull_request:
     branches: [ "main" ]
 

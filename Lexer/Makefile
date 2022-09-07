@@ -1,10 +1,6 @@
 TEST-DIR := Test
 
-.PHONY : test all 
-
-p1:
-	lex lexer.l
-	gcc -o lexer.out lex.yy.c
+.PHONY : test clean
 
 .SILENT:
 test :
