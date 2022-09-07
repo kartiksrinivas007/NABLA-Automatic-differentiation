@@ -15,6 +15,7 @@
  {
  IDENTIFIER = IDENTIFIER ;
  }
+ ENDIF
  }
  }
  PRINT ( STRING_LITERAL ) ;
