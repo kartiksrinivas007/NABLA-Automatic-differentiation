@@ -15,6 +15,7 @@
          {
             ans=False;
          }
+         endif
      }    
     }
       print("Is this idempotent matrix?");
