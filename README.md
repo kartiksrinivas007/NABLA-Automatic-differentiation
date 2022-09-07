@@ -53,3 +53,14 @@ The code will be converted into a computational graph(internally) of the form:-
 After this we will be able to use the chain rule to calculate the gradients of the Final variable in terms of the beginning variables
 
 ![alt text](Whitepaper/images/comp-graph.png)
+
+## Testing The Lexer
+
+---
+
+Run the Following commands to test the Lexer,
+```console
+cd Lexer
+make test
+```
+If you wish to see the outputs of the Lexer File, Please look into  `Lexer/Test/*.test-exp` 
