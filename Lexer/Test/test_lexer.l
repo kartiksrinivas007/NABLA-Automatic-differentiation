@@ -3,8 +3,8 @@ D			[0-9]
 L			[a-zA-Z_]
 H			[a-fA-F0-9]
 E			[Ee][+-]?{D}+
-FS			(f|F|l|L)
-IS			(u|U|l|L)*
+FS		(f|F)
+IS		(l|L)
 
 %{
 #include <stdio.h>
@@ -14,41 +14,41 @@ static void comment();
 
 
 %%
-"/*"			{ comment(); }
-"//"[^\n]*      { /* consume //-comment */ }
+"/*"				{ comment(); }
+"//"[^\n]*  { /* consume //-comment */ }
 "char"			{ count(); printf("CHAR"); }
-"cns"			{ count(); printf("CNS"); }
+"cns"				{ count(); printf("CNS"); }
 "elif"			{ count(); printf("ELIF"); }
 "else"			{ count(); printf("ELSE"); }
-"endif"			{count(); printf("ENDIF");}
+"endif"			{ count(); printf("ENDIF");}
 "float"			{ count(); printf("FLOAT"); }
 "loop"			{ count(); printf("LOOP"); }
-"if"			{ count(); printf("IF"); }
-"int"			{ count(); printf("INT"); }
+"if"				{ count(); printf("IF"); }
+"int"				{ count(); printf("INT"); }
 "Tensor"		{ count(); printf("TENSOR"); }
-"var"			{ count(); printf("VAR"); }
+"var"				{ count(); printf("VAR"); }
 "bool"			{ count(); printf("BOOL");}
 
 "sizeof"		{ count(); printf("SIZEOF");}
 "grad"			{ count(); printf("GRAD");}
-"backward"		{ count(); printf("BACKWARD");}
-"cos"			{ count(); printf("COS");}
-"sin"			{ count(); printf("SIN");}
-"exp"			{count(); printf("EXP");}
-"log"			{count(); printf("LOG");}
-"print" 		{count(); printf("PRINT");}
-{L}({L}|{D})*		{ count(); printf("IDENTIFIER");}
-0[xX]{H}+{IS}?		{ count(); printf("CONSTANT"); }
-0{D}+{IS}?		{ count(); printf("CONSTANT"); }
-{D}+{IS}?		{ count(); printf("CONSTANT"); }
-L?'(\\.|[^\\'])+'	{ count(); printf("CONSTANT"); }
-{D}+{E}{FS}?		{ count(); printf("CONSTANT"); }
+"backward"	{ count(); printf("BACKWARD");}
+"cos"				{ count(); printf("COS");}
+"sin"				{ count(); printf("SIN");}
+"exp"				{ count(); printf("EXP");}
+"log"				{ count(); printf("LOG");}
+"print" 		{ count(); printf("PRINT");}
+
+{L}({L}|{D})*		  			{ count(); printf("IDENTIFIER");}
+0[xX]{H}+{IS}?					{ count(); printf("CONSTANT"); }
+0{D}+{IS}?							{ count(); printf("CONSTANT"); }
+{D}+{IS}?								{ count(); printf("CONSTANT"); }
+L?'(\\.|[^\\'])+'				{ count(); printf("CONSTANT"); }
+{D}+{E}{FS}?						{ count(); printf("CONSTANT"); }
 {D}*"."{D}+({E})?{FS}?	{ count(); printf("CONSTANT"); }
 {D}+"."{D}*({E})?{FS}?	{ count(); printf("CONSTANT"); }
-L?\"(\\.|[^\\"])*\"	{ count(); printf("STRING_LITERAL"); }
+L?\"(\\.|[^\\"])*\"			{ count(); printf("STRING_LITERAL"); }
 
-"@"			{ count(); printf("AT_OP"); }
-"..."			{ count(); printf("ELLIPSIS"); }
+"@"				{ count(); printf("AT_OP"); }
 ">>="			{ count(); printf("RIGHT_ASSIGN"); }
 "<<="			{ count(); printf("LEFT_ASSIGN"); }
 "+="			{ count(); printf("ADD_ASSIGN"); }
@@ -81,7 +81,6 @@ L?\"(\\.|[^\\"])*\"	{ count(); printf("STRING_LITERAL"); }
 ")"			{ count(); printf(")"); }
 "["			{ count(); printf("["); }
 "]"			{ count(); printf("]"); }
-"."			{ count(); printf("."); }
 "&"			{ count(); printf("&"); }
 "!"			{ count(); printf("!"); }
 "~"			{ count(); printf("~"); }
@@ -136,26 +135,6 @@ void count()
 
 	// ECHO;
 }
-
-
-// int check_type()
-// {
-// /*
-// * pseudo code --- this is what it should check
-// *
-// *	if (yytext == type_name)
-// *		return(TYPE_NAME);
-// *
-// *	return(IDENTIFIER);
-// */
-
-// /*
-// *	it actually will only return IDENTIFIER
-// */
-
-// 	return(IDENTIFIER);
-// }
-
 
 int main(int argc,char** argv)
 {

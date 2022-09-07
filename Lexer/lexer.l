@@ -2,8 +2,8 @@ D			[0-9]
 L			[a-zA-Z_]
 H			[a-fA-F0-9]
 E			[Ee][+-]?{D}+
-FS			(f|F|l|L)
-IS			(u|U|l|L)*
+FS		(f|F)
+IS		(l|L)
 
 %{
 #include <stdio.h>
@@ -16,88 +16,87 @@ void yyerror(char *);
 
 
 %%
-"/*"			{ comment(); }
+"/*"						{ comment(); }
 "//"[^\n]*      { /* consume //-comment */ }
-"char"			{ count(); return CHAR; }
-"cns"			{ count(); return CNS; }
-"elif"			{ count(); return ELIF; }
-"else"			{ count(); return ELSE; }
-"endif"			{count(); return ENDIF;}
-"float"			{ count(); return FLOAT; }
-"loop"			{ count(); return LOOP; }
-"if"			{ count(); return IF; }
-"int"			{ count(); return INT; }
-"Tensor"		{ count(); return TENSOR; }
-"var"			{ count(); printf("Hello here\n"); return VAR; }
-"bool"			{ count(); return BOOL;}
+"char"					{ count(); return CHAR; }
+"cns"						{ count(); return CNS; }
+"elif"					{ count(); return ELIF; }
+"else"					{ count(); return ELSE; }
+"endif"					{ count(); return ENDIF;}
+"float"					{ count(); return FLOAT; }
+"loop"					{ count(); return LOOP; }
+"if"						{ count(); return IF; }
+"int"						{ count(); return INT; }
+"Tensor"				{ count(); return TENSOR; }
+"var"						{ count(); printf("Hello here\n"); return VAR; }
+"bool"					{ count(); return BOOL;}
+"sizeof"				{ count(); return SIZEOF;}
+"grad"					{ count(); return GRAD;}
+"backward"			{ count(); return BACKWARD;}
+"cos"						{ count(); return COS;}
+"sin"						{ count(); return SIN;}
+"exp"						{ count(); return EXP;}
+"log"						{ count(); return LOG;}
+"print" 				{ count(); return PRINT;}
 
-"sizeof"		{ count(); return SIZEOF;}
-"grad"			{ count(); return GRAD;}
-"backward"		{ count(); return BACKWARD;}
-"cos"			{ count(); return COS;}
-"sin"			{ count(); return SIN;}
-"exp"			{count(); return EXP;}
-"log"			{count(); return LOG;}
-"print" 		{count(); return PRINT;}
-{L}({L}|{D})*		{ count(); return IDENTIFIER;}
-0[xX]{H}+{IS}?		{ count(); return CONSTANT; }
-0{D}+{IS}?		{ count(); return CONSTANT; }
-{D}+{IS}?		{ count(); return CONSTANT; }
-L?'(\\.|[^\\'])+'	{ count(); return CONSTANT; }
-{D}+{E}{FS}?		{ count(); return CONSTANT; }
+{L}({L}|{D})*						{ count(); return IDENTIFIER;}
+0[xX]{H}+{IS}?					{ count(); return CONSTANT; }
+0{D}+{IS}?							{ count(); return CONSTANT; }
+{D}+{IS}?								{ count(); return CONSTANT; }
+L?'(\\.|[^\\'])+'				{ count(); return CONSTANT; }
+{D}+{E}{FS}?						{ count(); return CONSTANT; }
 {D}*"."{D}+({E})?{FS}?	{ count(); return CONSTANT; }
 {D}+"."{D}*({E})?{FS}?	{ count(); return CONSTANT; }
-L?\"(\\.|[^\\"])*\"	{ count(); return STRING_LITERAL; }
+L?\"(\\.|[^\\"])*\"			{ count(); return STRING_LITERAL; }
 
-"@"			{ count(); return AT_OP; }
-">>="			{ count(); return RIGHT_ASSIGN; }
-"<<="			{ count(); return LEFT_ASSIGN; }
-"+="			{ count(); return ADD_ASSIGN; }
-"-="			{ count(); return SUB_ASSIGN; }
-"*="			{ count(); return MUL_ASSIGN; }
-"/="			{ count(); return DIV_ASSIGN; }
-"%="			{ count(); return MOD_ASSIGN; }
-"&="			{ count(); return AND_ASSIGN; }
-"^="			{ count(); return XOR_ASSIGN; }
-"|="			{ count(); return OR_ASSIGN; }
-"@="			{ count(); return AT_ASSIGN;}
-">>"			{ count(); return RIGHT_OP; }
-"<<"			{ count(); return LEFT_OP; }
-"++"			{ count(); return INC_OP; }
-"--"			{ count(); return DEC_OP; }
-"&&"			{ count(); return AND_OP; }
-"||"			{ count(); return OR_OP; }
-"<="			{ count(); return LE_OP; }
-">="			{ count(); return GE_OP; }
-"=="			{ count(); return EQ_OP; }
-"!="			{ count(); return NE_OP; }
-";"			{ count(); return ';'; }
-"{"			{ count(); return '{'; }
-"}"			{ count(); return '}'; }
-","			{ count(); return ','; }
-":"			{ count(); return ':'; }
-"="			{ count(); return '='; }
-"("			{ count(); return '('; }
-")"			{ count(); return ')'; }
-"["			{ count(); return '['; }
-"]"			{ count(); return ']'; }
-"."			{ count(); return '.'; }
-"&"			{ count(); return '&'; }
-"!"			{ count(); return '!'; }
-"~"			{ count(); return '~'; }
-"-"			{ count(); return '-'; }
-"+"			{ count(); return '+'; }
-"*"			{ count(); return '*'; }
-"/"			{ count(); return '/'; }
-"%"			{ count(); return '%'; }
-"<"			{ count(); return '<'; }
-">"			{ count(); return '>'; }
-"^"			{ count(); return '^'; }
-"|"			{ count(); return '|'; }
-"?"			{ count(); return '?'; }
-[\n]			{ /*Nothing bro*/}
+"@"					{ count(); return AT_OP; }
+">>="				{ count(); return RIGHT_ASSIGN; }
+"<<="				{ count(); return LEFT_ASSIGN; }
+"+="				{ count(); return ADD_ASSIGN; }
+"-="				{ count(); return SUB_ASSIGN; }
+"*="				{ count(); return MUL_ASSIGN; }
+"/="				{ count(); return DIV_ASSIGN; }
+"%="				{ count(); return MOD_ASSIGN; }
+"&="				{ count(); return AND_ASSIGN; }
+"^="				{ count(); return XOR_ASSIGN; }
+"|="				{ count(); return OR_ASSIGN; }
+"@="				{ count(); return AT_ASSIGN;}
+">>"				{ count(); return RIGHT_OP; }
+"<<"				{ count(); return LEFT_OP; }
+"++"				{ count(); return INC_OP; }
+"--"				{ count(); return DEC_OP; }
+"&&"				{ count(); return AND_OP; }
+"||"				{ count(); return OR_OP; }
+"<="				{ count(); return LE_OP; }
+">="				{ count(); return GE_OP; }
+"=="				{ count(); return EQ_OP; }
+"!="				{ count(); return NE_OP; }
+";"					{ count(); return ';'; }
+"{"					{ count(); return '{'; }
+"}"					{ count(); return '}'; }
+","					{ count(); return ','; }
+":"					{ count(); return ':'; }
+"="					{ count(); return '='; }
+"("					{ count(); return '('; }
+")"					{ count(); return ')'; }
+"["					{ count(); return '['; }
+"]"					{ count(); return ']'; }
+"&"					{ count(); return '&'; }
+"!"					{ count(); return '!'; }
+"~"					{ count(); return '~'; }
+"-"					{ count(); return '-'; }
+"+"					{ count(); return '+'; }
+"*"					{ count(); return '*'; }
+"/"					{ count(); return '/'; }
+"%"					{ count(); return '%'; }
+"<"					{ count(); return '<'; }
+">"					{ count(); return '>'; }
+"^"					{ count(); return '^'; }
+"|"					{ count(); return '|'; }
+"?"					{ count(); return '?'; }
+[\n]				{	/*count();*/ }
 [ \t\v\f]		{ /*count(); eat these chars*/ }
-.			{ /* ignore bad characters */ }
+.						{ /* ignore bad characters */ }
 
 %%
 
@@ -136,25 +135,6 @@ void count()
 
 	// ECHO;
 }
-
-
-// int check_type()
-// {
-// /*
-// * pseudo code --- this is what it should check
-// *
-// *	if (yytext == type_name)
-// *		return(TYPE_NAME);
-// *
-// *	return(IDENTIFIER);
-// */
-
-// /*
-// *	it actually will only return IDENTIFIER
-// */
-
-// 	return(IDENTIFIER);
-// }
 
 
 /* int main(int argc,char** argv)

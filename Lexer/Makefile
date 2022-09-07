@@ -6,8 +6,9 @@ p1:
 	lex lexer.l
 	gcc -o lexer.out lex.yy.c
 
+.SILENT:
 test :
-		@echo "Testing Lexer"
+		@echo "\e[1mTesting Lexer\e[0m"
 		cd $(TEST-DIR);\
 		make test
 
