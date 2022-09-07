@@ -16,31 +16,31 @@ void yyerror(char *);
 
 
 %%
-"/*"						{ comment(); }
-"//"[^\n]*      { /* consume //-comment */ }
-"char"					{ count(); return CHAR; }
-"cns"						{ count(); return CNS; }
-"elif"					{ count(); return ELIF; }
-"else"					{ count(); return ELSE; }
-"endif"					{ count(); return ENDIF;}
-"float"					{ count(); return FLOAT; }
-"loop"					{ count(); return LOOP; }
-"if"						{ count(); return IF; }
-"int"						{ count(); return INT; }
-"Tensor"				{ count(); return TENSOR; }
-"var"						{ count(); printf("Hello here\n"); return VAR; }
-"bool"					{ count(); return BOOL;}
-"sizeof"				{ count(); return SIZEOF;}
-"grad"					{ count(); return GRAD;}
+"/*"						{ comment(); }              /* defined as comment */
+"//"[^\n]*      { /* consume //-comment */ }            /* comment */
+"char"					{ count(); return CHAR; }         /* lexer will print CHAR */
+"cns"						{ count(); return CNS; }       /* cns is constant */
+"elif"					{ count(); return ELIF; }           /* elif is just like else if in cpp */
+"else"					{ count(); return ELSE; }           /* it's else statement */
+"endif"					{ count(); return ENDIF;}            /* endif directive used to define "#if"  */
+"float"					{ count(); return FLOAT; }           /* float datatype */
+"loop"					{ count(); return LOOP; }            /* loop is just like for loop in cpp*/
+"if"						{ count(); return IF; }          /* if */
+"int"						{ count(); return INT; }         /* int datatype */
+"Tensor"				{ count(); return TENSOR; }          /* tensor datatype */
+"var"						{ count(); printf("Hello here\n"); return VAR; }    /* var is for variable */
+"bool"					{ count(); return BOOL;}          /* it is boolean */
+"sizeof"				{ count(); return SIZEOF;}        /* sizeof function */
+"grad"					{ count(); return GRAD;}          /* gradiance */
 "backward"			{ count(); return BACKWARD;}
-"cos"						{ count(); return COS;}
-"sin"						{ count(); return SIN;}
-"exp"						{ count(); return EXP;}
-"log"						{ count(); return LOG;}
-"print" 				{ count(); return PRINT;}
+"cos"						{ count(); return COS;}       /* cos function as keyword*/
+"sin"						{ count(); return SIN;}       /* sin function as keyword */
+"exp"						{ count(); return EXP;}       /* exponential function as keyword */
+"log"						{ count(); return LOG;}       /* logarithmic function as keyword */
+"print" 				{ count(); return PRINT;}         /* print is just like print in python */
 
-{L}({L}|{D})*						{ count(); return IDENTIFIER;}
-0[xX]{H}+{IS}?					{ count(); return CONSTANT; }
+{L}({L}|{D})*						{ count(); return IDENTIFIER;}   /* D for digit H for hexadecimal E for exponential  L for letters*/
+0[xX]{H}+{IS}?					{ count(); return CONSTANT; }        /* ? is when it is optional and star is when you can take it any times */
 0{D}+{IS}?							{ count(); return CONSTANT; }
 {D}+{IS}?								{ count(); return CONSTANT; }
 L?'(\\.|[^\\'])+'				{ count(); return CONSTANT; }
@@ -49,9 +49,9 @@ L?'(\\.|[^\\'])+'				{ count(); return CONSTANT; }
 {D}+"."{D}*({E})?{FS}?	{ count(); return CONSTANT; }
 L?\"(\\.|[^\\"])*\"			{ count(); return STRING_LITERAL; }
 
-"@"					{ count(); return AT_OP; }
-">>="				{ count(); return RIGHT_ASSIGN; }
-"<<="				{ count(); return LEFT_ASSIGN; }
+"@"					{ count(); return AT_OP; }          /* Tensor multiply operator */
+">>="				{ count(); return RIGHT_ASSIGN; }   /* below all operators like cpp */
+"<<="				{ count(); return LEFT_ASSIGN; }     /* assign operators from line 53 to 63 */
 "+="				{ count(); return ADD_ASSIGN; }
 "-="				{ count(); return SUB_ASSIGN; }
 "*="				{ count(); return MUL_ASSIGN; }
@@ -71,7 +71,7 @@ L?\"(\\.|[^\\"])*\"			{ count(); return STRING_LITERAL; }
 ">="				{ count(); return GE_OP; }
 "=="				{ count(); return EQ_OP; }
 "!="				{ count(); return NE_OP; }
-";"					{ count(); return ';'; }
+";"					{ count(); return ';'; }     /* some other operators from 74 to 96 */
 "{"					{ count(); return '{'; }
 "}"					{ count(); return '}'; }
 ","					{ count(); return ','; }
@@ -81,9 +81,9 @@ L?\"(\\.|[^\\"])*\"			{ count(); return STRING_LITERAL; }
 ")"					{ count(); return ')'; }
 "["					{ count(); return '['; }
 "]"					{ count(); return ']'; }
-"&"					{ count(); return '&'; }
+"&"					{ count(); return '&'; }    
 "!"					{ count(); return '!'; }
-"~"					{ count(); return '~'; }
+"~"					{ count(); return '~'; }    /* bitwise operator */
 "-"					{ count(); return '-'; }
 "+"					{ count(); return '+'; }
 "*"					{ count(); return '*'; }
