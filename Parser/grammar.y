@@ -39,7 +39,8 @@ statement
 	;
 
 selection_statement 
-	: if_section else_section endif_section
+	: 
+	/*|*/ if_section else_section endif_section
 	| if_section elif_section endif_section
 	| if_section elif_section else_section endif_section
  	;
@@ -232,7 +233,7 @@ unary_exp
 	| INC_OP unary_exp
 	| DEC_OP unary_exp
 	| unary_operator cast_exp
-	| '('type_specifier')'cast_exp // TODO: Make change in grammar pdf
+	//| '('type_specifier')'cast_exp // TODO: Make change in grammar pdf
 	| lib_funcs '(' unary_exp ')'
 	;
 
