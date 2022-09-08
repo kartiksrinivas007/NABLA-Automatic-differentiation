@@ -39,8 +39,7 @@ statement
 	;
 
 selection_statement 
-	: 
-	| if_section else_section endif_section
+	: if_section else_section endif_section
 	| if_section elif_section endif_section
 	| if_section elif_section else_section endif_section
  	;
