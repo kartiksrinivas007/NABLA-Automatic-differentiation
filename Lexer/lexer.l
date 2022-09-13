@@ -2,8 +2,8 @@ D			[0-9]
 L			[a-zA-Z_]
 H			[a-fA-F0-9]
 E			[Ee][+-]?{D}+
-FS		(f|F)
-IS		(l|L)
+FS			(f|F)
+IS			(l|L)
 
 %{
 #include <stdio.h>
@@ -17,37 +17,37 @@ void yyerror(char *);
 
 %%
 "/*"						{ comment(); }              /* defined as comment */
-"//"[^\n]*      { /* consume //-comment */ }            /* comment */
-"char"					{ count(); return CHAR; }         /* lexer will print CHAR */
+"//"[^\n]*      			{ /* consume //-comment */ }            /* comment */
+"char"						{ count(); return CHAR; }         /* lexer will print CHAR */
 "cns"						{ count(); return CNS; }       /* cns is constant */
-"elif"					{ count(); return ELIF; }           /* elif is just like else if in cpp */
-"else"					{ count(); return ELSE; }           /* it's else statement */
-"endif"					{ count(); return ENDIF;}            /* endif directive used to define "#if"  */
-"float"					{ count(); return FLOAT; }           /* float datatype */
-"loop"					{ count(); return LOOP; }            /* loop is just like for loop in cpp*/
+"elif"						{ count(); return ELIF; }           /* elif is just like else if in cpp */
+"else"						{ count(); return ELSE; }           /* it's else statement */
+"endif"						{ count(); return ENDIF;}            /* endif directive used to define "#if"  */
+"float"						{ count(); return FLOAT; }           /* float datatype */
+"loop"						{ count(); return LOOP; }            /* loop is just like for loop in cpp*/
 "if"						{ count(); return IF; }          /* if */
 "int"						{ count(); return INT; }         /* int datatype */
-"Tensor"				{ count(); return TENSOR; }          /* tensor datatype */
-"var"						{ count(); printf("Hello here\n"); return VAR; }    /* var is for variable */
-"bool"					{ count(); return BOOL;}          /* it is boolean */
-"sizeof"				{ count(); return SIZEOF;}        /* sizeof function */
-"grad"					{ count(); return GRAD;}          /* gradiance */
-"backward"			{ count(); return BACKWARD;}
+"Tensor"					{ count(); return TENSOR; }          /* tensor datatype */
+"var"						{ count(); return VAR; }    /* var is for variable */
+"bool"						{ count(); return BOOL;}          /* it is boolean */
+"sizeof"					{ count(); return SIZEOF;}        /* sizeof function */
+"grad"						{ count(); return GRAD;}          /* gradiance */
+"backward"					{ count(); return BACKWARD;}
 "cos"						{ count(); return COS;}       /* cos function as keyword*/
 "sin"						{ count(); return SIN;}       /* sin function as keyword */
 "exp"						{ count(); return EXP;}       /* exponential function as keyword */
 "log"						{ count(); return LOG;}       /* logarithmic function as keyword */
-"print" 				{ count(); return PRINT;}         /* print is just like print in python */
+"print" 					{ count(); return PRINT;}         /* print is just like print in python */
 
 {L}({L}|{D})*						{ count(); return IDENTIFIER;}   /* D for digit H for hexadecimal E for exponential  L for letters*/
-0[xX]{H}+{IS}?					{ count(); return CONSTANT; }        /* ? is when it is optional and star is when you can take it any times */
+0[xX]{H}+{IS}?						{ count(); return CONSTANT; }        /* ? is when it is optional and star is when you can take it any times */
 0{D}+{IS}?							{ count(); return CONSTANT; }
-{D}+{IS}?								{ count(); return CONSTANT; }
-L?'(\\.|[^\\'])+'				{ count(); return CONSTANT; }
+{D}+{IS}?							{ count(); return CONSTANT; }
+L?'(\\.|[^\\'])+'					{ count(); return CONSTANT; }
 {D}+{E}{FS}?						{ count(); return CONSTANT; }
-{D}*"."{D}+({E})?{FS}?	{ count(); return CONSTANT; }
-{D}+"."{D}*({E})?{FS}?	{ count(); return CONSTANT; }
-L?\"(\\.|[^\\"])*\"			{ count(); return STRING_LITERAL; }
+{D}*"."{D}+({E})?{FS}?				{ count(); return CONSTANT; }
+{D}+"."{D}*({E})?{FS}?				{ count(); return CONSTANT; }
+L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 
 "@"					{ count(); return AT_OP; }          /* Tensor multiply operator */
 ">>="				{ count(); return RIGHT_ASSIGN; }   /* below all operators like cpp */
