@@ -123,7 +123,6 @@ int column = 0;
 void count()
 {
 	yylval.string = yytext;
-	printf(" ");
 	int i;
 
 	for (i = 0; yytext[i] != '\0'; i++)

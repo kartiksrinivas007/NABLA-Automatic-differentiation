@@ -25,8 +25,8 @@ void yyerror(char *);
 }
 
 %token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD 
-%token<ival> INT_CONST 
-%token<fval> FLOAT_CONST 
+%token<string> INT_CONST 
+%token<string> FLOAT_CONST 
 %token<string> CHAR_CONST 
 %token<string> PRINT
 %token<string> INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP AT_OP
@@ -35,8 +35,6 @@ void yyerror(char *);
 %token<string> XOR_ASSIGN OR_ASSIGN TYPE_NAME
 %token<string> CHAR INT TENSOR FLOAT CNS VAR BOOL
 %token<string> IF ELIF ELSE LOOP ENDIF 
-
-%type<string> compound_statement statement 
 %start start
 %%
 
@@ -45,10 +43,10 @@ start : compound_statement;
 // Statements
 
 compound_statement 
-	: '{' '}'
-	| '{' declaration_list statement_list '}'{$$ = $1 SHOW("%s -> %s + %s");}
-	| '{' statement_list '}'  {SHOW("Compound Statment Complete \n ");SHOW("comp_stmt-> stmt_list\n");}
-	| '{' declaration_list '}' { SHOW("Compound Statment Complete\n "); SHOW("comp_stmt -> decl_list\n");}
+	: '{' '}' {printf("compound_statment in empty\n"); }
+	| '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
+	| '{' statement_list '}'  {printf("comp_stmt -> stmt_list\n");}
+	| '{' declaration_list '}' {; printf("comp_stmt -> declaration_list\n");}
 	;
 
 statement 
@@ -66,7 +64,7 @@ selection_statement
  	;
 
 declaration_list 
-	: declaration_list declaration 
+	: declaration_list declaration {;}
 	| declaration
 	;
 
