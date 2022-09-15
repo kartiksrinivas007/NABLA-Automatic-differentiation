@@ -6,7 +6,7 @@ extern int yylex();
 extern FILE* yyin;
 void yyerror(char *);
 #define DEBUG
-#ifdef DEBUG 
+#ifndef DEBUG 
 #define SHOW printf
 #else
 #define SHOW
