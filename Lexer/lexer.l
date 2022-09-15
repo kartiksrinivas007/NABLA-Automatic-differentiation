@@ -8,6 +8,7 @@ IS			(l|L)
 %{
 #include <stdio.h>
 #include "y.tab.h"
+extern int yylval;
 
 static void count();
 static void comment();
@@ -18,7 +19,7 @@ void yyerror(char *);
 %%
 "/*"						{ comment(); }              /* defined as comment */
 "//"[^\n]*      			{ /* consume //-comment */ }            /* comment */
-"char"						{ count(); return CHAR; }         /* lexer will print CHAR */
+"char"						{ yylval.string = yytext; count(); return CHAR; }         /* lexer will print CHAR */
 "cns"						{ count(); return CNS; }       /* cns is constant */
 "elif"						{ count(); return ELIF; }           /* elif is just like else if in cpp */
 "else"						{ count(); return ELSE; }           /* it's else statement */
@@ -122,7 +123,7 @@ int column = 0;
 
 void count()
 {
-	printf(" ");
+	// printf(" "); // this is the cause of the extra spaces
 	int i;
 
 	for (i = 0; yytext[i] != '\0'; i++)

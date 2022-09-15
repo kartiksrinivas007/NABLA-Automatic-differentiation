@@ -64,3 +64,9 @@ cd Lexer
 make test
 ```
 If you wish to see the outputs of the Lexer File, Please look into  `Lexer/Test/*.test-exp` 
+To run the parser and the Lexer jointly please use the following commands 
+
+```bash
+yacc -d Parser/grammar.y && lex Lexer/lexer.l && gcc lex.yy.c y.tab.c -o exec 
+./exec < Parser/Test/tmp.txt   
+```

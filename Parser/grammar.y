@@ -3,20 +3,38 @@
 #include<stdlib.h>
 
 extern int yylex();
+extern FILE* yyin;
 void yyerror(char *);
+#define DEBUG
+#ifdef DEBUG 
+#define SHOW printf
+#else
+#define SHOW
+#endif
 %}
 
 // TODOs: 
 // 1. Some parts here have to added to pdf. Search for "TODO" in this file.
 // 2.
+%union{
+	int ival;
+	float fval;
+	// some  technique required for the symbol table , to map strings to indices 
+	char *string;
 
-%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD INT_CONST FLOAT_CONST CHAR_CONST PRINT
-%token INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP AT_OP
-%token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN AT_ASSIGN
-%token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
-%token XOR_ASSIGN OR_ASSIGN TYPE_NAME
-%token CHAR INT TENSOR FLOAT CNS VAR BOOL
-%token IF ELIF ELSE LOOP ENDIF 
+}
+
+%token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD 
+%token<ival> INT_CONST 
+%token<fval> FLOAT_CONST 
+%token<string> CHAR_CONST 
+%token<string> PRINT
+%token<string> INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP AT_OP
+%token<string> AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN AT_ASSIGN
+%token<string> SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
+%token<string> XOR_ASSIGN OR_ASSIGN TYPE_NAME
+%token<string> CHAR INT TENSOR FLOAT CNS VAR BOOL
+%token<string> IF ELIF ELSE LOOP ENDIF 
 %start start
 %%
 
@@ -24,29 +42,29 @@ start : compound_statement;
 
 // Statements
 
-compound_statement
+compound_statement 
 	: '{' '}'
-	| '{' declaration_list statement_list '}'
-	| '{' statement_list '}'
-	| '{' declaration_list '}'
+	| '{' declaration_list statement_list '}'	 {SHOW("Compound Statment Complete comp_stmt -> decl_list stmt_list\n ");}
+	| '{' statement_list '}'  {SHOW("Compound Statment Complete \n ");SHOW("comp_stmt-> stmt_list\n");}
+	| '{' declaration_list '}' { SHOW("Compound Statment Complete\n "); SHOW("comp_stmt -> decl_list\n");}
 	;
 
 statement 
-	: expression_statement
-	| compound_statement
-	| selection_statement // TODO: Add this in pdf, was missing there
-	| iteration_statement
+	: expression_statement {SHOW("stmt -> exp_stmt\n");}
+	| compound_statement {SHOW("stmt -> comp_stmt\n");}
+	| selection_statement {SHOW("stmt -> selection_stmt\n");}// TODO: Add this in pdf, was missing there
+	| iteration_statement {SHOW("stmt -> iter_statementist\n");}
 	;
 
 selection_statement 
 	: 
-	/*|*/ if_section else_section endif_section
+	/*|*/ if_section else_section endif_section  
 	| if_section elif_section endif_section
 	| if_section elif_section else_section endif_section
  	;
 
 declaration_list 
-	: declaration_list declaration
+	: declaration_list declaration 
 	| declaration
 	;
 
@@ -111,14 +129,14 @@ init_declarators
 	;
 
 init_declarator 
-	: declarator
-	| declarator '=' initializer
+	: declarator {SHOW("init_decl -> declarator\n");}
+	| declarator '=' initializer {SHOW("int_decl -> declarator = initializer\n");}
 	;
 
 declarator
-	: IDENTIFIER
+	: IDENTIFIER {SHOW("declarator = identifier\n");}
 	| '('declarator')'
-	| declarator '[' const_exp ']'
+	| declarator '[' const_exp ']' {SHOW("declarator -> declarator = declarator[const_exp]\n");}
 	;
 
 initializer
@@ -287,8 +305,10 @@ void yyerror(char *s)
 	fprintf(stderr, "%s\n", s);
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
+	// printf("Input argument Number : %d", argc);
+	yyin = fopen(argv[1],"r"); 
 	yyparse();
 	return 0;
 }
