@@ -6,7 +6,7 @@ extern int yylex();
 extern FILE* yyin;
 void yyerror(char *);
 #define DEBUG
-#ifndef DEBUG 
+#ifdef DEBUG 
 #define SHOW printf
 #else
 #define SHOW
@@ -25,8 +25,8 @@ void yyerror(char *);
 }
 
 %token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD 
-%token<string> INT_CONST 
-%token<string> FLOAT_CONST 
+%token<ival> INT_CONST 
+%token<fval> FLOAT_CONST 
 %token<string> CHAR_CONST 
 %token<string> PRINT
 %token<string> INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP AT_OP
@@ -45,8 +45,8 @@ start : compound_statement;
 compound_statement 
 	: '{' '}' {printf("compound_statment in empty\n"); }
 	| '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
-	| '{' statement_list '}'  {printf("comp_stmt -> stmt_list\n");}
-	| '{' declaration_list '}' {; printf("comp_stmt -> declaration_list\n");}
+	| '{' statement_list '}'  {printf("comp_stmt -> stmt_list \n");}
+	| '{' declaration_list '}' {printf("comp_stmt -> declaration_list\n");}
 	;
 
 statement 
@@ -58,149 +58,150 @@ statement
 
 selection_statement 
 	: 
-	/*|*/ if_section else_section endif_section  
-	| if_section elif_section endif_section
-	| if_section elif_section else_section endif_section
+	/*|*/ if_section else_section endif_section  {SHOW("selection_stmt -> if else endif\n");}
+	| if_section elif_section endif_section	{SHOW("selection_stmt -> if elif endif\n");}
+	| if_section elif_section else_section endif_section {SHOW("selection_stmt -> if elif else endif\n");}
  	;
 
 declaration_list 
-	: declaration_list declaration {;}
-	| declaration
+	: declaration_list declaration {SHOW("decl_list -> decl_list decl\n");}
+	| declaration {SHOW("decl_list -> decl\n");}
 	;
 
 statement_list 
-	: statement
-	| statement_list statement
+	: statement {SHOW("state_list -> stmt\n");}
+	| statement_list statement {SHOW("state_list -> state_list stmt\n");}
 	;
 
 expression_statement 
-	: ';'
-	| exp ';'
+	: ';' {SHOW("exp_stmt -> ;\n");}
+	| exp ';' {SHOW("exp_stmt -> exp ;\n");}
 	;
 
 iteration_statement 
-	: LOOP '(' expression_statement expression_statement exp ')' statement
+	: LOOP '(' expression_statement expression_statement exp ')' statement {SHOW("iter_stmt -> %s exp_stmt exp_stmt exp stmt\n", $1);}
 	;
 
 if_section 
-	: IF '(' exp ')' statement
+	: IF '(' exp ')' statement {SHOW("if_sec -> %s exp exp_stmt exp stmt\n", $1);}
 	;
 
 endif_section 
-	: ENDIF
+	: ENDIF {SHOW("endif_sec -> %s\n", $1);}
 	;
 
 else_section 
-	: ELSE statement
+	: ELSE statement {SHOW("else_sec -> %s stmt\n", $1);}
 	;
 
 elif_section 
-	: ELIF '(' exp ')' statement 
-	| elif_section ELIF '(' exp ')' statement
+	: ELIF '(' exp ')' statement {SHOW("elif_sec -> %s exp stmt\n", $1);}
+	| elif_section ELIF '(' exp ')' statement {SHOW("elif_sec -> elif_sec %s exp stmt\n", $2);}
 	;
 
 // Declarations 
 declaration 
-	: declaration_type ';'
-	| declaration_type init_declarators ';'
+	: declaration_type ';' {SHOW("decl -> decl_type\n");}
+	| declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decl\n");}
 	;
 
 declaration_type
-	: grad_specifier type_specifier
+	: grad_specifier type_specifier {SHOW("decl -> decl_type init_decl\n");}
 	| type_specifier
 	;
 
 grad_specifier
-	: CNS
-	| VAR
+	: CNS {SHOW("grad_spec -> %s\n", $1);}
+	| VAR {SHOW("grad_spec -> %s\n", $1);}
 	;
 
 type_specifier
-	: CHAR
-	| INT
-	| FLOAT
-	| BOOL
-	| TENSOR
+	: CHAR {SHOW("type_spec -> %s\n", $1);}
+	| INT {SHOW("type_spec -> %s\n", $1);}
+	| FLOAT {SHOW("type_spec -> %s\n", $1);}
+	| BOOL {SHOW("type_spec -> %s\n", $1);}
+	| TENSOR {SHOW("type_spec -> %s\n", $1);}
 	;
 
 init_declarators
-	: init_declarator
-	| init_declarators init_declarator
+	: init_declarator {SHOW("init_decls -> init_decl\n");}
+	| init_declarators init_declarator {SHOW("init_decls -> init_decls init_decl\n");}
 	;
 
 init_declarator 
-	: declarator {SHOW("init_decl -> declarator\n");}
-	| declarator '=' initializer {SHOW("int_decl -> declarator = initializer\n");}
+	: declarator {SHOW("init_decl -> decl\n");}
+	| declarator '=' initializer {SHOW("int_decl -> decl = initializer\n");}
 	;
 
 declarator
-	: IDENTIFIER {SHOW("declarator = identifier\n");}
-	| '('declarator')'
-	| declarator '[' const_exp ']' {SHOW("declarator -> declarator = declarator[const_exp]\n");}
+	: IDENTIFIER {SHOW("decl -> %s\n", $1);}
+	| '('declarator')' {SHOW("decl -> (decl)\n");}
+	| declarator '[' const_exp ']' {SHOW("decl -> decl [const_exp]\n");}
 	;
 
 initializer
-	: assignment_exp
-	| '[' initializer_list ']'
-	| '[' initializer_list ',' ']'
+	: assignment_exp {SHOW("initializer -> assign_exp\n");}
+	| '[' initializer_list ']' {SHOW("initializer -> [initializer_list]\n");}
+	| '[' initializer_list ',' ']' {SHOW("initializer -> [initializer_list,]\n");}
 	;
 
 initializer_list
-	: initializer
-	| initializer_list ',' initializer
+	: initializer {SHOW("initializer_list -> initializer\n");}
+	| initializer_list ',' initializer {SHOW("initializer_list -> initializer_list, initializer\n");}
 	;
 
 // Expressions
 exp
-	: assignment_exp
-	| exp ',' assignment_exp
+	: assignment_exp {SHOW("exp -> assign_exp\n");}
+	| exp ',' assignment_exp {SHOW("exp -> exp, assign_exp\n");}
 	;
 
 assignment_exp
-	: conditional_exp
-	| unary_exp assignment_operator assignment_exp
+	: conditional_exp {SHOW("assign_exp -> cond_exp\n");}
+	| unary_exp assignment_operator assignment_exp {SHOW("assign_exp -> unary_exp assign_op assign_exp\n");}
 	;
 
 assignment_operator
-	: '='
-	| MUL_ASSIGN
-	| DIV_ASSIGN
-	| MOD_ASSIGN
-	| ADD_ASSIGN
-	| SUB_ASSIGN
-	| LEFT_ASSIGN
-	| RIGHT_ASSIGN
-	| AND_ASSIGN
-	| XOR_ASSIGN
-	| OR_ASSIGN
-	| AT_ASSIGN
+	: '=' {SHOW("assign_op -> =\n");}
+	| MUL_ASSIGN {SHOW("assign_op -> %s\n", $1);}
+	| DIV_ASSIGN {SHOW("assign_op -> %s\n", $1);}
+	| MOD_ASSIGN {SHOW("assign_op -> %s\n", $1);}
+	| ADD_ASSIGN {SHOW("assign_op -> %s\n", $1);}
+	| SUB_ASSIGN {SHOW("assign_op -> %s\n", $1);}
+	| LEFT_ASSIGN	{SHOW("assign_op -> %s\n", $1);}
+	| RIGHT_ASSIGN {SHOW("assign_op -> %s\n", $1);}
+	| AND_ASSIGN {SHOW("assign_op -> %s\n", $1);}
+	| XOR_ASSIGN {SHOW("assign_op -> %s\n", $1);}
+	| OR_ASSIGN {SHOW("assign_op -> %s\n", $1);}
+	| AT_ASSIGN {SHOW("assign_op -> %s\n", $1);}
 	;
 
 conditional_exp
-	: logical_or_exp
-	| logical_or_exp '?' exp ':' conditional_exp
+	: logical_or_exp {SHOW("cond_exp -> log_or_exp\n");}
+	| logical_or_exp '?' exp ':' conditional_exp {SHOW("cond_exp -> log_or_exp ? exp : cond_exp\n");}
 	;
 const_exp
-	: conditional_exp // TODO: Add this in pdf, was missing there
+	: conditional_exp  {SHOW("const_exp -> cond_exp\n");}
+	// TODO: Add this in pdf, was missing there 
 	;
 logical_or_exp
-	: logical_and_exp
-	| logical_or_exp OR_OP logical_and_exp
+	: logical_and_exp {SHOW("log_or_exp -> log_and_exp\n");}
+	| logical_or_exp OR_OP logical_and_exp {SHOW("log_or_exp -> log_or_exp %s log_and_exp\n", $2);}
 	;
 
 logical_and_exp
-	: inclusive_or_exp
-	| logical_and_exp AND_OP inclusive_or_exp
+	: inclusive_or_exp {SHOW("log_and_exp -> incl_or_exp\n");}
+	| logical_and_exp AND_OP inclusive_or_exp {SHOW("log_and_exp -> log_and_exp %s incl_or_exp\n", $2);}
 	;
 
 inclusive_or_exp
-	: exclusive_or_exp
-	| inclusive_or_exp '|' exclusive_or_exp
+	: exclusive_or_exp {SHOW("incl_or_exp -> excl_or_exp\n");}
+	| inclusive_or_exp '|' exclusive_or_exp {SHOW("incl_or_exp -> incl_or_exp | excl_or_exp\n");}
 	;
 
 exclusive_or_exp
-	: and_exp
-	| exclusive_or_exp '^' and_exp
+	: and_exp {SHOW("excl_or_exp -> and_exp\n");}
+	| exclusive_or_exp '^' and_exp 	{SHOW("excl_or_exp -> excl_or_exp ^ and_exp\n");}
 	;
 
 and_exp

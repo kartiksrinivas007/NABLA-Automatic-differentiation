@@ -1,0 +1,8 @@
+{   //all of it is a compound_statement -> declarations and statements
+int i;
+    loop(i = 1; i < 10 ; i++){
+        // by default cns
+        b  = b + b*c; //assign_exp
+    }
+    // gi
+}

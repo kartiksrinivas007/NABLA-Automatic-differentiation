@@ -45,8 +45,8 @@ void yyerror(char *);
 {D}+{IS}?							{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
 L?'(\\.|[^\\'])+'					{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
 {D}+{E}{FS}?						{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
-{D}*"."{D}+({E})?{FS}?				{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
-{D}+"."{D}*({E})?{FS}?				{ yylval.ival = atoi(yytext) ; count(); return CONSTANT; }
+{D}*"."{D}+({E})?{FS}?				{ yylval.fval = atof(yytext) ;count(); return CONSTANT; }
+{D}+"."{D}*({E})?{FS}?				{ yylval.fval = atof(yytext) ; count(); return CONSTANT; }
 L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 
 "@"					{ count(); return AT_OP; }          /* Tensor multiply operator */
@@ -122,7 +122,7 @@ int column = 0;
 
 void count()
 {
-	yylval.string = yytext;
+	yylval.string = strdup(yytext);
 	int i;
 
 	for (i = 0; yytext[i] != '\0'; i++)
