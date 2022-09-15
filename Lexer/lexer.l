@@ -40,13 +40,13 @@ void yyerror(char *);
 "print" 					{ count(); return PRINT;}         /* print is just like print in python */
 
 {L}({L}|{D})*						{ count(); return IDENTIFIER;}   /* D for digit H for hexadecimal E for exponential  L for letters*/
-0[xX]{H}+{IS}?						{ count(); return CONSTANT; }        /* ? is when it is optional and star is when you can take it any times */
-0{D}+{IS}?							{ count(); return CONSTANT; }
-{D}+{IS}?							{ count(); return CONSTANT; }
-L?'(\\.|[^\\'])+'					{ count(); return CONSTANT; }
-{D}+{E}{FS}?						{ count(); return CONSTANT; }
-{D}*"."{D}+({E})?{FS}?				{ count(); return CONSTANT; }
-{D}+"."{D}*({E})?{FS}?				{ count(); return CONSTANT; }
+0[xX]{H}+{IS}?						{ yylval.ival = atoi(yytext) ; count(); return CONSTANT; }        /* ? is when it is optional and star is when you can take it any times */
+0{D}+{IS}?							{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
+{D}+{IS}?							{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
+L?'(\\.|[^\\'])+'					{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
+{D}+{E}{FS}?						{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
+{D}*"."{D}+({E})?{FS}?				{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
+{D}+"."{D}*({E})?{FS}?				{ yylval.ival = atoi(yytext) ; count(); return CONSTANT; }
 L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 
 "@"					{ count(); return AT_OP; }          /* Tensor multiply operator */
@@ -122,6 +122,7 @@ int column = 0;
 
 void count()
 {
+	yylval.string = yytext;
 	printf(" ");
 	int i;
 
