@@ -35,6 +35,8 @@ void yyerror(char *);
 %token<string> XOR_ASSIGN OR_ASSIGN TYPE_NAME
 %token<string> CHAR INT TENSOR FLOAT CNS VAR BOOL
 %token<string> IF ELIF ELSE LOOP ENDIF 
+
+%type<string> compound_statement statement 
 %start start
 %%
 
@@ -44,7 +46,7 @@ start : compound_statement;
 
 compound_statement 
 	: '{' '}'
-	| '{' declaration_list statement_list '}'	 {SHOW("Compound Statment Complete comp_stmt -> decl_list stmt_list\n ");}
+	| '{' declaration_list statement_list '}'{$$ = $1 SHOW("%s -> %s + %s");}
 	| '{' statement_list '}'  {SHOW("Compound Statment Complete \n ");SHOW("comp_stmt-> stmt_list\n");}
 	| '{' declaration_list '}' { SHOW("Compound Statment Complete\n "); SHOW("comp_stmt -> decl_list\n");}
 	;
