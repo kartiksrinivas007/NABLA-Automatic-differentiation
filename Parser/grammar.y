@@ -239,7 +239,7 @@ multiplicative_exp
 	: cast_exp {SHOW("mult_exp -> cast_exp\n");}
 	| multiplicative_exp '*' cast_exp {SHOW("mult_exp -> mult_exp * cast_exp\n");}
 	| multiplicative_exp '/' cast_exp {SHOW("mult_exp -> mult_exp / cast_exp\n");}
-	| multiplicative_exp '%' cast_exp {SHOW("mult_exp -> mult_exp % cast_exp\n");}
+	| multiplicative_exp '%' cast_exp {SHOW("mult_exp -> mult_exp modulo cast_exp\n");}
 	;
 
 cast_exp
@@ -293,9 +293,9 @@ primary_exp
 
 // Constants
 constant
-	: INT_CONST {SHOW("constant -> %s\n", $1);}
+	: INT_CONST {SHOW("constant -> %d\n", $1);}
 	| CHAR_CONST {SHOW("constant -> %s\n", $1);}
-	| FLOAT_CONST {SHOW("constant -> %s\n", $1);}
+	| FLOAT_CONST {SHOW("constant -> %lf\n", $1);}
 	| CONSTANT {SHOW("constant -> %s\n", $1);}
 	;
 
