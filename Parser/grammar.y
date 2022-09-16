@@ -266,7 +266,7 @@ unary_exp
 	| DEC_OP unary_exp {SHOW("unary_exp -> %s unary_exp\n", $1);}
 	| unary_operator cast_exp {SHOW("unary_exp -> unary_op cast_exp\n");}
 	//| '('type_specifier')'cast_exp // TODO: Make change in grammar pdf
-	| lib_funcs '(' unary_exp ')' {SHOW("unary_exp -> lib_funcs (unary_exp)\n");}
+	| lib_funcs '(' additive_exp ')' {SHOW("unary_exp -> lib_funcs (unary_exp)\n");}
 	;
 
 // TODO: Make change in grammar pdf 
