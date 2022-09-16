@@ -205,98 +205,98 @@ exclusive_or_exp
 	;
 
 and_exp
-	: equality_exp
-	| and_exp '&' equality_exp
+	: equality_exp {SHOW("and_exp -> equ_exp\n");}
+	| and_exp '&' equality_exp {SHOW("and_exp -> and_exp & equ_exp\n");}
 	;
 
 equality_exp
-	: relational_exp
-	| equality_exp EQ_OP relational_exp
-	| equality_exp NE_OP relational_exp
+	: relational_exp {SHOW("equ_exp -> rel_exp\n");}
+	| equality_exp EQ_OP relational_exp {SHOW("equ_exp -> equ_exp %s rel_exp\n", $2);}
+	| equality_exp NE_OP relational_exp {SHOW("equ_exp -> equ_exp %s rel_exp\n", $2);}
 	;
 
 relational_exp
-	: shift_exp
-	| relational_exp '<' shift_exp
-	| relational_exp '>' shift_exp
-	| relational_exp LE_OP shift_exp
-	| relational_exp GE_OP shift_exp
-	;
+	: shift_exp {SHOW("rel_exp -> shift_exp\n");}
+	| relational_exp '<' shift_exp {SHOW("rel_exp -> rel_exp < shift_exp\n");}
+	| relational_exp '>' shift_exp {SHOW("rel_exp -> rel_exp > shift_exp\n");}
+	| relational_exp LE_OP shift_exp {SHOW("rel_exp -> rel_exp %s shift_exp\n", $2);}
+	| relational_exp GE_OP shift_exp {SHOW("rel_exp -> rel_exp %s shift_exp\n", $2);}
+	; 
 
 shift_exp
-	: additive_exp
-	| shift_exp LEFT_OP additive_exp
-	| shift_exp RIGHT_OP additive_exp
+	: additive_exp {SHOW("shift_exp -> add_exp\n");}
+	| shift_exp LEFT_OP additive_exp {SHOW("shift_exp -> shift_exp %s add_exp\n", $2);}
+	| shift_exp RIGHT_OP additive_exp {SHOW("shift_exp -> shift_exp %s add_exp\n", $2);}
 	;
 
 additive_exp
-	: multiplicative_exp
-	| additive_exp '+' multiplicative_exp
-	| additive_exp '-' multiplicative_exp
+	: multiplicative_exp {SHOW("add_exp -> mult_exp\n");}
+	| additive_exp '+' multiplicative_exp {SHOW("add_exp -> add_exp + mult_exp\n");}
+	| additive_exp '-' multiplicative_exp {SHOW("add_exp -> add_exp - mult_exp\n");}
 	;
 
 multiplicative_exp
-	: cast_exp
-	| multiplicative_exp '*' cast_exp
-	| multiplicative_exp '/' cast_exp
-	| multiplicative_exp '%' cast_exp
+	: cast_exp {SHOW("mult_exp -> cast_exp\n");}
+	| multiplicative_exp '*' cast_exp {SHOW("mult_exp -> mult_exp * cast_exp\n");}
+	| multiplicative_exp '/' cast_exp {SHOW("mult_exp -> mult_exp / cast_exp\n");}
+	| multiplicative_exp '%' cast_exp {SHOW("mult_exp -> mult_exp % cast_exp\n");}
 	;
 
 cast_exp
-	: unary_exp
-	| '(' type_specifier ')' cast_exp // TODO: Make change in grammar pdf
+	: unary_exp {SHOW("cast_exp -> unary_exp\n");}
+	| '(' type_specifier ')' cast_exp  {SHOW("cast_exp -> (type_specifier) cast_exp\n");}// TODO: Make change in grammar pdf
 	;
 
 unary_exp
-	: postfix_exp
-	| INC_OP unary_exp
-	| DEC_OP unary_exp
-	| unary_operator cast_exp
+	: postfix_exp {SHOW("unary_exp -> postfix_exp\n");}
+	| INC_OP unary_exp {SHOW("unary_exp -> %s unary_exp\n", $1);}
+	| DEC_OP unary_exp {SHOW("unary_exp -> %s unary_exp\n", $1);}
+	| unary_operator cast_exp {SHOW("unary_exp -> unary_op cast_exp\n");}
 	//| '('type_specifier')'cast_exp // TODO: Make change in grammar pdf
-	| lib_funcs '(' unary_exp ')'
+	| lib_funcs '(' unary_exp ')' {SHOW("unary_exp -> lib_funcs (unary_exp)\n");}
 	;
 
 // TODO: Make change in grammar pdf 
 lib_funcs
-	: GRAD
-	| COS
-	| SIN
-	| EXP
-	| LOG
-	| BACKWARD
-	| SIZEOF
-	| PRINT
+	: GRAD {SHOW("lib_funcs -> %s\n", $1);}
+	| COS {SHOW("lib_funcs -> %s\n", $1);}
+	| SIN {SHOW("lib_funcs -> %s\n", $1);}
+	| EXP	{SHOW("lib_funcs -> %s\n", $1);}
+	| LOG	{SHOW("lib_funcs -> %s\n", $1);}
+	| BACKWARD	{SHOW("lib_funcs -> %s\n", $1);}
+	| SIZEOF {SHOW("lib_funcs -> %s\n", $1);}
+	| PRINT {SHOW("lib_funcs -> %s\n", $1);}
 	;
 
 unary_operator
-	: '&'
-	| '*'
-	| '+'
-	| '-'
-	| '~'
-	| '!'
-	| AT_OP
+	: '&' {SHOW("unary_op -> &\n");}
+	| '*' {SHOW("unary_op -> *\n");}
+	| '+' {SHOW("unary_op -> +\n");}
+	| '-' {SHOW("unary_op -> -\n");}
+	| '~' {SHOW("unary_op -> ~\n");}
+	| '!' {SHOW("unary_op -> !\n");}
+	| AT_OP {SHOW("unary_op -> %s\n", $1);}
 	;
 
 postfix_exp
-	: primary_exp
-	| postfix_exp '[' exp ']'
-	| postfix_exp INC_OP
-	| postfix_exp DEC_OP
+	: primary_exp {SHOW("postfix_exp -> primary_exp\n");}
+	| postfix_exp '[' exp ']' {SHOW("postfix_exp -> postfix_exp [ exp ]\n");}
+	| postfix_exp INC_OP {SHOW("postfix_exp -> postfix_exp %s\n", $2);}
+	| postfix_exp DEC_OP {SHOW("postfix_exp -> postfix_exp %s\n", $2);}
 	;
 
 primary_exp
-	: IDENTIFIER
-	| constant
-	| '(' exp ')'
+	: IDENTIFIER {SHOW("primary_exp -> %s\n", $1);}
+	| constant {SHOW("primary_exp -> constant\n");}
+	| '(' exp ')' {SHOW("primary_exp -> ( exp )\n");}
 	;
 
 // Constants
 constant
-	: INT_CONST
-	| CHAR_CONST
-	| FLOAT_CONST
-	| CONSTANT
+	: INT_CONST {SHOW("constant -> %s\n", $1);}
+	| CHAR_CONST {SHOW("constant -> %s\n", $1);}
+	| FLOAT_CONST {SHOW("constant -> %s\n", $1);}
+	| CONSTANT {SHOW("constant -> %s\n", $1);}
 	;
 
 %%

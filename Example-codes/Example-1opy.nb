@@ -1,8 +1,13 @@
 {   //all of it is a compound_statement -> declarations and statements
-int i;
-    loop(i = 1; i < 10 ; i++){
-        // by default cns
-        b  = b + b*c; //assign_exp
+
+    if( c > 0 ){ //selection statement
+        b = c*a ;
     }
-    // gi
+    elif(c == 0){
+        b = c
+    }
+    else
+    {
+        
+    }
 }
