@@ -38,17 +38,28 @@ void yyerror(char *);
 %start start
 %%
 
-start : compound_statement;
+start : compound_statement {SHOW("parsing complete! \n");}
+	   ;
 
 // Statements
 
 compound_statement 
 	: '{' '}' {printf("compound_statment in empty\n"); }
-	| '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
-	| '{' statement_list '}'  {printf("comp_stmt -> stmt_list \n");}
-	| '{' declaration_list '}' {printf("comp_stmt -> declaration_list\n");}
+	| '{' binary_ds_list '}' {printf("cmp_stmt -> decl + stmt\n");} 
+	;
+	// | '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
+	// | '{' statement_list '}'  {printf("comp_stmt -> stmt_list \n");}
+	// | '{' declaration_list '}' {printf("comp_stmt -> declaration_list\n");}
+	// ;
+binary_ds_list
+	: binary_ds_list binary_statement {SHOW ("binary_ds_list -> binary_ds_list + binary_statement\n");}
+	| binary_statement {SHOW ("binary_ds_list -> binary_ds_list + binary_statement\n");}
 	;
 
+binary_statement 
+	: declaration {SHOW ("binary_statment -> declaration\n");}
+	| statement {SHOW("binary_statement -> statement");}
+	;
 statement 
 	: expression_statement {SHOW("stmt -> exp_stmt\n");}
 	| compound_statement {SHOW("stmt -> comp_stmt\n");}
@@ -61,17 +72,18 @@ selection_statement
 	/*|*/ if_section else_section endif_section  {SHOW("selection_stmt -> if else endif\n");}
 	| if_section elif_section endif_section	{SHOW("selection_stmt -> if elif endif\n");}
 	| if_section elif_section else_section endif_section {SHOW("selection_stmt -> if elif else endif\n");}
+	| if_section endif_section {SHOW("selection_stmt -> if endif\n");}
  	;
 
-declaration_list 
-	: declaration_list declaration {SHOW("decl_list -> decl_list decl\n");}
-	| declaration {SHOW("decl_list -> decl\n");}
-	;
+// declaration_list 
+// 	: declaration_list declaration {SHOW("decl_list -> decl_list decl\n");}
+// 	| declaration {SHOW("decl_list -> decl\n");}
+// 	;
 
-statement_list 
-	: statement {SHOW("state_list -> stmt\n");}
-	| statement_list statement {SHOW("state_list -> state_list stmt\n");}
-	;
+// statement_list 
+// 	: statement {SHOW("state_list -> stmt\n");}
+// 	| statement_list statement {SHOW("state_list -> state_list stmt\n");}
+// 	;
 
 expression_statement 
 	: ';' {SHOW("exp_stmt -> ;\n");}
@@ -134,9 +146,9 @@ init_declarator
 	;
 
 declarator
-	: IDENTIFIER {SHOW("decl -> %s\n", $1);}
-	| '('declarator')' {SHOW("decl -> (decl)\n");}
-	| declarator '[' const_exp ']' {SHOW("decl -> decl [const_exp]\n");}
+	: IDENTIFIER {SHOW("declarator -> identifier =  %s\n", $1);}
+	| '('declarator')' {SHOW("declarator -> (declarator)\n");}
+	| declarator '[' const_exp ']' {SHOW("declarator -> declarator [const_exp]\n");}
 	;
 
 initializer
@@ -240,6 +252,7 @@ multiplicative_exp
 	| multiplicative_exp '*' cast_exp {SHOW("mult_exp -> mult_exp * cast_exp\n");}
 	| multiplicative_exp '/' cast_exp {SHOW("mult_exp -> mult_exp / cast_exp\n");}
 	| multiplicative_exp '%' cast_exp {SHOW("mult_exp -> mult_exp modulo cast_exp\n");}
+	| multiplicative_exp '@' cast_exp {SHOW("mult_exp -> mult_exp matmul cast_exp\n");}
 	;
 
 cast_exp
