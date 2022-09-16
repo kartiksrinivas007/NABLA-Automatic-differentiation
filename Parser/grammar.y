@@ -92,6 +92,7 @@ expression_statement
 
 iteration_statement 
 	: LOOP '(' expression_statement expression_statement exp ')' statement {SHOW("iter_stmt -> %s (exp_stmt exp_stmt exp) stmt\n", $1);}
+	| LOOP '(' declaration expression_statement exp ')' statement {SHOW("iter_stmt -> %s (decl exp_stmt exp) stmt\n", $1);}
 	;
 
 if_section 
@@ -266,7 +267,7 @@ unary_exp
 	| DEC_OP unary_exp {SHOW("unary_exp -> %s unary_exp\n", $1);}
 	| unary_operator cast_exp {SHOW("unary_exp -> unary_op cast_exp\n");}
 	//| '('type_specifier')'cast_exp // TODO: Make change in grammar pdf
-	| lib_funcs '(' additive_exp ')' {SHOW("unary_exp -> lib_funcs (unary_exp)\n");}
+	| lib_funcs '(' additive_exp ')' {SHOW("unary_exp -> lib_funcs (additive_exp)\n");}
 	;
 
 // TODO: Make change in grammar pdf 
