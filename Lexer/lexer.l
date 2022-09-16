@@ -49,7 +49,7 @@ L?'(\\.|[^\\'])+'					{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
 {D}+"."{D}*({E})?{FS}?				{ yylval.fval = atof(yytext) ; count(); return CONSTANT; }
 L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 
-"@"					{ count(); return AT_OP; }          /* Tensor multiply operator */
+        /* Tensor multiply operator */
 ">>="				{ count(); return RIGHT_ASSIGN; }   /* below all operators like cpp */
 "<<="				{ count(); return LEFT_ASSIGN; }     /* assign operators from line 53 to 63 */
 "+="				{ count(); return ADD_ASSIGN; }
@@ -87,6 +87,7 @@ L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 "-"					{ count(); return '-'; }
 "+"					{ count(); return '+'; }
 "*"					{ count(); return '*'; }
+"@"					{ count(); return '@'; }  
 "/"					{ count(); return '/'; }
 "%"					{ count(); return '%'; }
 "<"					{ count(); return '<'; }
