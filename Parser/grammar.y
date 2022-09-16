@@ -295,7 +295,7 @@ primary_exp
 constant
 	: INT_CONST {SHOW("constant -> %d\n", $1);}
 	| CHAR_CONST {SHOW("constant -> %s\n", $1);}
-	| FLOAT_CONST {SHOW("constant -> %lf\n", $1);}
+	| FLOAT_CONST {SHOW("constant -> %f\n", $1);}
 	| CONSTANT {SHOW("constant -> %s\n", $1);}
 	;
 
