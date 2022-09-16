@@ -79,11 +79,11 @@ expression_statement
 	;
 
 iteration_statement 
-	: LOOP '(' expression_statement expression_statement exp ')' statement {SHOW("iter_stmt -> %s exp_stmt exp_stmt exp stmt\n", $1);}
+	: LOOP '(' expression_statement expression_statement exp ')' statement {SHOW("iter_stmt -> %s (exp_stmt exp_stmt exp) stmt\n", $1);}
 	;
 
 if_section 
-	: IF '(' exp ')' statement {SHOW("if_sec -> %s exp exp_stmt exp stmt\n", $1);}
+	: IF '(' exp ')' statement {SHOW("if_sec -> %s (exp) stmt\n", $1);}
 	;
 
 endif_section 
@@ -95,8 +95,8 @@ else_section
 	;
 
 elif_section 
-	: ELIF '(' exp ')' statement {SHOW("elif_sec -> %s exp stmt\n", $1);}
-	| elif_section ELIF '(' exp ')' statement {SHOW("elif_sec -> elif_sec %s exp stmt\n", $2);}
+	: ELIF '(' exp ')' statement {SHOW("elif_sec -> %s (exp) stmt\n", $1);}
+	| elif_section ELIF '(' exp ')' statement {SHOW("elif_sec -> elif_sec %s (exp) stmt\n", $2);}
 	;
 
 // Declarations 
