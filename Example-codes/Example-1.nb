@@ -15,6 +15,6 @@
         b  = b + b*c; //assign_exp
     } */
 /*
-    backward(b); //expression ; -> expression_statemnt-> statement(on the top)
+   backward(b); //expression ; -> expression_statemnt-> statement(on the top)
     print(grad(a)); // lib_funcs(unary_exp) */
 }
