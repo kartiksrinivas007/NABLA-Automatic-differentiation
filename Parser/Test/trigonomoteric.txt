@@ -1,0 +1,4 @@
+{
+    print(M);
+    var int a;
+}
