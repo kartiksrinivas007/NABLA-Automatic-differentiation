@@ -2,7 +2,7 @@
       bool x;
       int year;
 
-      if((year%4==0 && year%100!=0) || year%400)
+   /*   if((year%4==0 && year%100!=0) || year%400)
        {
         print("It's leap year.");
        }
@@ -10,4 +10,5 @@
       {
         print("It's not a leap year.");
       }
+      endif */
 }

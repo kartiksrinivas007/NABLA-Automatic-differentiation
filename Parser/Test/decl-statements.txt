@@ -1,0 +1,9 @@
+{
+    var Tensor a[2][2];
+    cns Tensor b[2][2] = [[1,2], [3,4]];
+    var Tensor c = sin(a + b);
+    loop(int i =0; i<3; i++){
+        var Tensor d = cos(a + b + i);
+        c = c + d;
+    }
+}

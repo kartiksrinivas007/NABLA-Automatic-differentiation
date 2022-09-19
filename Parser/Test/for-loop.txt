@@ -1,0 +1,11 @@
+{
+    loop(i =0; i<35; i++){
+        b=k@a;
+    }
+
+    // Declaration inside for loop
+    loop(int i =0; i<3; i++){
+       p = 9;
+    }
+
+}
