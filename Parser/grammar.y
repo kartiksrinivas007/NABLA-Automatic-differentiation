@@ -6,16 +6,29 @@ extern int yylex();
 extern FILE* yyin;
 void yyerror(char *);
 #define DEBUG
+
 #ifdef DEBUG 
-#define SHOW printf
+	#define SHOW printf
 #else
-#define SHOW
+	#define SHOW
 #endif
+
+typedef struct node {
+	char *token;
+	// unsigned n_children;
+	// struct node** children;
+	node* child1;
+	node* child2;
+	node* child3;
+} node;
+
+void insert_node(char* token, node*, node*, node*); // Create a node with these children
 %}
 
 // TODOs: 
 // 1. Some parts here have to added to pdf. Search for "TODO" in this file.
 // 2.
+
 %union{
 	int ival;
 	float fval;
@@ -115,12 +128,12 @@ elif_section
 // Declarations 
 declaration 
 	: declaration_type ';' {SHOW("decl -> decl_type\n");}
-	| declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decl\n");}
+	| declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n");}
 	;
 
 declaration_type
-	: grad_specifier type_specifier {SHOW("decl -> decl_type init_decl\n");}
-	| type_specifier
+	: grad_specifier type_specifier {SHOW("decl_type -> grad_spec type_spec\n");}
+	| type_specifier {SHOW("decl_type -> type_spec\n");}
 	;
 
 grad_specifier
@@ -147,9 +160,9 @@ init_declarator
 	;
 
 declarator
-	: IDENTIFIER {SHOW("declarator -> identifier =  %s\n", $1);}
-	| '('declarator')' {SHOW("declarator -> (declarator)\n");}
-	| declarator '[' const_exp ']' {SHOW("declarator -> declarator [const_exp]\n");}
+	: IDENTIFIER {SHOW("decl -> %s\n", $1);}
+	| '('declarator')' {SHOW("decl -> (decl)\n");}
+	| declarator '[' const_exp ']' {SHOW("decl -> decl [const_exp]\n");}
 	;
 
 initializer
@@ -314,6 +327,27 @@ constant
 	;
 
 %%
+
+void insert_node(char* token, node* child1, node* child2, node* child3)
+{
+	node* new_node = (node*)(malloc(sizeof(node)));
+	new_node->token = token;
+	new_node->child1 = child1;
+	new_node->child2 = child2;
+	new_node->child3 = child3;
+}
+
+void print_tree(node* nd, int level)
+{
+	if(nd == NULL) return;
+	for(int i = 0; i < level; i++) {
+		printf(" ");
+	}
+	printf("%s\n", nd->token);
+	print_tree(nd->child1, level + 1);
+	print_tree(nd->child2, level + 1);
+	print_tree(nd->child3, level + 1);
+}
 
 void yyerror(char *s)
 {
