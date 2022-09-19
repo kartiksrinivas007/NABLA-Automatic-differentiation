@@ -17,9 +17,9 @@ typedef struct node {
 	char *token;
 	// unsigned n_children;
 	// struct node** children;
-	node* child1;
-	node* child2;
-	node* child3;
+	struct node* child1;
+	struct node* child2;
+	struct node* child3;
 } node;
 
 void insert_node(char* token, node*, node*, node*); // Create a node with these children
