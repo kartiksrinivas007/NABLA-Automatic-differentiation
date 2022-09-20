@@ -1,6 +1,10 @@
 %{
 #include<stdio.h>
 #include<stdlib.h>
+#include <ctype.h>
+#include <string.h>
+// #include <bits/stdc++.h>
+#include "ast.h"
 
 extern int yylex();
 extern FILE* yyin;
@@ -357,6 +361,10 @@ void yyerror(char *s)
 int main(int argc, char **argv)
 {
 	// printf("Input argument Number : %d", argc);
+	class Parent p;
+	p.func();
+	class Child c;
+	c.func();
 	yyin = fopen(argv[1],"r"); 
 	yyparse();
 	return 0;

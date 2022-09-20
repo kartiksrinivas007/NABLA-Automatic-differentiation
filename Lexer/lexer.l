@@ -110,7 +110,7 @@ int yywrap()
 static void
 comment() {
 	char c, c1 = 0;
-	while ( (c = input()) != 0 ) {	/* (EOF maps to 0) */
+	while ( (c = yyinput()) != 0 ) {	/* (EOF maps to 0) */
 		if ( c == '/' && c1 == '*' )
 			return;
 		c1 = c;
