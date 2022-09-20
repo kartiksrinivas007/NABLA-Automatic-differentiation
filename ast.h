@@ -8,6 +8,7 @@ class Parent
 {
 public:
     void func();
+    class Parent *child;
 };
 
 class Child : public Parent
