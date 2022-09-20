@@ -4,19 +4,16 @@
 #include <iostream>
 #include <cstring>
 
-extern "C"
+class Parent
 {
-    class Parent
-    {
-    public:
-        void func();
-    };
+public:
+    void func();
+};
 
-    class Child : public Parent
-    {
-    public:
-        void func();
-    };
-}
+class Child : public Parent
+{
+public:
+    void func();
+};
 
 #endif
