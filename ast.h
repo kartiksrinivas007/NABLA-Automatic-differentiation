@@ -6,23 +6,17 @@
 
 extern "C"
 {
-class Parent
-{
-public:
-    void func()
+    class Parent
     {
-        std::cout << "Parent::func()" << std::endl;
-    }
-};
+    public:
+        void func();
+    };
 
-class Child : public Parent
-{
-public:
-    void func()
+    class Child : public Parent
     {
-        std::cout << "Child::func()" << std::endl;
-    }
-};
+    public:
+        void func();
+    };
 }
 
 #endif

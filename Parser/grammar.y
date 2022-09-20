@@ -361,9 +361,9 @@ void yyerror(char *s)
 int main(int argc, char **argv)
 {
 	// printf("Input argument Number : %d", argc);
-	class Parent p;
+	Parent p;
 	p.func();
-	class Child c;
+	Child c;
 	c.func();
 	yyin = fopen(argv[1],"r"); 
 	yyparse();
