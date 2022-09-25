@@ -162,7 +162,7 @@ init_declarator
 declarator
 	: IDENTIFIER {SHOW("decl -> %s\n", $1);}
 	| '('declarator')' {SHOW("decl -> (decl)\n");}
-	| declarator '[' const_exp ']' {SHOW("decl -> decl [const_exp]\n");}
+	| declarator '[' conditional_exp ']' {SHOW("decl -> decl [conditional_exp]\n");}
 	;
 
 initializer
@@ -206,10 +206,10 @@ conditional_exp
 	: logical_or_exp {SHOW("cond_exp -> log_or_exp\n");}
 	| logical_or_exp '?' exp ':' conditional_exp {SHOW("cond_exp -> log_or_exp ? exp : cond_exp\n");}
 	;
-const_exp
+/* const_exp
 	: conditional_exp  {SHOW("const_exp -> cond_exp\n");}
 	// TODO: Add this in pdf, was missing there 
-	;
+	; */
 logical_or_exp
 	: logical_and_exp {SHOW("log_or_exp -> log_and_exp\n");}
 	| logical_or_exp OR_OP logical_and_exp {SHOW("log_or_exp -> log_or_exp %s log_and_exp\n", $2);}
@@ -297,7 +297,7 @@ lib_funcs
 
 unary_operator
 	: '&' {SHOW("unary_op -> &\n");}
-	| '*' {SHOW("unary_op -> *\n");}
+	//| '*' {SHOW("unary_op -> *\n");}
 	| '+' {SHOW("unary_op -> +\n");}
 	| '-' {SHOW("unary_op -> -\n");}
 	| '~' {SHOW("unary_op -> ~\n");}
