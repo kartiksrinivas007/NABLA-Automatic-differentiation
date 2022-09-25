@@ -86,10 +86,10 @@ statement
 
 selection_statement 
 	: 
-	/*|*/ if_section else_section endif_section  {SHOW("selection_stmt -> if else endif\n");}
-	| if_section elif_section endif_section	{SHOW("selection_stmt -> if elif endif\n");}
-	| if_section elif_section else_section endif_section {SHOW("selection_stmt -> if elif else endif\n");}
-	| if_section endif_section {SHOW("selection_stmt -> if endif\n");}
+	/*|*/ if_section else_section ENDIF  {SHOW("selection_stmt -> if else endif\n");}
+	| if_section elif_section ENDIF	{SHOW("selection_stmt -> if elif endif\n");}
+	| if_section elif_section else_section ENDIF {SHOW("selection_stmt -> if elif else endif\n");}
+	| if_section ENDIF {SHOW("selection_stmt -> if endif\n");}
  	;
 
 // declaration_list 
@@ -114,10 +114,6 @@ iteration_statement
 
 if_section 
 	: IF '(' exp ')' statement {SHOW("if_sec -> %s (exp) stmt\n", $1);}
-	;
-
-endif_section 
-	: ENDIF {SHOW("endif_sec -> %s\n", $1);}
 	;
 
 else_section 
