@@ -1,4 +1,6 @@
 #include "ast.h"
+#include <llvm/ADT/APFloat.h>
+#include <llvm-c-14/llvm-c/Core.h>
 
 extern "C"
 {
