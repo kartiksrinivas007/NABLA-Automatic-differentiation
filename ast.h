@@ -8,6 +8,8 @@
 // Naming scheme:
 // class MUST have names starting with Capital [A-Z]
 
+// Search for ToDo
+
 class Parent
 {
 public:
@@ -30,6 +32,7 @@ class CompStatement;
 
 // Expressions
 class Expr;
+class AssignmentExp;
 class ConditionalExp;
 class LogicalOrExp;
 class LogicalAndExp;
@@ -46,9 +49,14 @@ class UnaryExp;
 class PostfixExp;
 class PrimaryExp;
 
-// Incomplete
-
+// Declarations
 class Declaration;
+class DeclarationType;
+class InitDeclarators;
+class InitDeclarator;
+class Declarator;
+class Initializer;
+class InitializerList;
 
 class Node
 {
@@ -125,6 +133,33 @@ class IterStatement : public Statement
 
 class Expr : public Node
 {
+    Expr *expression;
+    AssignmentExp *assignment_expression;
+};
+
+enum class AssignmentOperator
+{
+    ASSIGN,
+    MUL_ASSIGN,
+    DIV_ASSIGN,
+    MOD_ASSIGN,
+    ADD_ASSIGN,
+    SUB_ASSIGN,
+    LEFT_ASSIGN,
+    RIGHT_ASSIGN,
+    AND_ASSIGN,
+    XOR_ASSIGN,
+    OR_ASSIGN,
+    AT_ASSIGN
+};
+
+class AssignmentExp : public Expr
+{
+public:
+    ConditionalExp *conditional_expression;
+    AssignmentExp *assignment_expression;
+    UnaryExp *unary_expression;
+    AssignmentOperator assignment_operator;
 };
 
 class ConditionalExp : public Expr
@@ -294,10 +329,67 @@ enum class ConstantType
 class PrimaryExp : public Expr
 {
 public:
-    ConstantType type ;
+    ConstantType type;
     Expr *expression;
     std::string identifier;
     std::string constant_literal;
+};
+
+// Declaration
+class Declaration : public Node
+{
+public:
+    DeclarationType *declaration_type;
+    InitDeclarators *init_declarators;
+};
+
+enum class GradSpecifier
+{
+    CNS,
+    VAR
+};
+
+class DeclarationType : public Node
+{
+public:
+    TypeSpecifier type_specifier;
+    GradSpecifier grad_specifier;
+};
+
+class InitDeclarator : public Node
+{
+public:
+    Declarator *declarator;
+    Initializer *initializer;
+};
+
+class InitDeclarators : public Node
+{
+public:
+    std::vector<InitDeclarator *> init_declarators;
+};
+
+class Declarator : public Node
+{
+public:
+    std::string identifier;
+    ConditionalExp *conditional_exp;
+    Declarator *declarator;
+};
+
+class Initializer : public Node
+{
+public:
+    AssignmentExp *assignment_exp;
+    InitializerList *initializer_list;
+    // ToDo: Add error checkiing for semantically incorrect grammar
+    bool isComma;
+};
+
+class InitializerList : public Node
+{
+public:
+    std::vector<Initializer *> initializer_list;
 };
 
 // class DoubleExprAST : public BaseAST
