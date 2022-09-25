@@ -21,14 +21,33 @@ public:
     void func();
 };
 
+// Statements
 class Node;
 class Statement;
 class BinaryStatement;
 class ExprStatement;
 class CompStatement;
 
-// Incomplete
+// Expressions
 class Expr;
+class ConditionalExp;
+class LogicalOrExp;
+class LogicalAndExp;
+class InclusiveOrExp;
+class ExclusiveOrExp;
+class AndExp;
+class EqualityExp;
+class RelationalExp;
+class ShiftExp;
+class AdditiveExp;
+class MultiplicativeExp;
+class CastExp;
+class UnaryExp;
+class PostfixExp;
+class PrimaryExp;
+
+// Incomplete
+
 class Declaration;
 
 class Node
@@ -100,6 +119,185 @@ class IterStatement : public Statement
     ExprStatement *test_statement;
     Expr *update_expreession; // The increment/decreement expression
     Statement *loop_statement;
+};
+
+// Expressions class hierarchy
+
+class Expr : public Node
+{
+};
+
+class ConditionalExp : public Expr
+{
+public:
+    Expr *logical_or_expression;
+    Expr *expression;
+    Expr *conditional_expression;
+};
+class LogicalOrExp : public Expr
+{
+public:
+    LogicalOrExp *logical_or_exp;
+    LogicalAndExp *logical_and_exp;
+};
+
+class LogicalAndExp : public Expr
+{
+public:
+    LogicalAndExp *logical_and_exp;
+    InclusiveOrExp *inclusive_or_exp;
+};
+
+class InclusiveOrExp : public Expr
+{
+public:
+    InclusiveOrExp *inclusive_or_exp;
+    ExclusiveOrExp *exclusive_or_exp;
+};
+
+class ExclusiveOrExp : public Expr
+{
+public:
+    ExclusiveOrExp *exclusive_or_exp;
+    AndExp *and_exp;
+};
+
+class AndExp : public Expr
+{
+public:
+    AndExp *and_exp;
+    EqualityExp *equality_exp;
+};
+
+class EqualityExp : public Expr
+{
+public:
+    EqualityExp *equality_exp;
+    RelationalExp *relational_exp;
+    bool isEqualOp;
+};
+
+enum class RelationalOp
+{
+    LESS_THAN,
+    GREATER_THAN,
+    LESS_THAN_EQUAL,
+    GREATER_THAN_EQUAL
+};
+
+class RelationalExp : public Expr
+{
+public:
+    RelationalExp *relational_exp;
+    ShiftExp *shift_exp;
+    RelationalOp relational_op;
+};
+
+class ShiftExp : public Expr
+{
+public:
+    ShiftExp *shift_exp;
+    AdditiveExp *additive_exp;
+    bool isLeftShift;
+};
+
+class AdditiveExp : public Expr
+{
+public:
+    AdditiveExp *additive_exp;
+    MultiplicativeExp *multiplicative_exp;
+    bool isAddition;
+};
+
+enum class MultiplicativeOp
+{
+    MULTIPLY,
+    DIVIDE,
+    MODULO,
+    AT
+};
+
+class MultiplicativeExp : public Expr
+{
+public:
+    MultiplicativeExp *multiplicative_exp;
+    CastExp *cast_exp;
+    MultiplicativeOp multiplicative_op;
+};
+
+enum class TypeSpecifier
+{
+    CHAR,
+    INT,
+    LONG,
+    FLOAT,
+    BOOL,
+    TENSOR
+};
+
+class CastExp : public Expr
+{
+public:
+    CastExp *cast_exp;
+    UnaryExp *unary_exp;
+    TypeSpecifier type_specifier;
+};
+
+enum class LibFuncs
+{
+    GRAD,
+    COS,
+    SIN,
+    EXP,
+    LOG,
+    BACKWARD,
+    SIZEOF,
+    PRINT
+};
+
+enum class UnaryOp
+{
+    AND,
+    PLUS,
+    MINUS,
+    TILDA,
+    EXCLAMATION,
+    AT
+};
+class UnaryExp : public Expr
+{
+public:
+    UnaryExp *unary_exp;
+    PostfixExp *postfix_exp;
+    CastExp *cast_exp;
+    AdditiveExp *additive_exp;
+    bool isIncrement;
+    UnaryOp unary_op;
+    LibFuncs lib_funcs;
+};
+
+class PostfixExp : public Expr
+{
+public:
+    PostfixExp *postfix_exp;
+    PrimaryExp *primary_exp;
+    Expr *expression;
+    bool isIncrement;
+};
+
+enum class ConstantType
+{
+    INT,
+    FLOAT,
+    CHAR,
+};
+class PrimaryExp : public Expr
+{
+public:
+    ConstantType type ;
+    Expr *expression;
+    std::string identifier;
+    std::string constant_literal;
 };
 
 // class DoubleExprAST : public BaseAST
