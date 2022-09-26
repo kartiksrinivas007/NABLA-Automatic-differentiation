@@ -6,7 +6,7 @@
     Tensor X[2*3];
     Tensor Arr[2][2] = a@b;
     Tensor Arr[2][2] = a+=b;
-    Tensor Arr[2][2] = a==b;
+    Tensor Arr[2][2] = a/b;
     Tensor Arr[2][2] = a+b;
     Tensor Arr[2][2] = a-b;
     Tensor Arr[2][2] = a*b;
@@ -19,8 +19,8 @@
     char c = 'c';
     float f = 1.2e10;
     Tensor T[2][2] = [[1,0],[0,1]];
-    char s[10] = "Ganesh;
+    char s[10] = "Ganesh" ;
 
-    bool condition = true;
+    bool condition = true;  // true is considered as identifier
 
 }

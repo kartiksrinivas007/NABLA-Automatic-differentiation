@@ -1,0 +1,6 @@
+{
+	// ERROR_EXPECTED
+	loop(int ; i<3; i++){  // fault in grammar.y 144 declaration -> declaration_type ; 
+		p = 9;
+    }                 
+}

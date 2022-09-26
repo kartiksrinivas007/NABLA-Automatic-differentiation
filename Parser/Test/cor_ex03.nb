@@ -1,3 +1,4 @@
 {
-  int num[1];
+    print(M);
+    var int a;
 }

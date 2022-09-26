@@ -7,7 +7,7 @@
 extern int yylex();
 extern FILE* yyin;
 void yyerror(char *);
-#define DEBUG 0
+
 
 #ifdef DEBUG 
 	#define SHOW printf
@@ -72,8 +72,8 @@ start : compound_statement {SHOW("parsing complete! \n");}
 // Statements
 
 compound_statement 
-	: '{' '}' {printf("compound_statment in empty\n"); }
-	| '{' binary_ds_list '}' {printf("cmp_stmt -> decl + stmt\n");} 
+	: '{' '}' {SHOW ("compound_statment in empty\n"); }
+	| '{' binary_ds_list '}' {SHOW ("cmp_stmt -> decl + stmt\n");} 
 	| '{' error '}' {yyerrok;}
 	;
 	// | '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
@@ -385,12 +385,12 @@ void yyerror(char *s)
 void warning(const char* s){
 	fprintf(stdout, "%s:%d:%d:\e[1;35m warning:\e[0m %s\n%*d |%s\n",filename, yylineno, yycolumn, s,(int)strlen(filename)-1 ,yylineno, linebuf);
 	if(yylloc.first_line == yylloc.last_line){
-		fprintf(stderr, "%*s\e[1;35m%*s", (int)(strlen(filename)+1),"|",yylloc.first_column,"^");
+		fprintf(stdout, "%*s\e[1;35m%*s", (int)(strlen(filename)+1),"|",yylloc.first_column,"^");
 		
 		for(int i = yylloc.first_column+1; i<=yylloc.last_column;i++){
-			fprintf(stderr, "_");
+			fprintf(stdout, "_");
 			}
-		fprintf(stderr, "\e[0m\n\n");
+		fprintf(stdout, "\e[0m\n\n");
 	}
 
 }

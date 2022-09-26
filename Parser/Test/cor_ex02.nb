@@ -31,5 +31,13 @@
   }
   endif
 
-    
+  if(a)
+  b = 0;
+  else
+    if (c)
+        d;
+    else 
+        f; 
+    endif
+  endif
 }
