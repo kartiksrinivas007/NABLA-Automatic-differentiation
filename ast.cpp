@@ -17,10 +17,32 @@ void Statement::print()
     std::cout << "[Incomplete] Print statement\n";
 }
 
-// Statement functions
+// class Statement
 
-// BinaryStatement class
-BinaryStatement::BinaryStatement(std::unique_ptr<Statement> statement, std::unique_ptr<Declaration> declaration)
-    : statement(std::move(statement)), declaration(std::move(declaration))
-{
-}
+// class BinaryStatement
+// BinaryStatement::BinaryStatement(std::unique_ptr<Statement> statement, std::unique_ptr<Declaration> declaration)
+// {
+//     this->statement = std::move(statement);
+//     this->declaration = std::move(declaration);
+// }
+
+// class CompStatement
+// CompStatement::CompStatement()
+// {
+//     binary_statements = std::vector<std::unique_ptr<BinaryStatement>>();
+// }
+
+// CompStatement *CompStatement::singleton_instance = nullptr;
+// CompStatement *CompStatement::get_instance()
+// {
+//     if (singleton_instance == nullptr)
+//     {
+//         singleton_instance = new CompStatement();
+//     }
+//     return singleton_instance;
+// }
+
+// void CompStatement::add_binary_statement(std::unique_ptr<BinaryStatement> binary_statement)
+// {
+//     this->binary_statements.push_back(std::move(binary_statement));
+// }

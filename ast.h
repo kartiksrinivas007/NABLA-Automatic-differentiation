@@ -31,7 +31,7 @@ class Node;
 class Statement;
 class BinaryStatement;
 class ExprStatement;
-class CompStatement;
+class CompStatement; // Singleton class
 
 // Expressions
 class Expr;
@@ -100,12 +100,29 @@ public:
 };
 
 class CompStatement : public Statement
+// This will be a singleton class because there can be only one compound statement which
+// will be a bunch of binary_statement enclosed in {}.
+// Singleton will ease some of out work as during bottom up parsing, whenever yacc wants
+// to "pass" a declaration or statement to the compound statement, we can just pass it
+// to the singleton instance of CompStatement without worrying whether the instance
+// was created or not.
 {
 private:
-    std::vector<std::unique_ptr<BinaryStatement>> binary_statements;
+    std::vector<std::unique_ptr<BinaryStatement>> binary_statements; // ToDo: Can vector also be changed to unique_ptr?
+
+    // private constructor to make prevent instantiation
+    CompStatement();
+
+    // The singleton instance. static because we only want to have one instance of CompStatement and we want to access it from static function get_instance()
+    static CompStatement *singleton_instance; // ToDo: can we make use of unique_ptr here?
 
 public:
     virtual ~CompStatement() = default;
+
+    // Function to get the singleton instance. static because we want to call it without an instance
+    static CompStatement *get_instance(); // ToDo: can we make use of unique_ptr here?
+
+    void add_binary_statement(std::unique_ptr<BinaryStatement>); // append the binary statement to the vector
 };
 
 class SelecStatement : public Statement

@@ -317,15 +317,6 @@ constant
 
 %%
 
-void insert_node(char* token, node* child1, node* child2, node* child3)
-{
-	node* new_node = (node*)(malloc(sizeof(node)));
-	new_node->token = token;
-	new_node->child1 = child1;
-	new_node->child2 = child2;
-	new_node->child3 = child3;
-}
-
 void yyerror(char *s)
 {
 	fprintf(stderr, "%s\n", s);
