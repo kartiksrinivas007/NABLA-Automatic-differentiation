@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <memory>
 
 // Naming scheme:
 // class MUST have names starting with Capital [A-Z]
@@ -61,80 +62,107 @@ class InitializerList;
 class Node
 {
 public:
+    Node(){};
     virtual ~Node() {}
     virtual void print() = 0;
-    int row_num, col_num;
+    // int row_num, col_num;
     // add codegen() function from llvm for IR gen
 };
 
 class Statement : public Node
 {
 public:
+    Statement(){};
+    virtual ~Statement();
     virtual void print();
 };
 
 class BinaryStatement : public Node
 {
+private:
+    std::unique_ptr<Statement> statement;
+    std::unique_ptr<Declaration> declaration;
+
 public:
-    Statement *statement;
-    Declaration *declaration;
-    BinaryStatement();
+    BinaryStatement(std::unique_ptr<Statement>, std::unique_ptr<Declaration>);
+    virtual ~BinaryStatement() = default;
 };
 
 class ExprStatement : public Statement
 {
+private:
+    std::unique_ptr<Expr> expression;
+
 public:
-    Expr *expression;
+    virtual ~ExprStatement() = default;
 };
 
 class CompStatement : public Statement
 {
+private:
+    std::vector<std::unique_ptr<BinaryStatement>> binary_statements;
+
 public:
-    std::vector<BinaryStatement *> binary_statements;
+    virtual ~CompStatement() = default;
 };
 
 class SelecStatement : public Statement
 {
-public:
+private:
     // Since statement is common in if, elif and else, we create a comman Statement* at the parent itself
-    Statement *statement;
+    std::unique_ptr<Statement> statement;
+
+public:
+    virtual ~SelecStatement() = default;
 };
 
 class IfStatement : public SelecStatement
 {
 public:
-    Expr *expression;
+    std::unique_ptr<Expr> expression;
 };
 
 class ElseStatement : public SelecStatement
 {
 public:
+    virtual ~ElseStatement() = default;
 };
 
 class ElIfStatement : public SelecStatement
 {
+private:
+    std::unique_ptr<Expr> expression;
+
 public:
-    Expr *expression;
+    virtual ~ElIfStatement() = default;
 };
 
 class IterStatement : public Statement
 {
+private:
     // LOOP contains either of the ones below.
     // Exactly one of the two of them below have to be nullptr
-    Declaration *declaration;
-    ExprStatement *init_expression;
+    std::unique_ptr<Declaration> declaration;
+    std::unique_ptr<ExprStatement> init_expression;
 
-    ExprStatement *test_statement;
-    Expr *update_expreession; // The increment/decreement expression
-    Statement *loop_statement;
+    std::unique_ptr<ExprStatement> test_statement;
+    std::unique_ptr<Expr> update_expreession; // The increment/decreement expression
+    std::unique_ptr<Statement> loop_statement;
+
+public:
+    virtual ~IterStatement() = default;
 };
 
 // Expressions class hierarchy
 
 class Expr : public Node
 {
-    Expr *expression;
-    AssignmentExp *assignment_expression;
+private:
+    std::unique_ptr<Expr> expression;
+    std::unique_ptr<AssignmentExp> assignment_expression;
+
+public:
+    virtual ~Expr() = default;
 };
 
 enum class AssignmentOperator

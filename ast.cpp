@@ -16,3 +16,11 @@ void Statement::print()
 {
     std::cout << "[Incomplete] Print statement\n";
 }
+
+// Statement functions
+
+// BinaryStatement class
+BinaryStatement::BinaryStatement(std::unique_ptr<Statement> statement, std::unique_ptr<Declaration> declaration)
+    : statement(std::move(statement)), declaration(std::move(declaration))
+{
+}
