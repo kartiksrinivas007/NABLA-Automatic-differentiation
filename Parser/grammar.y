@@ -16,17 +16,6 @@ void yyerror(char *);
 #else
 	#define SHOW
 #endif
-
-typedef struct node {
-	char *token;
-	// unsigned n_children;
-	// struct node** children;
-	struct node* child1;
-	struct node* child2;
-	struct node* child3;
-} node;
-
-void insert_node(char* token, node*, node*, node*); // Create a node with these children
 %}
 
 // TODOs: 
@@ -335,18 +324,6 @@ void insert_node(char* token, node* child1, node* child2, node* child3)
 	new_node->child1 = child1;
 	new_node->child2 = child2;
 	new_node->child3 = child3;
-}
-
-void print_tree(node* nd, int level)
-{
-	if(nd == NULL) return;
-	for(int i = 0; i < level; i++) {
-		printf(" ");
-	}
-	printf("%s\n", nd->token);
-	print_tree(nd->child1, level + 1);
-	print_tree(nd->child2, level + 1);
-	print_tree(nd->child3, level + 1);
 }
 
 void yyerror(char *s)
