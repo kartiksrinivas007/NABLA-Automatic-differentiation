@@ -7,7 +7,9 @@
 #include <memory>
 
 // Naming scheme:
-// class MUST have names starting with Capital [A-Z]
+// 1. class MUST have names starting with Capital [A-Z]
+// 2. Follow the scheme class BinaryStatement for creation of unique_ptr as class member
+//   and initialization in constructor
 
 // Search for ToDo
 
@@ -62,8 +64,8 @@ class InitializerList;
 class Node
 {
 public:
-    Node(){};
-    virtual ~Node() {}
+    Node();
+    virtual ~Node() = default;
     virtual void print() = 0;
     // int row_num, col_num;
     // add codegen() function from llvm for IR gen
@@ -72,8 +74,8 @@ public:
 class Statement : public Node
 {
 public:
-    Statement(){};
-    virtual ~Statement();
+    Statement();
+    virtual ~Statement() = default;
     virtual void print();
 };
 
