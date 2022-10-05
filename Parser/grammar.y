@@ -329,6 +329,8 @@ int main(int argc, char **argv)
 	p.func();
 	Child c;
 	c.func();
+	// including ast.cpp statement class
+	Statement *s = new Statement();
 	yyin = fopen(argv[1],"r"); 
 	yyparse();
 	return 0;

@@ -17,6 +17,16 @@ void Statement::print()
     std::cout << "[Incomplete] Print statement\n";
 }
 
+Statement::Statement()
+{
+    std::cout << "Statement::Statement()" << std::endl;
+}
+
+Node::Node()
+{
+    std::cout << "Node::Node()" << std::endl;
+}
+
 // class Statement
 
 // class BinaryStatement
