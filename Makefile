@@ -23,7 +23,11 @@ test_parser:
 	cd $(PARSERDIR); make test
 
 clean:
+	rm -f *.out
 	rm -f **/*.out
+	rm -f *.tab.c
 	rm -f **/*.tab.c
+	rm -f *.tab.h
 	rm -f **/*.tab.h
+	rm -f *.yy.c
 	rm -f **/*.yy.c
