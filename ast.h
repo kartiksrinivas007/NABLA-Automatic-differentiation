@@ -133,30 +133,41 @@ private:
     std::unique_ptr<Statement> statement;
 
 public:
+    SelecStatement(std::unique_ptr<Statement>);
     virtual ~SelecStatement() = default;
 };
 
+// IfStatement inherits from SelectStatement
 class IfStatement : public SelecStatement
 {
-public:
+private:
     std::unique_ptr<Expr> expression;
+public:
+    //Consteuctor for IfStatement class
+    IfStatement(std::unique_ptr<Expr>, std::unique_ptr<Statement> statement);
+    virtual ~IfStatement() = default;
 };
 
+// ElseStatement inherits from SelectStatement
 class ElseStatement : public SelecStatement
 {
 public:
+    ElseStatement(std::unique_ptr<Statement> statement);
     virtual ~ElseStatement() = default;
 };
 
+// ElifStatement inherits from SelectStatement
 class ElIfStatement : public SelecStatement
 {
 private:
     std::unique_ptr<Expr> expression;
 
 public:
+    ElIfStatement(std::unique_ptr<Expr>, std::unique_ptr<Statement> statement);
     virtual ~ElIfStatement() = default;
 };
 
+// IterationStatement inherits from Statement
 class IterStatement : public Statement
 {
 private:
@@ -170,6 +181,7 @@ private:
     std::unique_ptr<Statement> loop_statement;
 
 public:
+    IterStatement(std::unique_ptr<Declaration>, std::unique_ptr<ExprStatement>, std::unique_ptr<ExprStatement>, std::unique_ptr<Expr>, std::unique_ptr<Statement>);
     virtual ~IterStatement() = default;
 };
 

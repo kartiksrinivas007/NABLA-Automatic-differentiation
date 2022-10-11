@@ -62,3 +62,36 @@ ExprStatement::ExprStatement(std::unique_ptr<Expr> expression)
 {
     this->expression = std::move(expression);
 }
+
+// class SelecStatement
+SelecStatement::SelecStatement(std::unique_ptr<Statement> statement)
+{
+    this->statement = std::move(statement);
+}
+
+// class IfStatement
+IfStatement::IfStatement(std::unique_ptr<Expr> expression, std::unique_ptr<Statement> statement) : SelecStatement(std::move(statement))
+{
+    this->expression = std::move(expression);
+}
+
+// class ElseStatement
+ElseStatement::ElseStatement(std::unique_ptr<Statement> statement) : SelecStatement(std::move(statement))
+{
+}
+
+// class ElIfStatement
+ElIfStatement::ElIfStatement(std::unique_ptr<Expr> expression, std::unique_ptr<Statement> statement) : SelecStatement(std::move(statement))
+{
+    this->expression = std::move(expression);
+}
+
+// class IterStatement
+IterStatement::IterStatement(std::unique_ptr<Declaration> declaration, std::unique_ptr<ExprStatement> init_expression, std::unique_ptr<ExprStatement> test_statement, std::unique_ptr<Expr> update_expreession, std::unique_ptr<Statement> loop_statement)
+{
+    this->declaration = std::move(declaration);
+    this->init_expression = std::move(init_expression);
+    this->test_statement = std::move(test_statement);
+    this->update_expreession = std::move(update_expreession);
+    this->loop_statement = std::move(loop_statement);
+}
