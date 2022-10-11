@@ -96,6 +96,7 @@ private:
     std::unique_ptr<Expr> expression;
 
 public:
+    ExprStatement(std::unique_ptr<Expr>);
     virtual ~ExprStatement() = default;
 };
 
