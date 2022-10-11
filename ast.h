@@ -194,6 +194,7 @@ private:
     std::unique_ptr<AssignmentExp> assignment_expression;
 
 public:
+    Expr(std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>);
     virtual ~Expr() = default;
 };
 
@@ -215,25 +216,44 @@ enum class AssignmentOperator
 
 class AssignmentExp : public Expr
 {
+private:
+    std::unique_ptr<ConditionalExp> conditional_expression;
+    std::unique_ptr<AssignmentExp> assignment_expression;
+    std::unique_ptr<UnaryExp> unary_expression;
+    std::unique_ptr<AssignmentOperator> assignment_operator;
+    // ConditionalExp *conditional_expression;
+    // AssignmentExp *assignment_expression;
+    // UnaryExp *unary_expression;
+    // AssignmentOperator assignment_operator;
 public:
-    ConditionalExp *conditional_expression;
-    AssignmentExp *assignment_expression;
-    UnaryExp *unary_expression;
-    AssignmentOperator assignment_operator;
+    AssignmentExp(std::unique_ptr<ConditionalExp>, std::unique_ptr<AssignmentExp>, std::unique_ptr<UnaryExp>, std::unique_ptr<AssignmentOperator>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>);
+    virtual ~AssignmentExp() = default;
 };
 
 class ConditionalExp : public Expr
 {
-public:
-    Expr *logical_or_expression;
-    Expr *expression;
-    Expr *conditional_expression;
+private:
+    std::unique_ptr<LogicalOrExp> logical_or_expression;
+    std::unique_ptr<Expr> expression;
+    std::unique_ptr<ConditionalExp> conditional_expression;
+
+    // Expr *logical_or_expression;
+    // Expr *expression;
+    // Expr *conditional_expression;
+public: 
+    ConditionalExp(std::unique_ptr<LogicalOrExp>, std::unique_ptr<Expr>, std::unique_ptr<ConditionalExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>);
+    virtual ~ConditionalExp() = default;
 };
 class LogicalOrExp : public Expr
 {
+private:
+    std::unique_ptr<LogicalAndExp> logical_and_expression;
+    std::unique_ptr<LogicalOrExp> logical_or_expression;
+    // LogicalOrExp *logical_or_exp;
+    // LogicalAndExp *logical_and_exp;
 public:
-    LogicalOrExp *logical_or_exp;
-    LogicalAndExp *logical_and_exp;
+    LogicalOrExp(std::unique_ptr<LogicalAndExp>, std::unique_ptr<LogicalOrExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>);
+    virtual ~LogicalOrExp() = default;
 };
 
 class LogicalAndExp : public Expr

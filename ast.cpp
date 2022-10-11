@@ -95,3 +95,34 @@ IterStatement::IterStatement(std::unique_ptr<Declaration> declaration, std::uniq
     this->update_expreession = std::move(update_expreession);
     this->loop_statement = std::move(loop_statement);
 }
+
+// class Expr
+Expr::Expr(std::unique_ptr<Expr> expression, std::unique_ptr<AssignmentExp> assignment_expression)
+{
+    this->expression = std::move(expression);
+    this->assignment_expression = std::move(assignment_expression);
+}
+
+// class AssignmentExp
+AssignmentExp::AssignmentExp(std::unique_ptr<ConditionalExp> conditional_expression, std::unique_ptr<AssignmentExp> assignment_expression, std::unique_ptr<UnaryExp> unary_expression, std::unique_ptr<AssignmentOperator> assignment_operator, std::unique_ptr<Expr> expr_expr, std::unique_ptr<AssignmentExp> assignment_expression2) : Expr(std::move(expr_expr), std::move(assignment_expression2))
+{
+    this->conditional_expression = std::move(conditional_expression);
+    this->assignment_expression = std::move(assignment_expression);
+    this->unary_expression = std::move(unary_expression);
+    this->assignment_operator = std::move(assignment_operator);
+}
+
+// class ConditionalExp
+ConditionalExp::ConditionalExp(std::unique_ptr<LogicalOrExp> logical_or_expression, std::unique_ptr<Expr> expression, std::unique_ptr<ConditionalExp> conditional_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expression) : Expr(std::move(expr), std::move(assignment_expression))
+{
+    this->logical_or_expression = std::move(logical_or_expression);
+    this->expression = std::move(expression);
+    this->conditional_expression = std::move(conditional_expression);
+}
+
+// class LogicalOrExp
+LogicalOrExp::LogicalOrExp(std::unique_ptr<LogicalAndExp> logical_and_expression, std::unique_ptr<LogicalOrExp> logical_or_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expr) : Expr(std::move(expr), std::move(assignment_expr))
+{
+    this->logical_and_expression = std::move(logical_and_expression);
+    this->logical_or_expression = std::move(logical_or_expression);
+}
