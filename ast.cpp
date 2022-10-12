@@ -126,3 +126,71 @@ LogicalOrExp::LogicalOrExp(std::unique_ptr<LogicalAndExp> logical_and_expression
     this->logical_and_expression = std::move(logical_and_expression);
     this->logical_or_expression = std::move(logical_or_expression);
 }
+
+// class LogicalAndExp
+LogicalAndExp::LogicalAndExp(std::unique_ptr<InclusiveOrExp> inclusive_or_expression, std::unique_ptr<LogicalAndExp> logical_and_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expr) : Expr(std::move(expr), std::move(assignment_expr))
+{
+    this->inclusive_or_expression = std::move(inclusive_or_expression);
+    this->logical_and_expression = std::move(logical_and_expression);
+}
+
+// class InclusiveOrExp
+InclusiveOrExp::InclusiveOrExp(std::unique_ptr<ExclusiveOrExp> exclusive_or_expression, std::unique_ptr<InclusiveOrExp> inclusive_or_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expr) : Expr(std::move(expr), std::move(assignment_expr))
+{
+    this->exclusive_or_expression = std::move(exclusive_or_expression);
+    this->inclusive_or_expression = std::move(inclusive_or_expression);
+}
+
+// class ExclusiveOrExp
+ExclusiveOrExp::ExclusiveOrExp(std::unique_ptr<AndExp> and_expression, std::unique_ptr<ExclusiveOrExp> exclusive_or_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expr) : Expr(std::move(expr), std::move(assignment_expr))
+{
+    this->and_expression = std::move(and_expression);
+    this->exclusive_or_expression = std::move(exclusive_or_expression);
+}
+
+// class AndExp
+AndExp::AndExp(std::unique_ptr<EqualityExp> equality_expression, std::unique_ptr<AndExp> and_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expr) : Expr(std::move(expr), std::move(assignment_expr))
+{
+    this->equality_expression = std::move(equality_expression);
+    this->and_expression = std::move(and_expression);
+}
+
+// class EqualityExp
+EqualityExp::EqualityExp(std::unique_ptr<RelationalExp> relational_expression, std::unique_ptr<EqualityExp> equality_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expr, bool isEqualOp = false) : Expr(std::move(expr), std::move(assignment_expr))
+{
+    this->relational_expression = std::move(relational_expression);
+    this->equality_expression = std::move(equality_expression);
+    this->isEqualOp = isEqualOp;
+}
+
+// class RelationalExp
+RelationalExp::RelationalExp(std::unique_ptr<ShiftExp> shift_expression, std::unique_ptr<RelationalExp> relational_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expr, std::unique_ptr<RelationalOp> relational_op) : Expr(std::move(expr), std::move(assignment_expr))
+{
+    this->shift_expression = std::move(shift_expression);
+    this->relational_expression = std::move(relational_expression);
+    this->relational_op = std::move(relational_op);
+}
+
+// class ShiftExp
+ShiftExp::ShiftExp(std::unique_ptr<AdditiveExp> additive_expression, std::unique_ptr<ShiftExp> shift_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expr, bool isLeftShift = false) : Expr(std::move(expr), std::move(assignment_expr))
+{
+    this->additive_expression = std::move(additive_expression);
+    this->shift_expression = std::move(shift_expression);
+    this->isLeftShift = isLeftShift;
+}
+
+// class AdditiveExp
+AdditiveExp::AdditiveExp(std::unique_ptr<MultiplicativeExp> multiplicative_expression, std::unique_ptr<AdditiveExp> additive_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expr, bool isAddition = false) : Expr(std::move(expr), std::move(assignment_expr))
+{
+    this->multiplicative_expression = std::move(multiplicative_expression);
+    this->additive_expression = std::move(additive_expression);
+    this->isAddition = isAddition;
+}
+
+// class MultiplicativeExp
+MultiplicativeExp::MultiplicativeExp(std::unique_ptr<CastExp> cast_expression, std::unique_ptr<MultiplicativeExp> multiplicative_expression, std::unique_ptr<Expr> expr, std::unique_ptr<AssignmentExp> assignment_expr, std::unique_ptr<MultiplicativeOp> multiplicative_op) : Expr(std::move(expr), std::move(assignment_expr))
+{
+    this->cast_expression = std::move(cast_expression);
+    this->multiplicative_expression = std::move(multiplicative_expression);
+    this->multiplicative_op = std::move(multiplicative_op);
+}

@@ -16,6 +16,7 @@ void yyerror(char *);
 #else
 	#define SHOW
 #endif
+CompStatement *root;
 %}
 
 // TODOs: 
@@ -27,6 +28,7 @@ void yyerror(char *);
 	float fval;
 	// some  technique required for the symbol table , to map strings to indices 
 	char *string;
+	class Expression *expr;
 
 }
 
@@ -50,8 +52,8 @@ start : compound_statement {SHOW("parsing complete! \n");}
 // Statements
 
 compound_statement 
-	: '{' '}' {printf("compound_statment in empty\n"); }
-	| '{' binary_ds_list '}' {printf("cmp_stmt -> decl + stmt\n");} 
+	: '{' '}' {printf("compound_statment is empty\n"); root = new CompStatement();}
+	| '{' binary_ds_list '}' {printf("cmp_stmt -> binary_ds_list\n");} 
 	;
 	// | '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
 	// | '{' statement_list '}'  {printf("comp_stmt -> stmt_list \n");}
@@ -59,7 +61,7 @@ compound_statement
 	// ;
 binary_ds_list
 	: binary_ds_list binary_statement {SHOW ("binary_ds_list -> binary_ds_list + binary_statement\n");}
-	| binary_statement {SHOW ("binary_ds_list -> binary_ds_list + binary_statement\n");}
+	| binary_statement {SHOW ("binary_ds_list -> binary_statement\n");}
 	;
 
 binary_statement 
@@ -325,12 +327,12 @@ void yyerror(char *s)
 int main(int argc, char **argv)
 {
 	// printf("Input argument Number : %d", argc);
-	Parent p;
+	/* Parent p;
 	p.func();
 	Child c;
 	c.func();
 	// including ast.cpp statement class
-	Statement *s = new Statement();
+	Statement *s = new Statement(); */
 	yyin = fopen(argv[1],"r"); 
 	yyparse();
 	return 0;

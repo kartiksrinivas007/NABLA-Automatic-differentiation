@@ -112,14 +112,14 @@ private:
     std::vector<std::unique_ptr<BinaryStatement>> binary_statements; // ToDo: Can vector also be changed to unique_ptr?
 
     // private constructor to make prevent instantiation
-    CompStatement();
+    // CompStatement();
 
     // The singleton instance. static because we only want to have one instance of CompStatement and we want to access it from static function get_instance()
     static CompStatement *singleton_instance; // ToDo: can we make use of unique_ptr here?
 
 public:
     virtual ~CompStatement() = default;
-
+    CompStatement();
     // Function to get the singleton instance. static because we want to call it without an instance
     static CompStatement *get_instance(); // ToDo: can we make use of unique_ptr here?
 
@@ -258,38 +258,63 @@ public:
 
 class LogicalAndExp : public Expr
 {
+private:
+    std::unique_ptr<InclusiveOrExp> inclusive_or_expression;
+    std::unique_ptr<LogicalAndExp> logical_and_expression;
+    // LogicalAndExp *logical_and_exp;
+    // InclusiveOrExp *inclusive_or_exp;
 public:
-    LogicalAndExp *logical_and_exp;
-    InclusiveOrExp *inclusive_or_exp;
+    LogicalAndExp(std::unique_ptr<InclusiveOrExp>, std::unique_ptr<LogicalAndExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>);
+    virtual ~LogicalAndExp() = default;
 };
 
 class InclusiveOrExp : public Expr
 {
+private:
+    std::unique_ptr<ExclusiveOrExp> exclusive_or_expression;
+    std::unique_ptr<InclusiveOrExp> inclusive_or_expression;
+    // InclusiveOrExp *inclusive_or_exp;
+    // ExclusiveOrExp *exclusive_or_exp;
 public:
-    InclusiveOrExp *inclusive_or_exp;
-    ExclusiveOrExp *exclusive_or_exp;
+    InclusiveOrExp(std::unique_ptr<ExclusiveOrExp>, std::unique_ptr<InclusiveOrExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>);
+    virtual ~InclusiveOrExp() = default;
 };
 
 class ExclusiveOrExp : public Expr
 {
+private:
+    std::unique_ptr<AndExp> and_expression;
+    std::unique_ptr<ExclusiveOrExp> exclusive_or_expression;
+    // ExclusiveOrExp *exclusive_or_exp;
+    // AndExp *and_exp;
 public:
-    ExclusiveOrExp *exclusive_or_exp;
-    AndExp *and_exp;
+    ExclusiveOrExp(std::unique_ptr<AndExp>, std::unique_ptr<ExclusiveOrExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>);
+    virtual ~ExclusiveOrExp() = default;
 };
 
 class AndExp : public Expr
 {
+private:
+    std::unique_ptr<EqualityExp> equality_expression;
+    std::unique_ptr<AndExp> and_expression;
+    // AndExp *and_exp;
+    // EqualityExp *equality_exp;
 public:
-    AndExp *and_exp;
-    EqualityExp *equality_exp;
+    AndExp(std::unique_ptr<EqualityExp>, std::unique_ptr<AndExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>);
+    virtual ~AndExp() = default;
 };
 
 class EqualityExp : public Expr
 {
-public:
-    EqualityExp *equality_exp;
-    RelationalExp *relational_exp;
+private:
+    std::unique_ptr<RelationalExp> relational_expression;
+    std::unique_ptr<EqualityExp> equality_expression;
+    // EqualityExp *equality_exp;
+    // RelationalExp *relational_exp;
     bool isEqualOp;
+public:
+    EqualityExp(std::unique_ptr<RelationalExp>, std::unique_ptr<EqualityExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>, bool);
+    virtual ~EqualityExp() = default;
 };
 
 enum class RelationalOp
@@ -302,26 +327,42 @@ enum class RelationalOp
 
 class RelationalExp : public Expr
 {
+private:
+    std::unique_ptr<ShiftExp> shift_expression;
+    std::unique_ptr<RelationalExp> relational_expression;   
+    // RelationalExp *relational_exp;
+    // ShiftExp *shift_exp;
+    std::unique_ptr<RelationalOp> relational_op;
+    // RelationalOp relational_op;
 public:
-    RelationalExp *relational_exp;
-    ShiftExp *shift_exp;
-    RelationalOp relational_op;
+    RelationalExp(std::unique_ptr<ShiftExp>, std::unique_ptr<RelationalExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>, std::unique_ptr<RelationalOp>);
+    virtual ~RelationalExp() = default;
 };
 
 class ShiftExp : public Expr
 {
-public:
-    ShiftExp *shift_exp;
-    AdditiveExp *additive_exp;
+private:
+    std::unique_ptr<AdditiveExp> additive_expression;
+    std::unique_ptr<ShiftExp> shift_expression;
+    // ShiftExp *shift_exp;
+    // AdditiveExp *additive_exp;
     bool isLeftShift;
+public:
+    ShiftExp(std::unique_ptr<AdditiveExp>, std::unique_ptr<ShiftExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>, bool);
+    virtual ~ShiftExp() = default;
 };
 
 class AdditiveExp : public Expr
 {
-public:
-    AdditiveExp *additive_exp;
-    MultiplicativeExp *multiplicative_exp;
+private:
+    std::unique_ptr<MultiplicativeExp> multiplicative_expression;
+    std::unique_ptr<AdditiveExp> additive_expression;
+    // AdditiveExp *additive_exp;
+    // MultiplicativeExp *multiplicative_exp;
     bool isAddition;
+public:
+    AdditiveExp(std::unique_ptr<MultiplicativeExp>, std::unique_ptr<AdditiveExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>, bool);
+    virtual ~AdditiveExp() = default;
 };
 
 enum class MultiplicativeOp
@@ -334,10 +375,16 @@ enum class MultiplicativeOp
 
 class MultiplicativeExp : public Expr
 {
+private:
+    std::unique_ptr<CastExp> cast_expression;
+    std::unique_ptr<MultiplicativeExp> multiplicative_expression;
+    std::unique_ptr<MultiplicativeOp> multiplicative_op;
+    // MultiplicativeExp *multiplicative_exp;
+    // CastExp *cast_exp;
+    // MultiplicativeOp multiplicative_op;
 public:
-    MultiplicativeExp *multiplicative_exp;
-    CastExp *cast_exp;
-    MultiplicativeOp multiplicative_op;
+    MultiplicativeExp(std::unique_ptr<CastExp>, std::unique_ptr<MultiplicativeExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>, std::unique_ptr<MultiplicativeOp>);
+    virtual ~MultiplicativeExp() = default;
 };
 
 enum class TypeSpecifier
