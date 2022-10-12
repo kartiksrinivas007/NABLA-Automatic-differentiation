@@ -1,0 +1,21 @@
+{
+
+    Tensor b[1][3]=['a','b',c]; // c is identifier,should give error
+
+    Tensor c[1][2]=[1,'ketan'];  //should give error as datatypes are different
+   var Tensor T[1][3]=['1','nothing','1.57','1.954'];   // should give error num of arguments
+
+    int a;
+    Tensor b[1][2]=[sin(a),cos(a)]; // should be error as redeclaration
+
+    int x;
+
+    print(x+'x'); // should give error as int+string or atleast warning
+
+    int y=x/2;   //even x is not declared y is having fun
+
+   Tensor T[[1]]=['x','y'];       //saying parsing complete // ERROR_EXPECTED
+
+
+}
+
