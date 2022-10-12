@@ -1,0 +1,10 @@
+{
+    var Tensor A[2]=['a','b'];   // This program should  give error as A contains strings
+
+    loop(int x=0;x<10;x++)
+    {
+        print(exp(A));
+        print(sin(A));
+
+    }
+}
