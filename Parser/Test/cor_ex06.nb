@@ -20,10 +20,6 @@
 
     }
 
-    loop(int i=0; i< 10; ){
-
-    }
-
     loop ( int i=0; i<10; i++)
         loop( int j=0; j<i; j++){
             

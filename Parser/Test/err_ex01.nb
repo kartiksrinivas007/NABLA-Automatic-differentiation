@@ -1,6 +1,10 @@
 {
-	// ERROR_EXPECTED
-	loop(int ; i<3; i++){  // fault in grammar.y 144 declaration -> declaration_type ; 
+	// fault in grammar.y 144 declaration -> declaration_type ; 
+	loop(int ; i<3; i++){  // ERROR_EXPECTED
 		p = 9;
-    }                 
+    }
+
+    loop(int i=0; i< 10; ){ // ERROR_EXPECTED
+
+    }
 }

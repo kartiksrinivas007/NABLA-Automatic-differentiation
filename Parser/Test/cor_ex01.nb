@@ -23,4 +23,11 @@
 
     bool condition = true;  // true is considered as identifier
 
+    var int a, b;
+    var int a=10, b=20;
+
+    cns float PI = 3.1412;
+
+    var int arr[5] = [1,2,3,4,5];
+
 }

@@ -143,8 +143,7 @@ elif_section
 
 // Declarations 
 declaration 
-	: declaration_type ';' {SHOW("decl -> decl_type\n");}
-	| declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n");}
+	: declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n");}
 	| error ';' {yyerrok;}
 	;
 
@@ -168,7 +167,7 @@ type_specifier
 
 init_declarators
 	: init_declarator {SHOW("init_decls -> init_decl\n");}
-	| init_declarators init_declarator {SHOW("init_decls -> init_decls init_decl\n");}
+	| init_declarators ',' init_declarator {SHOW("init_decls -> init_decls init_decl\n");}
 	;
 
 init_declarator 
@@ -297,7 +296,7 @@ unary_exp
 	| DEC_OP unary_exp {SHOW("unary_exp -> %s unary_exp\n", $1);}
 	| unary_operator cast_exp {SHOW("unary_exp -> unary_op cast_exp\n");}
 	//| '('type_specifier')'cast_exp // TODO: Make change in grammar pdf
-	| lib_funcs '(' additive_exp ')' {SHOW("unary_exp -> lib_funcs (additive_exp)\n");}
+	| lib_funcs '(' conditional_exp ')' {SHOW("unary_exp -> lib_funcs (additive_exp)\n");}
 	;
 
 // TODO: Make change in grammar pdf 

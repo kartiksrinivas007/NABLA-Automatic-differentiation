@@ -16,14 +16,15 @@ var Tensor z[2][1];
 cns float d = 6.5;
 var float m = 7.0;
 z = a@b + c;
-print(z)
+print(z);
 cns int k  = 5;
 cns int z = k >> 1;
 if(k > 0 || a[0][1]){  
         c  = a + b;
-        if(b > = 0){
+        if(b >= 0){
             b  = b*25;
         }
+        endif
 }
 elif(k < 0){
         c = a - b;
@@ -38,7 +39,7 @@ loop(int i = 0; i< 10; i++){
 }
 float k = 1.0; 
 var Tensor x[2][2]  = [[2.0, 3.0],[4.0, 5.0]];
-var Tensor y[2][1]  = [5.0 , 6.0]
+var Tensor y[2][1]  = [5.0 , 6.0];
 var Tensor p [2][1];
 var Tensor Final[2][1];
 p = m*x@y;

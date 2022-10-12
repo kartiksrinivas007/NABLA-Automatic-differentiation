@@ -32,8 +32,6 @@ fi
 
 echo "Checking for incorrect programs"
 ERROR_FILES=`ls *.nb | grep err`
-expected_error=0
-expected_warning=0
 for file in $ERROR_FILES
 do
     ${EXEC} ${file} > log  2>&1
@@ -44,7 +42,7 @@ do
     if [[ ($error -eq $expected_error) && ($warning -eq $expected_warning) ]]
     then
         echo -e "\e[32m\t [ PASSED ] \e[0m $file \tfound errors: ${error}/${expected_error} \tfound warnings: ${warning}/${expected_warning}\n"
-        passed=$(($passed+1));
+        passed=$(($passed+1))
     else
         echo -e "\e[31m\t [ FAILED ] \e[0m $file \tfound errors: ${error}/${expected_error} \tfound warnings: ${warning}/${expected_warning}\n"
         failed=$(($failed+1))
