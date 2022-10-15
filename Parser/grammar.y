@@ -30,6 +30,14 @@ CompStatement *root;
 	char *string;
 	class Expression *expr;
 
+	class TypeSpecifier* _type;
+	class DeclarationType* _decl_type;
+	class Declarator* _decl;
+	class InitDeclarator* _init_decl;
+	class InitDeclarators* _init_decls;
+	class Declaration* _declr;
+	class BinaryStatement* _bin_stmt;
+	class BinaryStatements* _bin_stmts;
 }
 
 %token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD 
@@ -43,6 +51,16 @@ CompStatement *root;
 %token<string> XOR_ASSIGN OR_ASSIGN TYPE_NAME
 %token<string> CHAR INT TENSOR FLOAT CNS VAR BOOL
 %token<string> IF ELIF ELSE LOOP ENDIF 
+
+%type<_type> type_specifier
+%type<_decl_type> declaration_type
+%type<_decl> declarator
+%type<_init_decl> init_declarator
+%type<_init_decls> init_declarators
+%type<_declr> declaration
+%type<_bin_stmt> binary_statement
+%type<_bin_stmts> binary_statements
+
 %start start
 %%
 
@@ -53,7 +71,7 @@ start : compound_statement {SHOW("parsing complete! \n");}
 
 compound_statement 
 	: '{' '}' {printf("compound_statment is empty\n"); root = new CompStatement();}
-	| '{' binary_ds_list '}' {printf("cmp_stmt -> binary_ds_list\n");} 
+	| '{' binary_ds_list '}' {printf("cmp_stmt -> binary_ds_list\n"); $$ = new CompStatement($2);}} 
 	;
 	// | '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
 	// | '{' statement_list '}'  {printf("comp_stmt -> stmt_list \n");}
@@ -61,11 +79,11 @@ compound_statement
 	// ;
 binary_ds_list
 	: binary_ds_list binary_statement {SHOW ("binary_ds_list -> binary_ds_list + binary_statement\n");}
-	| binary_statement {SHOW ("binary_ds_list -> binary_statement\n");}
+	| binary_statement {SHOW ("binary_ds_list -> binary_statement\n"); $$ = new BinaryStatements(nullptr, $1);}
 	;
 
 binary_statement 
-	: declaration {SHOW ("binary_statment -> declaration\n");}
+	: declaration {SHOW ("binary_statment -> declaration\n"); $$ = new BinaryStatement(nullptr, $1);}
 	| statement {SHOW("binary_statement -> statement");}
 	;
 statement 
@@ -119,12 +137,12 @@ elif_section
 // Declarations 
 declaration 
 	: declaration_type ';' {SHOW("decl -> decl_type\n");}
-	| declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n");}
+	| declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n"); $$ = new Declaration($1, $2);}
 	;
 
 declaration_type
 	: grad_specifier type_specifier {SHOW("decl_type -> grad_spec type_spec\n");}
-	| type_specifier {SHOW("decl_type -> type_spec\n");}
+	| type_specifier {SHOW("decl_type -> type_spec\n"); $$ = new DeclarationType($1);}
 	;
 
 grad_specifier
@@ -134,24 +152,24 @@ grad_specifier
 
 type_specifier
 	: CHAR {SHOW("type_spec -> %s\n", $1);}
-	| INT {SHOW("type_spec -> %s\n", $1);}
+	| INT {SHOW("type_spec -> %s\n", $1);$$ = new TypeSpecifier("INT");} 
 	| FLOAT {SHOW("type_spec -> %s\n", $1);}
 	| BOOL {SHOW("type_spec -> %s\n", $1);}
 	| TENSOR {SHOW("type_spec -> %s\n", $1);}
 	;
 
 init_declarators
-	: init_declarator {SHOW("init_decls -> init_decl\n");}
-	| init_declarators init_declarator {SHOW("init_decls -> init_decls init_decl\n");}
+	: init_declarator {SHOW("init_decls -> init_decl\n"); $$ = new InitDeclarators(nullptr, $1);}
+	| init_declarators init_declarator {SHOW("init_decls -> init_decls init_decl\n"); $$ = new InitDeclarators($1, $2);}
 	;
 
 init_declarator 
-	: declarator {SHOW("init_decl -> decl\n");}
+	: declarator {SHOW("init_decl -> decl\n"); $$ = new InitDeclarator($1);}
 	| declarator '=' initializer {SHOW("int_decl -> decl = initializer\n");}
 	;
 
 declarator
-	: IDENTIFIER {SHOW("decl -> %s\n", $1);}
+	: IDENTIFIER {SHOW("decl -> %s\n", $1); $$ = new Declarator($1);}
 	| '('declarator')' {SHOW("decl -> (decl)\n");}
 	| declarator '[' conditional_exp ']' {SHOW("decl -> decl [conditional_exp]\n");}
 	;

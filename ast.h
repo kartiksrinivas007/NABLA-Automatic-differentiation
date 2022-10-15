@@ -30,8 +30,14 @@ public:
 class Node;
 class Statement;
 class BinaryStatement;
+class BinaryStatements;
 class ExprStatement;
 class CompStatement; // Singleton class
+class SelecStatement;
+class IfStatement;
+class ElseStatement;
+class ElifStatement;
+class IterStatement;
 
 // Expressions
 class Expr;
@@ -61,6 +67,8 @@ class Declarator;
 class Initializer;
 class InitializerList;
 
+class TypeSpecifier;
+
 class Node
 {
 public:
@@ -79,6 +87,7 @@ public:
     virtual void print();
 };
 
+// Statement obj = new ExpressionStatement();
 class BinaryStatement : public Node
 {
 private:
@@ -88,6 +97,16 @@ private:
 public:
     BinaryStatement(std::unique_ptr<Statement>, std::unique_ptr<Declaration>);
     virtual ~BinaryStatement() = default;
+};
+
+class BinaryStatements : public Node
+{
+private:
+    std::unique_ptr<BinaryStatement> binary_statement;
+    std::unique_ptr<BinaryStatements> binary_statements;
+
+public:
+    BinaryStatements(std::unique_ptr<BinaryStatement>, std::unique_ptr<BinaryStatements>);
 };
 
 class ExprStatement : public Statement
@@ -109,7 +128,7 @@ class CompStatement : public Statement
 // was created or not.
 {
 private:
-    std::vector<std::unique_ptr<BinaryStatement>> binary_statements; // ToDo: Can vector also be changed to unique_ptr?
+    std::unique_ptr<BinaryStatements> binary_statements;
 
     // private constructor to make prevent instantiation
     // CompStatement();
@@ -142,8 +161,9 @@ class IfStatement : public SelecStatement
 {
 private:
     std::unique_ptr<Expr> expression;
+
 public:
-    //Consteuctor for IfStatement class
+    // Consteuctor for IfStatement class
     IfStatement(std::unique_ptr<Expr>, std::unique_ptr<Statement> statement);
     virtual ~IfStatement() = default;
 };
@@ -240,7 +260,7 @@ private:
     // Expr *logical_or_expression;
     // Expr *expression;
     // Expr *conditional_expression;
-public: 
+public:
     ConditionalExp(std::unique_ptr<LogicalOrExp>, std::unique_ptr<Expr>, std::unique_ptr<ConditionalExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>);
     virtual ~ConditionalExp() = default;
 };
@@ -312,6 +332,7 @@ private:
     // EqualityExp *equality_exp;
     // RelationalExp *relational_exp;
     bool isEqualOp;
+
 public:
     EqualityExp(std::unique_ptr<RelationalExp>, std::unique_ptr<EqualityExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>, bool);
     virtual ~EqualityExp() = default;
@@ -329,7 +350,7 @@ class RelationalExp : public Expr
 {
 private:
     std::unique_ptr<ShiftExp> shift_expression;
-    std::unique_ptr<RelationalExp> relational_expression;   
+    std::unique_ptr<RelationalExp> relational_expression;
     // RelationalExp *relational_exp;
     // ShiftExp *shift_exp;
     std::unique_ptr<RelationalOp> relational_op;
@@ -347,6 +368,7 @@ private:
     // ShiftExp *shift_exp;
     // AdditiveExp *additive_exp;
     bool isLeftShift;
+
 public:
     ShiftExp(std::unique_ptr<AdditiveExp>, std::unique_ptr<ShiftExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>, bool);
     virtual ~ShiftExp() = default;
@@ -360,6 +382,7 @@ private:
     // AdditiveExp *additive_exp;
     // MultiplicativeExp *multiplicative_exp;
     bool isAddition;
+
 public:
     AdditiveExp(std::unique_ptr<MultiplicativeExp>, std::unique_ptr<AdditiveExp>, std::unique_ptr<Expr>, std::unique_ptr<AssignmentExp>, bool);
     virtual ~AdditiveExp() = default;
@@ -387,14 +410,24 @@ public:
     virtual ~MultiplicativeExp() = default;
 };
 
-enum class TypeSpecifier
+// enum class TypeSpecifier
+// {
+//     _CHAR,
+//     _INT,
+//     _LONG,
+//     _FLOAT,
+//     _BOOL,
+//     _TENSOR
+// };
+
+class TypeSpecifier : public Node
 {
-    CHAR,
-    INT,
-    LONG,
-    FLOAT,
-    BOOL,
-    TENSOR
+private:
+    std::string data_type;
+
+public:
+    TypeSpecifier(std::string);
+    void print();
 };
 
 class CastExp : public Expr
@@ -466,8 +499,9 @@ public:
 class Declaration : public Node
 {
 public:
-    DeclarationType *declaration_type;
-    InitDeclarators *init_declarators;
+    std::unique_ptr<DeclarationType> declaration_type;
+    std::unique_ptr<InitDeclarators> init_declarators;
+    Declaration(std::unique_ptr<DeclarationType>, std::unique_ptr<InitDeclarators>);
 };
 
 enum class GradSpecifier
@@ -479,29 +513,37 @@ enum class GradSpecifier
 class DeclarationType : public Node
 {
 public:
-    TypeSpecifier type_specifier;
-    GradSpecifier grad_specifier;
+    std::unique_ptr<TypeSpecifier> type_specifier;
+    std::unique_ptr<GradSpecifier> grad_specifier;
+    DeclarationType(std::unique_ptr<TypeSpecifier>, std::unique_ptr<GradSpecifier>);
 };
 
 class InitDeclarator : public Node
 {
 public:
-    Declarator *declarator;
-    Initializer *initializer;
+    // Declarator *declarator;
+    // Initializer *initializer;
+    std::unique_ptr<Declarator> declarator;
+    std::unique_ptr<Initializer> initializer;
+    InitDeclarator(std::unique_ptr<Declarator>, std::unique_ptr<Initializer>);
 };
 
 class InitDeclarators : public Node
 {
 public:
-    std::vector<InitDeclarator *> init_declarators;
+    std::unique_ptr<InitDeclarators> init_declarators;
+    std::unique_ptr<InitDeclarator> init_declarator;
+
+    InitDeclarators(std::unique_ptr<InitDeclarators>, std::unique_ptr<InitDeclarator>);
 };
 
 class Declarator : public Node
 {
 public:
     std::string identifier;
-    ConditionalExp *conditional_exp;
-    Declarator *declarator;
+    std::unique_ptr<ConditionalExp> conditional_exp;
+    std::unique_ptr<Declarator> declarator;
+    Declarator(std::string, std::unique_ptr<ConditionalExp>, std::unique_ptr<Declarator>);
 };
 
 class Initializer : public Node
