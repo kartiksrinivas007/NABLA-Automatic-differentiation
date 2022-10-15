@@ -38,6 +38,32 @@ CompStatement *root;
 	class Declaration* _declr;
 	class BinaryStatement* _bin_stmt;
 	class BinaryStatements* _bin_stmts;
+
+	class ExprStatement* _expr_stmt;
+	class CompStatement* _comp_stmt;
+	class SelecStatement* _selec_stmt;
+	class IfStatement* _if_stmt;
+	class ElseStatement* _else_stmt;
+	class ElifStatement* _elif_stmt;
+	class IterStatement* _iter_stmt;
+	class AssignmentExp* _assign_exp;
+	class ConditionalExp* _cond_exp;
+	class LogicalOrExp* _log_or_exp;
+	class LogicalAndExp* _log_and_exp;
+	class InclusiveOrExp* _inc_or_exp;
+	class ExclusiveOrExp* _exc_or_exp;
+	class AndExp* _and_exp;
+	class EqualityExp* _eq_exp;
+	class RelationalExp* _rel_exp;
+	class ShiftExp* _shift_exp;
+	class AdditiveExp* _add_exp;
+	class MultiplicativeExp* _mul_exp;
+	class CastExp* _cast_exp;
+	class UnaryExp* _unary_exp;
+	class PostfixExp* _postfix_exp;
+	class PrimaryExp* _primary_exp;
+	class Initializer* _init;
+	class InitializerList* _init_list;
 }
 
 %token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD 
@@ -60,6 +86,7 @@ CompStatement *root;
 %type<_declr> declaration
 %type<_bin_stmt> binary_statement
 %type<_bin_stmts> binary_statements
+%type<_comp_stmt> compound_statement
 
 %start start
 %%

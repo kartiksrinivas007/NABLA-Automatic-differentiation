@@ -438,27 +438,46 @@ public:
     TypeSpecifier type_specifier;
 };
 
-enum class LibFuncs
+// enum class LibFuncs
+// {
+//     GRAD,
+//     COS,
+//     SIN,
+//     EXP,
+//     LOG,
+//     BACKWARD,
+//     SIZEOF,
+//     PRINT
+// };
+
+class LibFuncs : public Node
 {
-    GRAD,
-    COS,
-    SIN,
-    EXP,
-    LOG,
-    BACKWARD,
-    SIZEOF,
-    PRINT
+private:
+    std::string lib_func;
+public:
+    LibFuncs(std::string);
+    void print();
 };
 
-enum class UnaryOp
+// enum class UnaryOp
+// {
+//     AND,
+//     PLUS,
+//     MINUS,
+//     TILDA,
+//     EXCLAMATION,
+//     AT
+// };
+
+class UnaryOp : public Node
 {
-    AND,
-    PLUS,
-    MINUS,
-    TILDA,
-    EXCLAMATION,
-    AT
+private:
+    std::string unary_op;
+public:
+    UnaryOp(std::string);
+    void print();
 };
+
 class UnaryExp : public Expr
 {
 public:
@@ -480,12 +499,22 @@ public:
     bool isIncrement;
 };
 
-enum class ConstantType
+// enum class ConstantType
+// {
+//     INT,
+//     FLOAT,
+//     CHAR,
+// };
+
+class ConstantType : public Node
 {
-    INT,
-    FLOAT,
-    CHAR,
+private:
+    std::string constant_type;
+public:
+    ConstantType(std::string);
+    void print();
 };
+
 class PrimaryExp : public Expr
 {
 public:
@@ -504,10 +533,19 @@ public:
     Declaration(std::unique_ptr<DeclarationType>, std::unique_ptr<InitDeclarators>);
 };
 
-enum class GradSpecifier
+// enum class GradSpecifier
+// {
+//     CNS,
+//     VAR
+// };
+
+class GradSpecifier : public Node
 {
-    CNS,
-    VAR
+private:
+    std::string grad_specifier;
+public:
+    GradSpecifier(std::string);
+    void print();
 };
 
 class DeclarationType : public Node

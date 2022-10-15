@@ -33,7 +33,7 @@ BinaryStatements::BinaryStatements(std::unique_ptr<BinaryStatement> bs, std::uni
 
 CompStatement::CompStatement()
 {
-    binary_statements = std::vector<std::unique_ptr<BinaryStatement>>();
+    // binary_statements = std::vector<std::unique_ptr<BinaryStatement>>();
 }
 
 CompStatement *CompStatement::singleton_instance = nullptr;
@@ -48,7 +48,7 @@ CompStatement *CompStatement::get_instance()
 
 void CompStatement::add_binary_statement(std::unique_ptr<BinaryStatement> binary_statement)
 {
-    this->binary_statements.push_back(std::move(binary_statement));
+    // this->binary_statements.push_back(std::move(binary_statement));
 }
 
 ExprStatement::ExprStatement(std::unique_ptr<Expr> expression)
