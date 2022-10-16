@@ -1,0 +1,33 @@
+{
+    var Tensor a[2][2];
+    cns Tensor b[2][2] = [[1,2], [3,4]];
+    Tensor t[1][1] = [[1]];
+    
+    Tensor X[2*3];
+    Tensor Arr[2][2] = a@b;
+    Tensor Arr[2][2] = a+=b;
+    Tensor Arr[2][2] = a/b;
+    Tensor Arr[2][2] = a+b;
+    Tensor Arr[2][2] = a-b;
+    Tensor Arr[2][2] = a*b;
+    Tensor Arr[2][2] = a%b;
+    Tensor Arr[2][2] = (true?a:b);
+
+    cns int a1 = 10;
+    var int a2 = 10;
+    int a3 = 10;
+    char c = 'c';
+    float f = 1.2e10;
+    Tensor T[2][2] = [[1,0],[0,1]];
+    char s[10] = "Ganesh" ;
+
+    bool condition = true;  // true is considered as identifier
+
+    var int a, b;
+    var int a=10, b=20;
+
+    cns float PI = 3.1412;
+
+    var int arr[5] = [1,2,3,4,5];
+
+}

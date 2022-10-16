@@ -3,13 +3,14 @@
 #include<stdlib.h>
 #include <ctype.h>
 #include <string.h>
-// #include <bits/stdc++.h>
 #include "ast.h"
+#include <stdarg.h>
+#include <string.h>
 
 extern int yylex();
 extern FILE* yyin;
 void yyerror(char *);
-#define DEBUG
+
 
 #ifdef DEBUG 
 	#define SHOW printf
@@ -17,6 +18,27 @@ void yyerror(char *);
 	#define SHOW
 #endif
 CompStatement *root;
+
+typedef struct node {
+	char *token;
+	// unsigned n_children;
+	// struct node** children;
+	struct node* child1;
+	struct node* child2;
+	struct node* child3;
+} node;
+
+void insert_node(char* token, node*, node*, node*); // Create a node with these children
+
+extern int yylineno;
+extern int yycolumn;
+extern char yytext[];
+extern char linebuf[];
+extern const char* filename;
+// extern void yyerror(char *);
+struct YYLTYPE;
+extern void lyyerror(struct YYLTYPE t,char *s,...);
+extern void warning(const char*);
 %}
 
 // TODOs: 
@@ -44,6 +66,9 @@ CompStatement *root;
 %token<string> CHAR INT TENSOR FLOAT CNS VAR BOOL
 %token<string> IF ELIF ELSE LOOP ENDIF 
 %start start
+
+// %define parse.error verbose 
+%locations
 %%
 
 start : compound_statement {SHOW("parsing complete! \n");}
@@ -54,6 +79,7 @@ start : compound_statement {SHOW("parsing complete! \n");}
 compound_statement 
 	: '{' '}' {printf("compound_statment is empty\n"); /*root = new CompStatement();*/}
 	| '{' binary_ds_list '}' {printf("cmp_stmt -> binary_ds_list\n");} 
+  | '{' error '}' {yyerrok;}
 	;
 	// | '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
 	// | '{' statement_list '}'  {printf("comp_stmt -> stmt_list \n");}
@@ -118,8 +144,8 @@ elif_section
 
 // Declarations 
 declaration 
-	: declaration_type ';' {SHOW("decl -> decl_type\n");}
-	| declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n");}
+	: declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n");}
+	| error ';' {yyerrok;}
 	;
 
 declaration_type
@@ -142,7 +168,7 @@ type_specifier
 
 init_declarators
 	: init_declarator {SHOW("init_decls -> init_decl\n");}
-	| init_declarators init_declarator {SHOW("init_decls -> init_decls init_decl\n");}
+	| init_declarators ',' init_declarator {SHOW("init_decls -> init_decls init_decl\n");}
 	;
 
 init_declarator 
@@ -271,7 +297,7 @@ unary_exp
 	| DEC_OP unary_exp {SHOW("unary_exp -> %s unary_exp\n", $1);}
 	| unary_operator cast_exp {SHOW("unary_exp -> unary_op cast_exp\n");}
 	//| '('type_specifier')'cast_exp // TODO: Make change in grammar pdf
-	| lib_funcs '(' additive_exp ')' {SHOW("unary_exp -> lib_funcs (additive_exp)\n");}
+	| lib_funcs '(' conditional_exp ')' {SHOW("unary_exp -> lib_funcs (additive_exp)\n");}
 	;
 
 // TODO: Make change in grammar pdf 
@@ -307,6 +333,7 @@ primary_exp
 	: IDENTIFIER {SHOW("primary_exp -> %s\n", $1);}
 	| constant {SHOW("primary_exp -> constant\n");}
 	| '(' exp ')' {SHOW("primary_exp -> ( exp )\n");}
+	| '(' error ')' {yyerrok; lyyerror(@1,"error"); yyerrok; }
 	;
 
 // Constants
@@ -315,16 +342,57 @@ constant
 	| CHAR_CONST {SHOW("constant -> %s\n", $1);}
 	| FLOAT_CONST {SHOW("constant -> %f\n", $1);}
 	| CONSTANT {SHOW("constant -> %s\n", $1);}
+	| STRING_LITERAL
 	;
 
 %%
 
 void yyerror(char *s)
 {
-	fprintf(stderr, "%s\n", s);
+		fprintf(stderr, "%s:%d:%d:\e[1;31m error:\e[0m %s at %s\n%*d |%s\n",filename, yylineno , yycolumn, s, yytext,(int)(strlen(filename)-1), yylineno, linebuf);
+		
+		if(yylloc.first_line == yylloc.last_line){
+			fprintf(stderr, "%*s\e[1;31m%*s", (int)(strlen(filename)+1),"|",yylloc.first_column,"^");
+			
+			for(int i = yylloc.first_column+1; i<=yylloc.last_column;i++){
+				fprintf(stderr, "_");
+				}
+			fprintf(stderr, "\e[0m\n\n");
+		}
 }
 
-int main(int argc, char **argv)
+void warning(const char* s){
+	fprintf(stdout, "%s:%d:%d:\e[1;35m warning:\e[0m %s\n%*d |%s\n",filename, yylineno, yycolumn, s,(int)strlen(filename)-1 ,yylineno, linebuf);
+	if(yylloc.first_line == yylloc.last_line){
+		fprintf(stdout, "%*s\e[1;35m%*s", (int)(strlen(filename)+1),"|",yylloc.first_column,"^");
+		
+		for(int i = yylloc.first_column+1; i<=yylloc.last_column;i++){
+			fprintf(stdout, "_");
+			}
+		fprintf(stdout, "\e[0m\n\n");
+	}
+
+}
+
+void lyyerror(YYLTYPE t,char *s,...){
+	va_list ap;
+	va_start(ap,s);
+
+
+	fprintf(stderr, "%s:%d:%d:\e[1;31m error:\e[0m %s at %s\n%*d |%s\n",filename, yylineno , yycolumn, s, yytext,(int)(strlen(filename)-1), yylineno, linebuf);
+	
+	if(yylloc.first_line == yylloc.last_line){
+		fprintf(stderr, "%*s%*s", (int)(strlen(filename)+1),"|",yylloc.first_column,"^");
+		
+		for(int i = yylloc.first_column+1; i<=yylloc.last_column;i++){
+			fprintf(stderr, "_");
+		}
+	}
+	fprintf(stderr, "\n\n");
+	
+}
+
+int main(int argc, char const *argv[])
 {
 	// printf("Input argument Number : %d", argc);
 	/* Parent p;
@@ -333,7 +401,16 @@ int main(int argc, char **argv)
 	c.func();
 	// including ast.cpp statement class
 	Statement *s = new Statement(); */
-	yyin = fopen(argv[1],"r"); 
+	if(argc > 1){
+		if((yyin = fopen(argv[1],"r")) == NULL){
+			perror(argv[1]);
+			return 1;
+		}
+		filename = argv[1];
+	}
+	else{
+		filename = "(stdin)";
+	}
 	yyparse();
 	return 0;
 }

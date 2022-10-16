@@ -1,6 +1,12 @@
 TEST-DIR := Test
+EXEC = lexer.out
+
 
 .PHONY : test clean
+
+$(EXEC) :
+		lex test_lexer.l
+		gcc -o $(EXEC) lex.yy.c 
 
 .SILENT:
 test :

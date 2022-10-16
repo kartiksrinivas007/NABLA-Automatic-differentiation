@@ -1,0 +1,27 @@
+{
+    var Tensor M[2][2] = [[1,0],[0,1]];
+    var Tensor N[2][2] = [[0,0],[0,0]];
+    print(M);
+    print(N);
+    print(M@N);
+    print(sin(M+N));
+    print(backward(M));
+    var int size = sizeof(M);
+    N=exp(M);
+    print(log(exp(M)));
+
+    var Tensor A[2][2] = log(exp(M@N));
+    A += sin(A);
+
+    print(sizeof(M));
+
+    if( sizeof(M) >= 2 ){
+        M = N;
+    }
+    elif( sin(M) != sin(N)){
+        A = M*N + M@N;
+    }
+    endif
+
+
+}

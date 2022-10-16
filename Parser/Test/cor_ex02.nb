@@ -1,0 +1,43 @@
+{
+  int a;
+  if ( 6 > 7)
+  {  
+    a = a;
+  }
+  endif
+
+  if( 1 == 2)
+    ++(a++);
+  else
+    a--; 
+  endif
+
+  if(a>0){
+    a %=7;
+  }
+  elif(a<=10){
+    a *= 10;
+  }
+  endif
+
+  if(a){
+    a == 0;
+  }
+  elif(!a ) {
+    (a--)--;
+  }
+  else{
+    ++a++;
+  }
+  endif
+
+  if(a)
+  b = 0;
+  else
+    if (c)
+        d;
+    else 
+        f; 
+    endif
+  endif
+}

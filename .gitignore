@@ -1,4 +1,4 @@
-.vscode/settings.json
+.vscode/**
 **/*.out
 **/exec
 **/lex.yy.c
@@ -7,3 +7,4 @@
 parser-op.txt
 **/.DS_Store
 **/*.o
+Build/
