@@ -8,5 +8,6 @@ Parent Directory [link](https://drive.google.com/drive/folders/1MUYgyinMpAWBMlGB
 
 - Lexer Design: [link](https://drive.google.com/drive/folders/1dEbrVZs9JpM-BWOL0r9y1cRjmFyAqq8j?usp=sharing)
 - Parser Design: [link](https://drive.google.com/drive/folders/1-ra3QZNKZbB7f1QbpxjTDavSmWMIBkOx?usp=sharing)
+- Semantic Design: [link](https://drive.google.com/drive/folders/1txNY6JbYnF2Uv6dmEUJQ8pK1qxtyx-0U?usp=sharing)
 
-The Presenation for each stage is available in the _Presentations and Videos_ directory of the project
+The Presentation for each stage is available in the _Presentations and Videos_ directory of the project.
