@@ -74,7 +74,7 @@ class Node
 public:
     Node();
     virtual ~Node() = default;
-    virtual void print() = 0;
+    // virtual void print() = 0;
     // int row_num, col_num;
     // add codegen() function from llvm for IR gen
 };
@@ -84,7 +84,7 @@ class Statement : public Node
 public:
     Statement();
     virtual ~Statement() = default;
-    virtual void print();
+    // virtual void print();
 };
 
 // Statement obj = new ExpressionStatement();
@@ -119,30 +119,39 @@ public:
     virtual ~ExprStatement() = default;
 };
 
+// class CompStatement : public Statement
+// // This will be a singleton class because there can be only one compound statement which
+// // will be a bunch of binary_statement enclosed in {}.
+// // Singleton will ease some of out work as during bottom up parsing, whenever yacc wants
+// // to "pass" a declaration or statement to the compound statement, we can just pass it
+// // to the singleton instance of CompStatement without worrying whether the instance
+// // was created or not.
+// {
+// private:
+//     std::unique_ptr<BinaryStatements> binary_statements;
+
+//     // private constructor to make prevent instantiation
+//     // CompStatement();
+
+//     // The singleton instance. static because we only want to have one instance of CompStatement and we want to access it from static function get_instance()
+//     static CompStatement *singleton_instance; // ToDo: can we make use of unique_ptr here?
+
+// public:
+//     virtual ~CompStatement() = default;
+//     CompStatement();
+//     // Function to get the singleton instance. static because we want to call it without an instance
+//     static CompStatement *get_instance(); // ToDo: can we make use of unique_ptr here?
+
+//     void add_binary_statement(std::unique_ptr<BinaryStatement>); // append the binary statement to the vector
+// };
+
 class CompStatement : public Statement
-// This will be a singleton class because there can be only one compound statement which
-// will be a bunch of binary_statement enclosed in {}.
-// Singleton will ease some of out work as during bottom up parsing, whenever yacc wants
-// to "pass" a declaration or statement to the compound statement, we can just pass it
-// to the singleton instance of CompStatement without worrying whether the instance
-// was created or not.
 {
 private:
     std::unique_ptr<BinaryStatements> binary_statements;
 
-    // private constructor to make prevent instantiation
-    // CompStatement();
-
-    // The singleton instance. static because we only want to have one instance of CompStatement and we want to access it from static function get_instance()
-    static CompStatement *singleton_instance; // ToDo: can we make use of unique_ptr here?
-
 public:
-    virtual ~CompStatement() = default;
-    CompStatement();
-    // Function to get the singleton instance. static because we want to call it without an instance
-    static CompStatement *get_instance(); // ToDo: can we make use of unique_ptr here?
-
-    void add_binary_statement(std::unique_ptr<BinaryStatement>); // append the binary statement to the vector
+    CompStatement(std::unique_ptr<BinaryStatements>);
 };
 
 class SelecStatement : public Statement
@@ -427,7 +436,7 @@ private:
 
 public:
     TypeSpecifier(std::string);
-    void print();
+    // void print();
 };
 
 class CastExp : public Expr
@@ -454,9 +463,10 @@ class LibFuncs : public Node
 {
 private:
     std::string lib_func;
+
 public:
     LibFuncs(std::string);
-    void print();
+    // void print();
 };
 
 // enum class UnaryOp
@@ -473,9 +483,10 @@ class UnaryOp : public Node
 {
 private:
     std::string unary_op;
+
 public:
     UnaryOp(std::string);
-    void print();
+    // void print();
 };
 
 class UnaryExp : public Expr
@@ -510,9 +521,10 @@ class ConstantType : public Node
 {
 private:
     std::string constant_type;
+
 public:
     ConstantType(std::string);
-    void print();
+    // void print();
 };
 
 class PrimaryExp : public Expr
@@ -543,9 +555,10 @@ class GradSpecifier : public Node
 {
 private:
     std::string grad_specifier;
+
 public:
     GradSpecifier(std::string);
-    void print();
+    // void print();
 };
 
 class DeclarationType : public Node

@@ -3,8 +3,10 @@
 #include<stdlib.h>
 #include <ctype.h>
 #include <string.h>
-// #include <bits/stdc++.h>
+#include <memory>
+#include <iostream>
 #include "ast.h"
+
 
 extern int yylex();
 extern FILE* yyin;
@@ -28,8 +30,42 @@ CompStatement *root;
 	float fval;
 	// some  technique required for the symbol table , to map strings to indices 
 	char *string;
-	class Expression *expr;
 
+	std::unique_ptr<Expression> _expr;
+	std::unique_ptr<TypeSpecifier> _type;
+	std::unique_ptr<DeclarationType> _decl_type;
+	std::unique_ptr<Declarator> _decl;
+	std::unique_ptr<InitDeclarator> _init_decl;
+	std::unique_ptr<InitDeclarators> _init_decls;
+	std::unique_ptr<Declaration> _declr;
+	std::unique_ptr<BinaryStatement> _bin_stmt;
+	std::unique_ptr<BinaryStatements> _bin_stmts;
+	std::unique_ptr<CompStatement> _comp_stmt;
+
+	// class ExprStatement* _expr_stmt;
+	// class SelecStatement* _selec_stmt;
+	// class IfStatement* _if_stmt;
+	// class ElseStatement* _else_stmt;
+	// class ElifStatement* _elif_stmt;
+	// class IterStatement* _iter_stmt;
+	// class AssignmentExp* _assign_exp;
+	// class ConditionalExp* _cond_exp;
+	// class LogicalOrExp* _log_or_exp;
+	// class LogicalAndExp* _log_and_exp;
+	// class InclusiveOrExp* _inc_or_exp;
+	// class ExclusiveOrExp* _exc_or_exp;
+	// class AndExp* _and_exp;
+	// class EqualityExp* _eq_exp;
+	// class RelationalExp* _rel_exp;
+	// class ShiftExp* _shift_exp;
+	// class AdditiveExp* _add_exp;
+	// class MultiplicativeExp* _mul_exp;
+	// class CastExp* _cast_exp;
+	// class UnaryExp* _unary_exp;
+	// class PostfixExp* _postfix_exp;
+	// class PrimaryExp* _primary_exp;
+	// class Initializer* _init;
+	// class InitializerList* _init_list;
 }
 
 %token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD 
@@ -43,6 +79,17 @@ CompStatement *root;
 %token<string> XOR_ASSIGN OR_ASSIGN TYPE_NAME
 %token<string> CHAR INT TENSOR FLOAT CNS VAR BOOL
 %token<string> IF ELIF ELSE LOOP ENDIF 
+
+%type<_type> type_specifier
+%type<_decl_type> declaration_type
+%type<_decl> declarator
+%type<_init_decl> init_declarator
+%type<_init_decls> init_declarators
+%type<_declr> declaration
+%type<_bin_stmt> binary_statement
+%type<_bin_stmts> binary_ds_list
+%type<_comp_stmt> compound_statement
+
 %start start
 %%
 
@@ -52,8 +99,8 @@ start : compound_statement {SHOW("parsing complete! \n");}
 // Statements
 
 compound_statement 
-	: '{' '}' {printf("compound_statment is empty\n"); /*root = new CompStatement();*/}
-	| '{' binary_ds_list '}' {printf("cmp_stmt -> binary_ds_list\n");} 
+	: '{' '}' {printf("compound_statment is empty\n"); $$ = make_unique<CompStatement>(nullptr);}
+	| '{' binary_ds_list '}' {printf("cmp_stmt -> binary_ds_list\n"); $$ = make_unique<CompStatement>(std::move($2));}
 	;
 	// | '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
 	// | '{' statement_list '}'  {printf("comp_stmt -> stmt_list \n");}
@@ -61,11 +108,11 @@ compound_statement
 	// ;
 binary_ds_list
 	: binary_ds_list binary_statement {SHOW ("binary_ds_list -> binary_ds_list + binary_statement\n");}
-	| binary_statement {SHOW ("binary_ds_list -> binary_statement\n");}
+	| binary_statement {SHOW ("binary_ds_list -> binary_statement\n"); $$ = make_unique<BinaryStatements>(nullptr, std::move($1));}
 	;
 
 binary_statement 
-	: declaration {SHOW ("binary_statment -> declaration\n");}
+	: declaration {SHOW ("binary_statment -> declaration\n"); $$ = make_unique<BinaryStatement>(nullptr, std::move($1));}
 	| statement {SHOW("binary_statement -> statement");}
 	;
 statement 
@@ -119,12 +166,12 @@ elif_section
 // Declarations 
 declaration 
 	: declaration_type ';' {SHOW("decl -> decl_type\n");}
-	| declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n");}
+	| declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n"); $$ = make_unique<Declaration>(std::move($1), std::move($2));}
 	;
 
 declaration_type
 	: grad_specifier type_specifier {SHOW("decl_type -> grad_spec type_spec\n");}
-	| type_specifier {SHOW("decl_type -> type_spec\n");}
+	| type_specifier {SHOW("decl_type -> type_spec\n"); $$ = make_unique<DeclarationType>(std::move($1));}
 	;
 
 grad_specifier
@@ -134,24 +181,24 @@ grad_specifier
 
 type_specifier
 	: CHAR {SHOW("type_spec -> %s\n", $1);}
-	| INT {SHOW("type_spec -> %s\n", $1);}
+	| INT {SHOW("type_spec -> %s\n", $1);$$ = new TypeSpecifier("INT");} 
 	| FLOAT {SHOW("type_spec -> %s\n", $1);}
 	| BOOL {SHOW("type_spec -> %s\n", $1);}
 	| TENSOR {SHOW("type_spec -> %s\n", $1);}
 	;
 
 init_declarators
-	: init_declarator {SHOW("init_decls -> init_decl\n");}
-	| init_declarators init_declarator {SHOW("init_decls -> init_decls init_decl\n");}
+	: init_declarator {SHOW("init_decls -> init_decl\n"); $$ = make_unique<InitDeclarators>(nullptr, std::move($1));}
+	| init_declarators init_declarator {SHOW("init_decls -> init_decls init_decl\n"); $$ = make_unique<InitDeclarators>(std::move($1), std::move($2));}
 	;
 
 init_declarator 
-	: declarator {SHOW("init_decl -> decl\n");}
+	: declarator {SHOW("init_decl -> decl\n"); $$ = make_unique<InitDeclarator>(std::move($1), nullptr);}
 	| declarator '=' initializer {SHOW("int_decl -> decl = initializer\n");}
 	;
 
 declarator
-	: IDENTIFIER {SHOW("decl -> %s\n", $1);}
+	: IDENTIFIER {SHOW("decl -> %s\n", $1); $$ = make_unique<Declarator>(std::move($1), nullptr, nullptr);}
 	| '('declarator')' {SHOW("decl -> (decl)\n");}
 	| declarator '[' conditional_exp ']' {SHOW("decl -> decl [conditional_exp]\n");}
 	;

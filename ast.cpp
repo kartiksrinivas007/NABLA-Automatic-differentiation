@@ -14,10 +14,10 @@ Statement::Statement()
     std::cout << "Statement::Statement()" << std::endl;
 }
 
-void Statement::print()
-{
-    std::cout << "[Incomplete] Print statement\n";
-}
+// void Statement::print()
+// {
+//     std::cout << "[Incomplete] Print statement\n";
+// }
 
 BinaryStatement::BinaryStatement(std::unique_ptr<Statement> statement, std::unique_ptr<Declaration> declaration)
 {
@@ -31,25 +31,25 @@ BinaryStatements::BinaryStatements(std::unique_ptr<BinaryStatement> bs, std::uni
     this->binary_statements = std::move(bss);
 }
 
-CompStatement::CompStatement()
+CompStatement::CompStatement(std::unique_ptr<BinaryStatements> bs)
 {
-    // binary_statements = std::vector<std::unique_ptr<BinaryStatement>>();
+    this->binary_statements = std::move(bs);
 }
 
-CompStatement *CompStatement::singleton_instance = nullptr;
-CompStatement *CompStatement::get_instance()
-{
-    if (singleton_instance == nullptr)
-    {
-        singleton_instance = new CompStatement();
-    }
-    return singleton_instance;
-}
+// CompStatement *CompStatement::singleton_instance = nullptr;
+// CompStatement *CompStatement::get_instance()
+// {
+//     if (singleton_instance == nullptr)
+//     {
+//         singleton_instance = new CompStatement();
+//     }
+//     return singleton_instance;
+// }
 
-void CompStatement::add_binary_statement(std::unique_ptr<BinaryStatement> binary_statement)
-{
-    // this->binary_statements.push_back(std::move(binary_statement));
-}
+// void CompStatement::add_binary_statement(std::unique_ptr<BinaryStatement> binary_statement)
+// {
+//     // this->binary_statements.push_back(std::move(binary_statement));
+// }
 
 ExprStatement::ExprStatement(std::unique_ptr<Expr> expression)
 {
@@ -209,12 +209,7 @@ TypeSpecifier::TypeSpecifier(std::string s)
     this->data_type = s;
 }
 
-int main()
-{
-    return 0;
-}
-
-void TypeSpecifier::print()
-{
-    std::cout << data_type << std::endl;
-}
+// void TypeSpecifier::print()
+// {
+//     std::cout << data_type << std::endl;
+// }
