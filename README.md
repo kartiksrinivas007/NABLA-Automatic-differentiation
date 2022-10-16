@@ -1,6 +1,8 @@
 # Nabla
 
 ![alt text](Whitepaper/images/nabla.png)
+<br>
+![alt text](Whitepaper/images/class_hierarchy.png)
 
 Nabla is a Domain specific langauge built for the purpose of Tensor Operations and Automatic differentiation
 <br>
@@ -54,6 +56,13 @@ The code will be converted into a computational graph(internally) of the form:-
 After this we will be able to use the chain rule to calculate the gradients of the Final variable in terms of the beginning variables
 
 ![alt text](Whitepaper/images/comp-graph.png)
+
+## The Class Hierarchy
+---
+
+The class Hierarchy being used to Build the parse tree is the following for now
+
+![alt text](Whitepaper/images/class_hierarchy.png)
 
 ## Testing The Lexer
 
