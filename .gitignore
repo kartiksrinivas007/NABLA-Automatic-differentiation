@@ -6,4 +6,5 @@
 **/y.tab.h
 parser-op.txt
 **/.DS_Store
+**/*.o
 Build/

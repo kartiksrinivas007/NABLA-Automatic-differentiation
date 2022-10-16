@@ -3,14 +3,15 @@
 #include<stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <memory>
+#include <iostream>
 #include "ast.h"
-#include <stdarg.h>
-#include <string.h>
+
 
 extern int yylex();
 extern FILE* yyin;
 void yyerror(char *);
-
+#define DEBUG
 
 #ifdef DEBUG 
 	#define SHOW printf
@@ -18,27 +19,6 @@ void yyerror(char *);
 	#define SHOW
 #endif
 CompStatement *root;
-
-typedef struct node {
-	char *token;
-	// unsigned n_children;
-	// struct node** children;
-	struct node* child1;
-	struct node* child2;
-	struct node* child3;
-} node;
-
-void insert_node(char* token, node*, node*, node*); // Create a node with these children
-
-extern int yylineno;
-extern int yycolumn;
-extern char yytext[];
-extern char linebuf[];
-extern const char* filename;
-// extern void yyerror(char *);
-struct YYLTYPE;
-extern void lyyerror(struct YYLTYPE t,char *s,...);
-extern void warning(const char*);
 %}
 
 // TODOs: 
@@ -50,8 +30,42 @@ extern void warning(const char*);
 	float fval;
 	// some  technique required for the symbol table , to map strings to indices 
 	char *string;
-	class Expression *expr;
 
+	std::unique_ptr<Expression> _expr;
+	std::unique_ptr<TypeSpecifier> _type;
+	std::unique_ptr<DeclarationType> _decl_type;
+	std::unique_ptr<Declarator> _decl;
+	std::unique_ptr<InitDeclarator> _init_decl;
+	std::unique_ptr<InitDeclarators> _init_decls;
+	std::unique_ptr<Declaration> _declr;
+	std::unique_ptr<BinaryStatement> _bin_stmt;
+	std::unique_ptr<BinaryStatements> _bin_stmts;
+	std::unique_ptr<CompStatement> _comp_stmt;
+
+	// class ExprStatement* _expr_stmt;
+	// class SelecStatement* _selec_stmt;
+	// class IfStatement* _if_stmt;
+	// class ElseStatement* _else_stmt;
+	// class ElifStatement* _elif_stmt;
+	// class IterStatement* _iter_stmt;
+	// class AssignmentExp* _assign_exp;
+	// class ConditionalExp* _cond_exp;
+	// class LogicalOrExp* _log_or_exp;
+	// class LogicalAndExp* _log_and_exp;
+	// class InclusiveOrExp* _inc_or_exp;
+	// class ExclusiveOrExp* _exc_or_exp;
+	// class AndExp* _and_exp;
+	// class EqualityExp* _eq_exp;
+	// class RelationalExp* _rel_exp;
+	// class ShiftExp* _shift_exp;
+	// class AdditiveExp* _add_exp;
+	// class MultiplicativeExp* _mul_exp;
+	// class CastExp* _cast_exp;
+	// class UnaryExp* _unary_exp;
+	// class PostfixExp* _postfix_exp;
+	// class PrimaryExp* _primary_exp;
+	// class Initializer* _init;
+	// class InitializerList* _init_list;
 }
 
 %token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD 
@@ -65,10 +79,18 @@ extern void warning(const char*);
 %token<string> XOR_ASSIGN OR_ASSIGN TYPE_NAME
 %token<string> CHAR INT TENSOR FLOAT CNS VAR BOOL
 %token<string> IF ELIF ELSE LOOP ENDIF 
-%start start
 
-// %define parse.error verbose 
-%locations
+%type<_type> type_specifier
+%type<_decl_type> declaration_type
+%type<_decl> declarator
+%type<_init_decl> init_declarator
+%type<_init_decls> init_declarators
+%type<_declr> declaration
+%type<_bin_stmt> binary_statement
+%type<_bin_stmts> binary_ds_list
+%type<_comp_stmt> compound_statement
+
+%start start
 %%
 
 start : compound_statement {SHOW("parsing complete! \n");}
@@ -77,9 +99,8 @@ start : compound_statement {SHOW("parsing complete! \n");}
 // Statements
 
 compound_statement 
-	: '{' '}' {printf("compound_statment is empty\n"); /*root = new CompStatement();*/}
-	| '{' binary_ds_list '}' {printf("cmp_stmt -> binary_ds_list\n");} 
-  | '{' error '}' {yyerrok;}
+	: '{' '}' {printf("compound_statment is empty\n"); $$ = make_unique<CompStatement>(nullptr);}
+	| '{' binary_ds_list '}' {printf("cmp_stmt -> binary_ds_list\n"); $$ = make_unique<CompStatement>(std::move($2));}
 	;
 	// | '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
 	// | '{' statement_list '}'  {printf("comp_stmt -> stmt_list \n");}
@@ -87,11 +108,11 @@ compound_statement
 	// ;
 binary_ds_list
 	: binary_ds_list binary_statement {SHOW ("binary_ds_list -> binary_ds_list + binary_statement\n");}
-	| binary_statement {SHOW ("binary_ds_list -> binary_statement\n");}
+	| binary_statement {SHOW ("binary_ds_list -> binary_statement\n"); $$ = make_unique<BinaryStatements>(nullptr, std::move($1));}
 	;
 
 binary_statement 
-	: declaration {SHOW ("binary_statment -> declaration\n");}
+	: declaration {SHOW ("binary_statment -> declaration\n"); $$ = make_unique<BinaryStatement>(nullptr, std::move($1));}
 	| statement {SHOW("binary_statement -> statement");}
 	;
 statement 
@@ -144,13 +165,13 @@ elif_section
 
 // Declarations 
 declaration 
-	: declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n");}
-	| error ';' {yyerrok;}
+	: declaration_type ';' {SHOW("decl -> decl_type\n");}
+	| declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n"); $$ = make_unique<Declaration>(std::move($1), std::move($2));}
 	;
 
 declaration_type
 	: grad_specifier type_specifier {SHOW("decl_type -> grad_spec type_spec\n");}
-	| type_specifier {SHOW("decl_type -> type_spec\n");}
+	| type_specifier {SHOW("decl_type -> type_spec\n"); $$ = make_unique<DeclarationType>(std::move($1));}
 	;
 
 grad_specifier
@@ -160,24 +181,24 @@ grad_specifier
 
 type_specifier
 	: CHAR {SHOW("type_spec -> %s\n", $1);}
-	| INT {SHOW("type_spec -> %s\n", $1);}
+	| INT {SHOW("type_spec -> %s\n", $1);$$ = new TypeSpecifier("INT");} 
 	| FLOAT {SHOW("type_spec -> %s\n", $1);}
 	| BOOL {SHOW("type_spec -> %s\n", $1);}
 	| TENSOR {SHOW("type_spec -> %s\n", $1);}
 	;
 
 init_declarators
-	: init_declarator {SHOW("init_decls -> init_decl\n");}
-	| init_declarators ',' init_declarator {SHOW("init_decls -> init_decls init_decl\n");}
+	: init_declarator {SHOW("init_decls -> init_decl\n"); $$ = make_unique<InitDeclarators>(nullptr, std::move($1));}
+	| init_declarators init_declarator {SHOW("init_decls -> init_decls init_decl\n"); $$ = make_unique<InitDeclarators>(std::move($1), std::move($2));}
 	;
 
 init_declarator 
-	: declarator {SHOW("init_decl -> decl\n");}
+	: declarator {SHOW("init_decl -> decl\n"); $$ = make_unique<InitDeclarator>(std::move($1), nullptr);}
 	| declarator '=' initializer {SHOW("int_decl -> decl = initializer\n");}
 	;
 
 declarator
-	: IDENTIFIER {SHOW("decl -> %s\n", $1);}
+	: IDENTIFIER {SHOW("decl -> %s\n", $1); $$ = make_unique<Declarator>(std::move($1), nullptr, nullptr);}
 	| '('declarator')' {SHOW("decl -> (decl)\n");}
 	| declarator '[' conditional_exp ']' {SHOW("decl -> decl [conditional_exp]\n");}
 	;
@@ -297,7 +318,7 @@ unary_exp
 	| DEC_OP unary_exp {SHOW("unary_exp -> %s unary_exp\n", $1);}
 	| unary_operator cast_exp {SHOW("unary_exp -> unary_op cast_exp\n");}
 	//| '('type_specifier')'cast_exp // TODO: Make change in grammar pdf
-	| lib_funcs '(' conditional_exp ')' {SHOW("unary_exp -> lib_funcs (additive_exp)\n");}
+	| lib_funcs '(' additive_exp ')' {SHOW("unary_exp -> lib_funcs (additive_exp)\n");}
 	;
 
 // TODO: Make change in grammar pdf 
@@ -333,7 +354,6 @@ primary_exp
 	: IDENTIFIER {SHOW("primary_exp -> %s\n", $1);}
 	| constant {SHOW("primary_exp -> constant\n");}
 	| '(' exp ')' {SHOW("primary_exp -> ( exp )\n");}
-	| '(' error ')' {yyerrok; lyyerror(@1,"error"); yyerrok; }
 	;
 
 // Constants
@@ -342,57 +362,16 @@ constant
 	| CHAR_CONST {SHOW("constant -> %s\n", $1);}
 	| FLOAT_CONST {SHOW("constant -> %f\n", $1);}
 	| CONSTANT {SHOW("constant -> %s\n", $1);}
-	| STRING_LITERAL
 	;
 
 %%
 
 void yyerror(char *s)
 {
-		fprintf(stderr, "%s:%d:%d:\e[1;31m error:\e[0m %s at %s\n%*d |%s\n",filename, yylineno , yycolumn, s, yytext,(int)(strlen(filename)-1), yylineno, linebuf);
-		
-		if(yylloc.first_line == yylloc.last_line){
-			fprintf(stderr, "%*s\e[1;31m%*s", (int)(strlen(filename)+1),"|",yylloc.first_column,"^");
-			
-			for(int i = yylloc.first_column+1; i<=yylloc.last_column;i++){
-				fprintf(stderr, "_");
-				}
-			fprintf(stderr, "\e[0m\n\n");
-		}
+	fprintf(stderr, "%s\n", s);
 }
 
-void warning(const char* s){
-	fprintf(stdout, "%s:%d:%d:\e[1;35m warning:\e[0m %s\n%*d |%s\n",filename, yylineno, yycolumn, s,(int)strlen(filename)-1 ,yylineno, linebuf);
-	if(yylloc.first_line == yylloc.last_line){
-		fprintf(stdout, "%*s\e[1;35m%*s", (int)(strlen(filename)+1),"|",yylloc.first_column,"^");
-		
-		for(int i = yylloc.first_column+1; i<=yylloc.last_column;i++){
-			fprintf(stdout, "_");
-			}
-		fprintf(stdout, "\e[0m\n\n");
-	}
-
-}
-
-void lyyerror(YYLTYPE t,char *s,...){
-	va_list ap;
-	va_start(ap,s);
-
-
-	fprintf(stderr, "%s:%d:%d:\e[1;31m error:\e[0m %s at %s\n%*d |%s\n",filename, yylineno , yycolumn, s, yytext,(int)(strlen(filename)-1), yylineno, linebuf);
-	
-	if(yylloc.first_line == yylloc.last_line){
-		fprintf(stderr, "%*s%*s", (int)(strlen(filename)+1),"|",yylloc.first_column,"^");
-		
-		for(int i = yylloc.first_column+1; i<=yylloc.last_column;i++){
-			fprintf(stderr, "_");
-		}
-	}
-	fprintf(stderr, "\n\n");
-	
-}
-
-int main(int argc, char const *argv[])
+int main(int argc, char **argv)
 {
 	// printf("Input argument Number : %d", argc);
 	/* Parent p;
@@ -401,16 +380,7 @@ int main(int argc, char const *argv[])
 	c.func();
 	// including ast.cpp statement class
 	Statement *s = new Statement(); */
-	if(argc > 1){
-		if((yyin = fopen(argv[1],"r")) == NULL){
-			perror(argv[1]);
-			return 1;
-		}
-		filename = argv[1];
-	}
-	else{
-		filename = "(stdin)";
-	}
+	yyin = fopen(argv[1],"r"); 
 	yyparse();
 	return 0;
 }
