@@ -1,9 +1,9 @@
 D			[0-9]
 L			[a-zA-Z_]
-H			[a-fA-F0-9]
+/* H			[a-fA-F0-9] */
 E			[Ee][+-]?{D}+
-FS			(f|F)
-IS			(l|L)
+/* FS			(f|F) */
+/* IS			(l|L) */
 
 %{
 #include <stdio.h>
@@ -29,13 +29,13 @@ int yycolumn =1;
 %%
 "/*"						{ comment(); }              /* defined as comment */
 "//"[^\n]*      			{ /* consume //-comment */ }            /* comment */
-"char"						{ count(); return CHAR; }         /* lexer will print CHAR */
+/*"char"						{ count(); return CHAR; }         lexer will print CHAR */
 "cns"						{ count(); return CNS; }       /* cns is constant */
 "elif"						{ count(); return ELIF; }           /* elif is just like else if in cpp */
 "else"						{ count(); return ELSE; }           /* it's else statement */
 "endif"						{ count(); return ENDIF;}            /* endif directive used to define "#if"  */
 "float"						{ count(); return FLOAT; }           /* float datatype */
-"loop"						{ count(); return LOOP; }            /* loop is just like for loop in cpp*/
+/*"loop"						{ count(); return LOOP; }            loop is just like for loop in cpp*/
 "if"						{ count(); return IF; }          /* if */
 "int"						{ count(); return INT; }         /* int datatype */
 "Tensor"					{ count(); return TENSOR; }          /* tensor datatype */
@@ -49,32 +49,27 @@ int yycolumn =1;
 "exp"						{ count(); return EXP;}       /* exponential function as keyword */
 "log"						{ count(); return LOG;}       /* logarithmic function as keyword */
 "print" 					{ count(); return PRINT;}         /* print is just like print in python */
+"declare"					{ count(); return DECLARE;}       /* declare is just like declare in cpp */
+"operations"				{ count(); return OPERATIONS;}    /* operations is just like operations in cpp */
+"gradient"                     { count(); return GRADIENT;}      /* gradient is just like gradient in cpp */
 
 {L}({L}|{D})*						{ count(); return IDENTIFIER;}   /* D for digit H for hexadecimal E for exponential  L for letters*/
-0[xX]{H}+{IS}?						{ yylval.ival = atoi(yytext) ; count(); return CONSTANT; }        /* ? is when it is optional and star is when you can take it any times */
-0{D}+{IS}?							{ yylval.ival = atoi(yytext) ; check_integer_overflow(); count(); return CONSTANT; }
-{D}+{IS}?							{ yylval.ival = atoi(yytext) ; check_integer_overflow(); count(); return CONSTANT; }
+/*0[xX]{H}+{IS}?						{ yylval.ival = atoi(yytext) ; count(); return CONSTANT; }         ? is when it is optional and star is when you can take it any times */
+{D}+							{ yylval.ival = atoi(yytext) ; check_integer_overflow(); count(); return CONSTANT; }
 L?'(\\.|[^\\'])+'					{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
-{D}+{E}{FS}?						{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
-{D}*"."{D}+({E})?{FS}?				{ yylval.fval = atof(yytext) ;count(); return CONSTANT; }
-{D}+"."{D}*({E})?{FS}?				{ yylval.fval = atof(yytext) ; count(); return CONSTANT; }
+{D}+{E}						{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
+{D}*"."{D}+({E})?				{ yylval.fval = atof(yytext) ;count(); return CONSTANT; }
+{D}+"."{D}*({E})?			{ yylval.fval = atof(yytext) ; count(); return CONSTANT; }
 L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 \"[^\n\"]*[;,]?						{ count(); warning("unterminated string, misssing \" character"); return STRING_LITERAL; }
 
         /* Tensor multiply operator */
-">>="				{ count(); return RIGHT_ASSIGN; }   /* below all operators like cpp */
-"<<="				{ count(); return LEFT_ASSIGN; }     /* assign operators from line 53 to 63 */
 "+="				{ count(); return ADD_ASSIGN; }
 "-="				{ count(); return SUB_ASSIGN; }
 "*="				{ count(); return MUL_ASSIGN; }
 "/="				{ count(); return DIV_ASSIGN; }
 "%="				{ count(); return MOD_ASSIGN; }
-"&="				{ count(); return AND_ASSIGN; }
-"^="				{ count(); return XOR_ASSIGN; }
-"|="				{ count(); return OR_ASSIGN; }
 "@="				{ count(); return AT_ASSIGN;}
-">>"				{ count(); return RIGHT_OP; }
-"<<"				{ count(); return LEFT_OP; }
 "++"				{ count(); return INC_OP; }
 "--"				{ count(); return DEC_OP; }
 "&&"				{ count(); return AND_OP; }
@@ -93,9 +88,9 @@ L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 ")"					{ count(); return ')'; }
 "["					{ count(); return '['; }
 "]"					{ count(); return ']'; }
-"&"					{ count(); return '&'; }    
+/*"&"					{ count(); return '&'; }    
 "!"					{ count(); return '!'; }
-"~"					{ count(); return '~'; }    /* bitwise operator */
+"~"					{ count(); return '~'; }    bitwise operator */
 "-"					{ count(); return '-'; }
 "+"					{ count(); return '+'; }
 "*"					{ count(); return '*'; }
@@ -104,9 +99,9 @@ L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 "%"					{ count(); return '%'; }
 "<"					{ count(); return '<'; }
 ">"					{ count(); return '>'; }
-"^"					{ count(); return '^'; }
+/*"^"					{ count(); return '^'; }
 "|"					{ count(); return '|'; }
-"?"					{ count(); return '?'; }
+"?"					{ count(); return '?'; }*/
 \n.*						{ strcpy(linebuf,yytext+1); yyless(1); yycolumn=1;}
 [ \t\v\f]		{ /*count(); eat these chars*/ }
 .						{ /* ignore bad characters */ }
