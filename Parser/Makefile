@@ -4,7 +4,7 @@ EXEC = parser.out
 $(EXEC) : grammar.y ../Lexer/lexer.l
 	yacc -d grammar.y
 	lex ../Lexer/lexer.l
-	gcc y.tab.c lex.yy.c -o $(EXEC) 
+	clang++ y.tab.c lex.yy.c ../ast.cpp -I .. -o $(EXEC) 
 
 
 test: ${EXEC}

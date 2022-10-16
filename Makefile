@@ -11,7 +11,7 @@ $(TARGET): $(LEXERFILE) $(PARSERFILE)
 	mkdir -p $(BUILDDIR)
 	cd $(BUILDDIR);\
 	yacc -d ../$(PARSERFILE); lex ../$(LEXERFILE);\
-	gcc y.tab.c lex.yy.c -o $(TARGET)
+	clang++ y.tab.c lex.yy.c ../ast.cpp -I .. -o $(TARGET)
 	cp $(BUILDDIR)$(TARGET) $(TARGET)
 
 build: $(TARGET)

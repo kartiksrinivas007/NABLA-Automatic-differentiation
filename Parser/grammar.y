@@ -12,7 +12,7 @@ extern FILE* yyin;
 void yyerror(char *);
 
 
-#ifdef DEBUG 
+#ifndef DEBUG 
 	#define SHOW printf
 #else
 	#define SHOW
