@@ -17,16 +17,16 @@ void yyerror(char *);
 #else
 	#define SHOW
 #endif
-CompStatement *root;
+// CompStatement *root;
 
-typedef struct node {
-	char *token;
-	// unsigned n_children;
-	// struct node** children;
-	struct node* child1;
-	struct node* child2;
-	struct node* child3;
-} node;
+// typedef struct node {
+// 	char *token;
+// 	// unsigned n_children;
+// 	// struct node** children;
+// 	struct node* child1;
+// 	struct node* child2;
+// 	struct node* child3;
+// } node;
 
 void insert_node(char* token, node*, node*, node*); // Create a node with these children
 
