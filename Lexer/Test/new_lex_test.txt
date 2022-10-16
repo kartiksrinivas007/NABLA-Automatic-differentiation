@@ -14,4 +14,20 @@ operations{
     x = x @ y;
     x = sin(x);
     x = sin(x*x);
+    if(y < 2)
+    {
+        x +=y;
+    }
+    elif(x>2)
+    {
+
+    }
+    else
+    {
+
+    }
+}
+gradient{
+    grad(x);
+    backward(x);
 }

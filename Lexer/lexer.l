@@ -1,3 +1,4 @@
+%option noyywrap
 D			[0-9]
 L			[a-zA-Z_]
 /* H			[a-fA-F0-9] */
@@ -7,7 +8,7 @@ E			[Ee][+-]?{D}+
 
 %{
 #include <stdio.h>
-#include "y.tab.h"
+// #include "y.tab.h"
 
 static void count();
 static void comment();
@@ -29,13 +30,11 @@ int yycolumn =1;
 %%
 "/*"						{ comment(); }              /* defined as comment */
 "//"[^\n]*      			{ /* consume //-comment */ }            /* comment */
-/*"char"						{ count(); return CHAR; }         lexer will print CHAR */
 "cns"						{ count(); return CNS; }       /* cns is constant */
 "elif"						{ count(); return ELIF; }           /* elif is just like else if in cpp */
 "else"						{ count(); return ELSE; }           /* it's else statement */
 "endif"						{ count(); return ENDIF;}            /* endif directive used to define "#if"  */
 "float"						{ count(); return FLOAT; }           /* float datatype */
-/*"loop"						{ count(); return LOOP; }            loop is just like for loop in cpp*/
 "if"						{ count(); return IF; }          /* if */
 "int"						{ count(); return INT; }         /* int datatype */
 "Tensor"					{ count(); return TENSOR; }          /* tensor datatype */
@@ -54,7 +53,6 @@ int yycolumn =1;
 "gradient"                     { count(); return GRADIENT;}      /* gradient is just like gradient in cpp */
 
 {L}({L}|{D})*						{ count(); return IDENTIFIER;}   /* D for digit H for hexadecimal E for exponential  L for letters*/
-/*0[xX]{H}+{IS}?						{ yylval.ival = atoi(yytext) ; count(); return CONSTANT; }         ? is when it is optional and star is when you can take it any times */
 {D}+							{ yylval.ival = atoi(yytext) ; check_integer_overflow(); count(); return CONSTANT; }
 L?'(\\.|[^\\'])+'					{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
 {D}+{E}						{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
@@ -88,9 +86,6 @@ L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 ")"					{ count(); return ')'; }
 "["					{ count(); return '['; }
 "]"					{ count(); return ']'; }
-/*"&"					{ count(); return '&'; }    
-"!"					{ count(); return '!'; }
-"~"					{ count(); return '~'; }    bitwise operator */
 "-"					{ count(); return '-'; }
 "+"					{ count(); return '+'; }
 "*"					{ count(); return '*'; }
@@ -99,9 +94,6 @@ L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 "%"					{ count(); return '%'; }
 "<"					{ count(); return '<'; }
 ">"					{ count(); return '>'; }
-/*"^"					{ count(); return '^'; }
-"|"					{ count(); return '|'; }
-"?"					{ count(); return '?'; }*/
 \n.*						{ strcpy(linebuf,yytext+1); yyless(1); yycolumn=1;}
 [ \t\v\f]		{ /*count(); eat these chars*/ }
 .						{ /* ignore bad characters */ }
@@ -190,7 +182,7 @@ void check_integer_overflow()
 }
 
 
-/* int main(int argc,char** argv)
+int main(int argc,char** argv)
 {
 	if( argc >=2 ){
 		yyin = fopen(argv[1] , "r");
@@ -205,5 +197,5 @@ void check_integer_overflow()
 	}
 	yylex();
 	return 0;
-} */
+}
 
