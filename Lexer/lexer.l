@@ -56,8 +56,8 @@ int yycolumn =1;
 {D}+							{ yylval.ival = atoi(yytext) ; check_integer_overflow(); count(); return CONSTANT; }
 L?'(\\.|[^\\'])+'					{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
 {D}+{E}						{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
-{D}*"."{D}+({E})?				{ yylval.fval = atof(yytext) ;count(); return CONSTANT; }
-{D}+"."{D}*({E})?			{ yylval.fval = atof(yytext) ; count(); return CONSTANT; }
+{D}*"."{D}+({E})?				{ yylval.fval = atof(yytext) ;count(); return FLOAT_CONST; }
+{D}+"."{D}*({E})?			{ yylval.fval = atof(yytext) ; count(); return FLOAT_CONST; }
 L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 \"[^\n\"]*[;,]?						{ count(); warning("unterminated string, misssing \" character"); return STRING_LITERAL; }
 
@@ -68,8 +68,6 @@ L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 "/="				{ count(); return DIV_ASSIGN; }
 "%="				{ count(); return MOD_ASSIGN; }
 "@="				{ count(); return AT_ASSIGN;}
-"++"				{ count(); return INC_OP; }
-"--"				{ count(); return DEC_OP; }
 "&&"				{ count(); return AND_OP; }
 "||"				{ count(); return OR_OP; }
 "<="				{ count(); return LE_OP; }
