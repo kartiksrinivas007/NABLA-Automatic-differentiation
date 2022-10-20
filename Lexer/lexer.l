@@ -1,4 +1,4 @@
-%option noyywrap
+/* %option noyywrap */
 D			[0-9]
 L			[a-zA-Z_]
 /* H			[a-fA-F0-9] */
@@ -8,7 +8,7 @@ E			[Ee][+-]?{D}+
 
 %{
 #include <stdio.h>
-// #include "y.tab.h"
+#include "y.tab.h"
 
 static void count();
 static void comment();
@@ -53,9 +53,9 @@ int yycolumn =1;
 "gradient"                     { count(); return GRADIENT;}      /* gradient is just like gradient in cpp */
 
 {L}({L}|{D})*						{ count(); return IDENTIFIER;}   /* D for digit H for hexadecimal E for exponential  L for letters*/
-{D}+							{ yylval.ival = atoi(yytext) ; check_integer_overflow(); count(); return CONSTANT; }
+{D}+							{ yylval.ival = atoi(yytext) ; check_integer_overflow(); count(); return INT_CONST; }
 L?'(\\.|[^\\'])+'					{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
-{D}+{E}						{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
+{D}+{E}						{ yylval.ival = atoi(yytext) ;count(); return FLOAT_CONST; }
 {D}*"."{D}+({E})?				{ yylval.fval = atof(yytext) ;count(); return FLOAT_CONST; }
 {D}+"."{D}*({E})?			{ yylval.fval = atof(yytext) ; count(); return FLOAT_CONST; }
 L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
@@ -107,7 +107,7 @@ int yywrap()
 static void
 comment() {
 	char c, c1 = 0;
-	while ( (c = yyinput()) != 0 ) {	/* (EOF maps to 0) */
+	while ( (c = input()) != 0 ) {	/* (EOF maps to 0) */
 		if ( c == '/' && c1 == '*' )
 			return;
 		c1 = c;
@@ -180,7 +180,7 @@ void check_integer_overflow()
 }
 
 
-int main(int argc,char** argv)
+/* int main(int argc,char** argv)
 {
 	if( argc >=2 ){
 		yyin = fopen(argv[1] , "r");
@@ -196,4 +196,4 @@ int main(int argc,char** argv)
 	yylex();
 	return 0;
 }
-
+ */

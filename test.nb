@@ -1,0 +1,14 @@
+declare{
+    cns int a  = 3;
+    cns int b = 3*3;
+    var Tensor a[2][2]  = [[2,2],[3,4]]
+    cns int d;
+}
+operations{
+    c = b*a;
+    d = c*b;
+}
+gradient{
+    backward(c);
+    grad(b);
+}
