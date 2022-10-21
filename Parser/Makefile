@@ -1,11 +1,18 @@
 EXEC = parser.out
+BISON = bison
 
-.SILENT:
-$(EXEC) : grammar.y ../Lexer/lexer.l
-	yacc -d grammar.y
-	lex ../Lexer/lexer.l
-	clang++ y.tab.c lex.yy.c ../ast.cpp -I .. -o $(EXEC) 
+.SILENT: test run
+.PHONY: clean build test run
 
+$(EXEC) : grammar.y ../Lexer/lex.yy.c
+	bison -d grammar.y
+	g++ grammar.tab.c lex.yy.c ../ast/ast.cpp -o $(EXEC) 
+
+../Lexer/lex.yy.c: ../Lexer/lexer.l
+	cd ../Lexer && make build && cp lex.yy.c ../Parser
+
+build : grammar.y
+	$(BISON) -d grammar.y
 
 test: ${EXEC}
 	cd Test && ./test.sh
@@ -15,4 +22,5 @@ run: $(EXEC)
 	./$(EXEC) < Test/tmp.txt
 
 clean: 
-	rm *.out
+	rm -f *.out
+	rm -f *.tab.*

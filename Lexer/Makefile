@@ -2,11 +2,17 @@ TEST-DIR := Test
 EXEC = lexer.out
 
 
-.PHONY : test clean
+.PHONY : test clean build
 
 $(EXEC) :
-		lex test_lexer.l
-		gcc -o $(EXEC) lex.yy.c 
+	lex test_lexer.l
+	gcc -o $(EXEC) lex.yy.c 
+
+build : ../Parser/grammar.tab.h lexer.l
+	lex lexer.l
+
+../Parser/grammar.tab.h : 
+	cd ../Parser && make build
 
 .SILENT:
 test :

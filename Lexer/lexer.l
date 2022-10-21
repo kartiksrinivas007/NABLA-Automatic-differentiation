@@ -8,12 +8,12 @@ E			[Ee][+-]?{D}+
 
 %{
 #include <stdio.h>
-// #include "y.tab.h"
-#include "grammar.tab.h"
+// #include "y.tab.h"`
+#include "../Parser/grammar.tab.h"
 
 static void count();
 static void comment();
-void yyerror(char *);
+void yyerror(const char *);
 void check_integer_overflow();
 // extern void lyyerror(YYLTYPE t,char *s,...);
 char linebuf[500];
@@ -54,11 +54,11 @@ int yycolumn =1;
 "gradient"                     { count(); return GRADIENT;}      /* gradient is just like gradient in cpp */
 
 {L}({L}|{D})*						{ count(); return IDENTIFIER;}   /* D for digit H for hexadecimal E for exponential  L for letters*/
-{D}+							{ yylval.ival = atoi(yytext) ; check_integer_overflow(); count(); return INT_CONST; }
-L?'(\\.|[^\\'])+'					{ yylval.ival = atoi(yytext) ;count(); return CONSTANT; }
-{D}+{E}						{ yylval.ival = atoi(yytext) ;count(); return FLOAT_CONST; }
-{D}*"."{D}+({E})?				{ yylval.fval = atof(yytext) ;count(); return FLOAT_CONST; }
-{D}+"."{D}*({E})?			{ yylval.fval = atof(yytext) ; count(); return FLOAT_CONST; }
+{D}+							{ yylval.ival = atoi(yytext) ; check_integer_overflow(); return INT_CONST; }
+L?'(\\.|[^\\'])+'					{ yylval.ival = atoi(yytext) ; return CONSTANT; }
+{D}+{E}						{ yylval.ival = atoi(yytext) ; return FLOAT_CONST; }
+{D}*"."{D}+({E})?				{ yylval.fval = atof(yytext) ; return FLOAT_CONST; }
+{D}+"."{D}*({E})?			{ yylval.fval = atof(yytext) ; return FLOAT_CONST; }
 L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 \"[^\n\"]*[;,]?						{ count(); warning("unterminated string, misssing \" character"); return STRING_LITERAL; }
 

@@ -1,6 +1,6 @@
 %code requires
 {
-	#include "ast/ast.h"
+	#include "../ast/ast.h"
 }
 %{
 #include<stdio.h>
@@ -13,7 +13,7 @@
 
 extern int yylex();
 extern FILE* yyin;
-void yyerror(char *);
+void yyerror(const char *);
 
 
 #ifndef DEBUG 
@@ -210,7 +210,7 @@ grad_stmt : BACKWARD '(' IDENTIFIER ')' ';'
 
 %%
 
-void yyerror(char *s)
+void yyerror(const char *s)
 {
 		fprintf(stderr, "%s:%d:%d:\e[1;31m error:\e[0m %s at %s\n%*d |%s\n",filename, yylineno , yycolumn, s, yytext,(int)(strlen(filename)-1), yylineno, linebuf);
 		
@@ -265,11 +265,13 @@ int main(int argc, char const *argv[])
 	// including ast.cpp statement class
 	Statement *s = new Statement(); */
 	if(argc > 1){
+		printf("Input file name : %s\n", argv[1]);
 		if((yyin = fopen(argv[1],"r")) == NULL){
 			perror(argv[1]);
 			return 1;
 		}
-		filename = argv[1];
+		filename = basename(argv[1]);
+		printf("File name : %s\n", filename);
 	}
 	else{
 		filename = "(stdin)";
