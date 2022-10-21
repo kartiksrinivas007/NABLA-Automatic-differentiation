@@ -8,7 +8,8 @@ E			[Ee][+-]?{D}+
 
 %{
 #include <stdio.h>
-#include "y.tab.h"
+// #include "y.tab.h"
+#include "grammar.tab.h"
 
 static void count();
 static void comment();
@@ -107,7 +108,7 @@ int yywrap()
 static void
 comment() {
 	char c, c1 = 0;
-	while ( (c = input()) != 0 ) {	/* (EOF maps to 0) */
+	while ( (c = yyinput()) != 0 ) {	/* (EOF maps to 0) */
 		if ( c == '/' && c1 == '*' )
 			return;
 		c1 = c;

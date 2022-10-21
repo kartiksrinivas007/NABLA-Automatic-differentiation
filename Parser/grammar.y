@@ -1,9 +1,13 @@
+%code requires
+{
+	#include "ast/ast.h"
+}
 %{
 #include<stdio.h>
 #include<stdlib.h>
 #include <ctype.h>
 #include <string.h>
-// #include "ast.h"
+
 #include <stdarg.h>
 #include <string.h>
 
@@ -17,18 +21,8 @@ void yyerror(char *);
 #else
 	#define SHOW
 #endif
-// CompStatement *root;
 
-// typedef struct node {
-// 	char *token;
-// 	// unsigned n_children;
-// 	// struct node** children;
-// 	struct node* child1;
-// 	struct node* child2;
-// 	struct node* child3;
-// } node;
-
-// void insert_node(char* token, node*, node*, node*); // Create a node with these children
+class Start* root;
 
 extern int yylineno;
 extern int yycolumn;
@@ -51,6 +45,22 @@ extern void warning(const char*);
 	// some  technique required for the symbol table , to map strings to indices 
 	char *string;
 	// class Expression *expr;
+	class Start * AstStart;
+
+// Declaration classes
+	class Decl* AstDecl;
+	GradSpecifier AstGradSpecifier;
+	TypeSpecifier AstTypeSpecifier;
+	class InitDeclarator* AstInitDeclarator;
+	class Declarator* AstDeclarator;
+	class Initializer* AstInitializer;
+	class ConstValue * AstConstValue;
+	class AssgnStmt* AstAssgnStmt;
+	class GradStmt* AstGradStmt;
+
+
+	std::vector<Decl*> * AstDeclList;
+
 
 }
 
@@ -66,65 +76,87 @@ extern void warning(const char*);
 %token<string> CHAR INT TENSOR FLOAT CNS VAR BOOL
 %token<string> IF ELIF ELSE LOOP ENDIF 
 %token<string> DECLARE OPERATIONS GRADIENT
+%type<AstDecl> decl
+%type<AstGradSpecifier> grad_specifier
+%type<AstTypeSpecifier> type_specifier
+%type<AstInitDeclarator> init_declarator
+%type<AstDeclarator> declarator
+%type<AstInitializer> initializer
+%type<AstConstValue> constant
+%type<AstStart> start
+%type<AstDeclList> decl_list
+%type<AstDeclList> declarations
 %start start
 
 // %define parse.error verbose 
 %locations
 %%
 
-start : declarations operations gradient
+start : declarations operations gradient {$$ = new Start($1,NULL,NULL); root = $$;}
 	;
 
 
-declarations : DECLARE '{'decl_list'}'
+declarations : DECLARE '{'decl_list'}' {$$ = $3;}
 	;	
 
-decl_list : decl_list decl
-	| decl
-	;
-decl : grad_specifier type_specifier init_declarator ';'
-	;
-grad_specifier : CNS
-	| VAR
-	;
-type_specifier : CHAR
-	| INT
-	| FLOAT
-	| BOOL
-	| TENSOR
+decl_list 
+	: decl_list decl {$1->push_back($2); $$ = $1;}
+	| decl {$$ = new std::vector<Decl*>(); $$->push_back($1);}
 	;
 
-init_declarator : declarator
-	| declarator '=' initializer
+decl : grad_specifier type_specifier init_declarator ';' {$$ = new Decl($1, $2, $3);}
 	;
 
-declarator : IDENTIFIER
+grad_specifier 
+	: CNS {$$ = GradSpecifier::CNS;}
+	| VAR {$$ = GradSpecifier::VAR;}
+	;
+type_specifier : CHAR {$$ = TypeSpecifier::CHAR;}
+	| INT	{$$ = TypeSpecifier::INT;}
+	| FLOAT	{$$ = TypeSpecifier::FLOAT;}
+	| BOOL	{$$ = TypeSpecifier::BOOL;}
+	| TENSOR	{$$ = TypeSpecifier::TENSOR;}
+	;
+
+init_declarator 
+	: declarator {$$ = new InitDeclarator($1, NULL);}
+	| declarator '=' initializer {$$ = new InitDeclarator($1, $3);}
+	;
+
+declarator 
+	: IDENTIFIER {$$ = new Declarator($1);}
 	| declarator'[' INT_CONST ']'
 	;
 
-initializer: const_exp
+initializer
+	: constant {$$ = new Initializer($1, std::vector<Initializer*>());}
 	| '['initializer_list ']'
 	;
 	// | '[' initializer_list ','initializer ']'
 
-initializer_list : initializer
+initializer_list 
+	: initializer
 	| initializer_list ',' initializer
 	;
 
-const_exp : constant '+' constant
+/* const_exp 
+	: constant '+' constant
 	| constant
+	; */
+
+constant 
+	: INT_CONST {$$ = new ConstValue($1);}
+	| FLOAT_CONST {$$ = new ConstValue($1);}
 	;
 
-constant : INT_CONST
-	| FLOAT_CONST
+
+
+operations 
+	: OPERATIONS '{'assign_stmt_list '}'
 	;
 
-
-
-operations : OPERATIONS '{'assign_stmt_list '}'
-	;
-
-assign_stmt_list : assign_stmt
+assign_stmt_list 
+	: assign_stmt
 	| assign_stmt_list assign_stmt
 	;
 
@@ -243,5 +275,6 @@ int main(int argc, char const *argv[])
 		filename = "(stdin)";
 	}
 	yyparse();
+	
 	return 0;
 }
