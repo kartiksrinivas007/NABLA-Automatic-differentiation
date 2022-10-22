@@ -265,7 +265,6 @@ int main(int argc, char const *argv[])
 	// including ast.cpp statement class
 	Statement *s = new Statement(); */
 	if(argc > 1){
-		printf("Input file name : %s\n", argv[1]);
 		if((yyin = fopen(argv[1],"r")) == NULL){
 			perror(argv[1]);
 			return 1;

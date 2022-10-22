@@ -15,6 +15,11 @@ $(TARGET): $(LEXERFILE) $(PARSERFILE)
 	clang++ y.tab.c lex.yy.c ../ast.cpp -I .. -o $(TARGET)
 	cp $(BUILDDIR)$(TARGET) $(TARGET)
 
+build: Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp ast/ast.h
+	mkdir -p $(BUILDDIR)
+	g++ -o ${TARGET} Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp
+	cp ${TARGET} $(BUILDDIR)${TARGET}
+
 debug: Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp ast/ast.h copy_all
 	mkdir -p $(BUILDDIR)
 	cd $(BUILDDIR) &&\

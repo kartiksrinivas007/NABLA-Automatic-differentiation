@@ -24,3 +24,15 @@ clang++ ast.o lex.yy.o y.tab.o $(llvm-config --ldflags --libs) -lpthread -o exec
 ```bison
 bison -d Parser/grammar.y && lex Lexer/lexer.l && clang++ lex.yy.c grammar.tab.c  ast/ast.cpp -o exec
 ```
+
+```Makefile
+make build
+```
+
+```Makefile
+make debug
+```
+
+```Command
+cd Parser/ && bison -d grammar.y; cd ../Lexer/ &&lex lexer.l ;cd .. && g++ -o exec Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp
+```
