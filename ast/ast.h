@@ -5,6 +5,7 @@
 #include <cstring>
 #include <vector>
 #include <memory>
+#include <optional>
 
 class Parent
 {
@@ -45,8 +46,27 @@ class InitDeclarator;
 class Declarator;
 class Initializer;
 
-// Expressions class
+// Operations class
 class AssgnStmt;
+enum class LibFuncs
+{
+    SIN,
+    COS,
+    LOG,
+    EXP
+};
+enum AssignmentOperator
+{
+    AST_ASSIGN, // only =
+    AST_ADD_ASSIGN,
+    AST_SUB_ASSIGN,
+    AST_MUL_ASSIGN,
+    AST_DIV_ASSIGN,
+    AST_AT_ASSIGN
+};
+class Expr;
+class BinaryExpr;
+class UnaryExpr;
 
 // Gradient class
 class GradStmt;
@@ -85,7 +105,7 @@ public:
     GradSpecifier GradType;
     TypeSpecifier DataType;
     InitDeclarator *InitDeclaratorList;
-    Decl(GradSpecifier, TypeSpecifier, InitDeclarator*);
+    Decl(GradSpecifier, TypeSpecifier, InitDeclarator *);
     virtual ~Decl() = default;
 };
 
@@ -95,7 +115,7 @@ class InitDeclarator : public Node
 public:
     Declarator *declarator;
     Initializer *initializer;
-    InitDeclarator(Declarator*, Initializer*);
+    InitDeclarator(Declarator *, Initializer *);
     virtual ~InitDeclarator() = default;
 };
 // Declarator Class stores the name of the variable and the dimensions of the variable
@@ -128,24 +148,24 @@ public:
 // It also stores the pointers to the initializers of the elements of the variable if it is an array
 class Initializer : public Node
 {
-    public:
-    union type_value{
+public:
+    union type_value
+    {
         ConstValue *cvalue;
-        std::vector<Initializer*> *InitializerList;
+        std::vector<Initializer *> *InitializerList;
         constexpr type_value() : cvalue(nullptr) {}
         ~type_value() {}
     };
     type_value val;
     bool isScalar;
-    Initializer(ConstValue* value);
-    Initializer(std::vector<Initializer*> *InitializerList);
+    Initializer(ConstValue *value);
+    Initializer(std::vector<Initializer *> *InitializerList);
     // Initializer(ConstValue*, std::vector<Initializer*>);
 
     virtual ~Initializer() = default;
 };
 
-
-
+// Operations
 class AssgnStmt : public Node
 {
 public:
@@ -156,6 +176,38 @@ public:
     virtual ~AssgnStmt() = default;
 };
 
+class Expr : public Node
+{
+public:
+    Expr();
+    virtual void printExpression();
+    virtual ~Expr() = default;
+};
+
+class BinaryExpr : public Expr
+{
+public:
+    Expr *lhs, *rhs;
+    char op;
+    BinaryExpr(Expr *lhs, Expr *rhs, char op);
+    virtual ~BinaryExpr() = default;
+    virtual void printExpression();
+};
+
+class UnaryExpr : public Expr
+{
+public:
+    Expr *expr;
+    std::string identifier;
+    ConstValue *cvalue;
+    std::optional<LibFuncs> libfunc;
+
+    UnaryExpr(Expr *expr, std::optional<LibFuncs> libfunc, std::string identifier, ConstValue *cvalue);
+    virtual ~UnaryExpr() = default;
+    virtual void printExpression();
+};
+
+// Gradient
 class GradStmt : public Node
 {
 public:

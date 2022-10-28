@@ -56,7 +56,15 @@ extern void warning(const char*);
 	class Declarator* AstDeclarator;
 	class Initializer* AstInitializer;
 	class ConstValue * AstConstValue;
+
+// Operations
 	class AssgnStmt* AstAssgnStmt;
+	LibFuncs AstLibFuncs;
+	AssignmentOperator AstAssignmentOperator;
+	class Expr* AstExpr;
+	class BinaryExpr* AstBinaryExpr;
+
+// Gradient
 	class GradStmt* AstGradStmt;
 
 
@@ -90,6 +98,14 @@ extern void warning(const char*);
 %type<AstDeclList> decl_list
 %type<AstDeclList> declarations
 %type<AstInitializerList> initializer_list
+
+%type<AstLibFuncs> lib_funcs
+%type<AstAssignmentOperator> assign_op
+%type<AstExpr> exp
+%type<AstExpr> additive_exp
+%type<AstExpr> multiplicative_exp
+%type<AstExpr> lib_exp
+
 %type<AstGradStmtList> grad_stmt_list
 %type<AstGradStmt> grad_stmt
 %type<AstGradStmtList> gradient
@@ -104,6 +120,7 @@ start : declarations operations gradient {$$ = new Start($1,NULL,$3); root = $$;
 	;
 
 
+// Declaration
 declarations : DECLARE '{'decl_list'}' {$$ = $3;}
 	;	
 
@@ -119,6 +136,7 @@ grad_specifier
 	: CNS {$$ = GradSpecifier::CNS;}
 	| VAR {$$ = GradSpecifier::VAR;}
 	;
+
 type_specifier : CHAR {$$ = TypeSpecifier::CHAR;}
 	| INT	{$$ = TypeSpecifier::INT;}
 	| FLOAT	{$$ = TypeSpecifier::FLOAT;}
@@ -137,7 +155,7 @@ declarator
 	;
 
 initializer
-	: constant {$$ = new Initializer($1);}
+	: constant {$$ = new Initializer($1); std::cout << "Initializer: " << $1->value.int_val << std::endl;}
 	| '['initializer_list ']' {$$ = new Initializer($2);} 
 	;
 	// | '[' initializer_list ','initializer ']'
@@ -158,9 +176,9 @@ constant
 	;
 
 
-
+// Operations
 operations 
-	: OPERATIONS '{'assign_stmt_list '}'
+	: OPERATIONS '{' assign_stmt_list '}'
 	;
 
 assign_stmt_list 
@@ -174,44 +192,45 @@ assign_stmt
 	;
 
 assign_op 
-	: ADD_ASSIGN
-	| '='
-	| MUL_ASSIGN
-	| DIV_ASSIGN
-	| SUB_ASSIGN
-	| AT_ASSIGN
+	: ADD_ASSIGN {$$ = AssignmentOperator::AST_ADD_ASSIGN;}
+	| '=' {$$ = AssignmentOperator::AST_ASSIGN;}
+	| MUL_ASSIGN {$$ = AssignmentOperator::AST_MUL_ASSIGN;}
+	| DIV_ASSIGN {$$ = AssignmentOperator::AST_DIV_ASSIGN;}
+	| SUB_ASSIGN {$$ = AssignmentOperator::AST_SUB_ASSIGN;}
+	| AT_ASSIGN {$$ = AssignmentOperator::AST_AT_ASSIGN;}
 	;
 
 
-exp : additive_exp
+exp : additive_exp {$$ = $1; $$->printExpression(); std::cout << std::endl;}
 	;
 
 additive_exp 
-	: additive_exp  '+' multiplicative_exp
-	| additive_exp '-' multiplicative_exp
-	| multiplicative_exp
+	: additive_exp  '+' multiplicative_exp {$$ = new BinaryExpr($1, $3, '+');}
+	| additive_exp '-' multiplicative_exp {$$ = new BinaryExpr($1, $3, '-');}
+	| multiplicative_exp {$$ = $1;}
 	;
 	
 multiplicative_exp 
-	: multiplicative_exp '*' lib_exp
-	| multiplicative_exp '/' lib_exp
-	| multiplicative_exp '@' lib_exp
-	| lib_exp
+	: multiplicative_exp '*' lib_exp {$$ = new BinaryExpr($1, $3, '*');}
+	| multiplicative_exp '/' lib_exp {$$ = new BinaryExpr($1, $3, '/');}
+	| multiplicative_exp '@' lib_exp {$$ = new BinaryExpr($1, $3, '@');}
+	| lib_exp {$$ = $1;}
 	;
 
 lib_exp 
-	: IDENTIFIER
-	| lib_funcs '(' exp ')'
-	| constant
+	: IDENTIFIER {$$ = new UnaryExpr(nullptr, std::nullopt, $1, nullptr);}
+	| lib_funcs '(' exp ')' {$$ = new UnaryExpr($3, $1, "", nullptr);}
+	| constant {$$ = new UnaryExpr(nullptr, std::nullopt, "", $1);}
 	;
 
 lib_funcs 
-	: SIN
-	| COS
-	| LOG
-	| EXP 
+	: SIN {$$ = LibFuncs::SIN;}
+	| COS {$$ = LibFuncs::COS;}
+	| LOG {$$ = LibFuncs::LOG;}
+	| EXP {$$ = LibFuncs::EXP;}
 	;
 
+// Gradient
 gradient 
 	: GRADIENT '{' grad_stmt_list '}' {$$ = $3;}
 	;
