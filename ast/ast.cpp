@@ -60,8 +60,11 @@ Initializer::Initializer(std::vector<Initializer *> *InitializerList)
 // {
 // }
 
-AssgnStmt::AssgnStmt()
+AssgnStmt::AssgnStmt(std::string name, std::optional<AssignmentOperator> op, Expr *expr)
 {
+    this->name = name;
+    this->op = op;
+    this->expr = expr;
 }
 
 Expr::Expr()

@@ -71,6 +71,7 @@ extern void warning(const char*);
 	std::vector<Decl*> * AstDeclList;
 	std::vector<Initializer*> * AstInitializerList;
 	std::vector<GradStmt*> * AstGradStmtList;
+	std::vector<AssgnStmt*> * AstAssgnStmtList;
 
 
 }
@@ -99,6 +100,9 @@ extern void warning(const char*);
 %type<AstDeclList> declarations
 %type<AstInitializerList> initializer_list
 
+%type<AstAssgnStmt> assign_stmt
+%type<AstAssgnStmtList> assign_stmt_list
+%type<AstAssgnStmtList> operations
 %type<AstLibFuncs> lib_funcs
 %type<AstAssignmentOperator> assign_op
 %type<AstExpr> exp
@@ -178,17 +182,17 @@ constant
 
 // Operations
 operations 
-	: OPERATIONS '{' assign_stmt_list '}'
+	: OPERATIONS '{' assign_stmt_list '}' {$$ = $3;}
 	;
 
 assign_stmt_list 
-	: assign_stmt
-	| assign_stmt_list assign_stmt
+	: assign_stmt {$$ = new std::vector<AssgnStmt*>(); $$->push_back($1);}
+	| assign_stmt_list assign_stmt {$$->push_back($2);}
 	;
 
 assign_stmt 	
-	: IDENTIFIER assign_op exp ';'
-	| ';'
+	: IDENTIFIER assign_op exp ';' {$$ = new AssgnStmt($1, $2, $3);}
+	| ';' {$$ = new AssgnStmt(nullptr, std::nullopt, nullptr);}
 	;
 
 assign_op 

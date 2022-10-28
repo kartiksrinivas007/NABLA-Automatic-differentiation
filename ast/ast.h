@@ -172,7 +172,10 @@ public:
     // Declarator *declarator;
     // Initializer *initializer;
     // AssgnStmt(Declarator*, Initializer*);
-    AssgnStmt();
+    std::string name;
+    std::optional<AssignmentOperator> op;
+    Expr *expr;
+    AssgnStmt(std::string, std::optional<AssignmentOperator>, Expr *);
     virtual ~AssgnStmt() = default;
 };
 
