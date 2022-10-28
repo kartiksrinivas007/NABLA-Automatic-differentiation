@@ -292,7 +292,7 @@ int main(int argc, char const *argv[])
 			perror(argv[1]);
 			return 1;
 		}
-		filename = basename(argv[1]);
+		/* filename = basename(argv[1]); */
 		printf("File name : %s\n", filename);
 	}
 	else{
