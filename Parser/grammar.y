@@ -159,14 +159,14 @@ declarator
 	;
 
 initializer
-	: constant {$$ = new Initializer($1); std::cout << "Initializer: " << $1->value.int_val << std::endl;}
-	| '['initializer_list ']' {$$ = new Initializer($2);} 
+	: constant {$$ = new Initializer($1); /*std::cout << "Initializer: " << $1->value.int_val << std::endl;*/}
+	| '['initializer_list ']' {$$ = new Initializer($2); $$->printInitializerList();} 
 	;
 	// | '[' initializer_list ','initializer ']'
 
 initializer_list 
 	: initializer {$$ = new std::vector<Initializer*>(); $$->push_back($1);}
-	| initializer_list ',' initializer {$$->push_back($3);}
+	| initializer_list ',' initializer {$$ = $1; $$->push_back($3);}
 	;
 
 /* const_exp 
@@ -187,7 +187,7 @@ operations
 
 assign_stmt_list 
 	: assign_stmt {$$ = new std::vector<AssgnStmt*>(); $$->push_back($1);}
-	| assign_stmt_list assign_stmt {$$->push_back($2);}
+	| assign_stmt_list assign_stmt {$$ = $1; $$->push_back($2);}
 	;
 
 assign_stmt 	

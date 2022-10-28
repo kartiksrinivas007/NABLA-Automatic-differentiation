@@ -56,6 +56,31 @@ Initializer::Initializer(std::vector<Initializer *> *InitializerList)
     this->isScalar = false;
 }
 
+void Initializer::printInitializerList()
+{
+    // std::cout << "InitializerList" << std::endl;
+    if (this->isScalar)
+    {
+        std::cout << "Scalar ";
+        if (this->val.cvalue->isInt)
+        {
+            std::cout << this->val.cvalue->value.int_val << std::endl;
+        }
+        else
+        {
+            std::cout << this->val.cvalue->value.float_val << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "Array" << std::endl;
+        for (auto i : *this->val.InitializerList)
+        {
+            i->printInitializerList();
+        }
+    }
+}
+
 // void print_init_list_tree(Initializer *obj)
 // {
 // }

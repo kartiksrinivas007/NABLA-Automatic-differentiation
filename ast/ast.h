@@ -162,6 +162,7 @@ public:
     Initializer(std::vector<Initializer *> *InitializerList);
     // Initializer(ConstValue*, std::vector<Initializer*>);
 
+    void printInitializerList();
     virtual ~Initializer() = default;
 };
 
