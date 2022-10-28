@@ -53,12 +53,12 @@ int yycolumn =1;
 "operations"				{ count(); return OPERATIONS;}    /* operations is just like operations in cpp */
 "gradient"                     { count(); return GRADIENT;}      /* gradient is just like gradient in cpp */
 
-{L}({L}|{D})*						{ count(); return IDENTIFIER;}   /* D for digit H for hexadecimal E for exponential  L for letters*/
+{L}({L}|{D})*						{ count();/*printf("IDENTIFIER: %s\n", yytext);*/ return IDENTIFIER;}   /* D for digit H for hexadecimal E for exponential  L for letters*/
 {D}+							{ yylval.ival = atoi(yytext) ; check_integer_overflow(); return INT_CONST; }
 L?'(\\.|[^\\'])+'					{ yylval.ival = atoi(yytext) ; return CONSTANT; }
-{D}+{E}						{ yylval.ival = atoi(yytext) ; return FLOAT_CONST; }
-{D}*"."{D}+({E})?				{ yylval.fval = atof(yytext) ; return FLOAT_CONST; }
-{D}+"."{D}*({E})?			{ yylval.fval = atof(yytext) ; return FLOAT_CONST; }
+{D}+{E}						{ yylval.ival = atoi(yytext) ;count(); return FLOAT_CONST; }
+{D}*"."{D}+({E})?				{ yylval.fval = atof(yytext) ;count(); return FLOAT_CONST; }
+{D}+"."{D}*({E})?			{ yylval.fval = atof(yytext) ; count(); return FLOAT_CONST; }
 L?\"(\\.|[^\\"])*\"					{ count(); return STRING_LITERAL; }
 \"[^\n\"]*[;,]?						{ count(); warning("unterminated string, misssing \" character"); return STRING_LITERAL; }
 
@@ -196,5 +196,5 @@ void check_integer_overflow()
 	}
 	yylex();
 	return 0;
-}
- */
+} */
+

@@ -51,6 +51,7 @@ extern void warning(const char*);
 	class Decl* AstDecl;
 	GradSpecifier AstGradSpecifier;
 	TypeSpecifier AstTypeSpecifier;
+	GradType AstGradType;
 	class InitDeclarator* AstInitDeclarator;
 	class Declarator* AstDeclarator;
 	class Initializer* AstInitializer;
@@ -60,6 +61,8 @@ extern void warning(const char*);
 
 
 	std::vector<Decl*> * AstDeclList;
+	std::vector<Initializer*> * AstInitializerList;
+	std::vector<GradStmt*> * AstGradStmtList;
 
 
 }
@@ -86,13 +89,18 @@ extern void warning(const char*);
 %type<AstStart> start
 %type<AstDeclList> decl_list
 %type<AstDeclList> declarations
+%type<AstInitializerList> initializer_list
+%type<AstGradStmtList> grad_stmt_list
+%type<AstGradStmt> grad_stmt
+%type<AstGradStmtList> gradient
+%type<AstGradType> grad_type
 %start start
 
 // %define parse.error verbose 
 %locations
 %%
 
-start : declarations operations gradient {$$ = new Start($1,NULL,NULL); root = $$;}
+start : declarations operations gradient {$$ = new Start($1,NULL,$3); root = $$;}
 	;
 
 
@@ -124,19 +132,19 @@ init_declarator
 	;
 
 declarator 
-	: IDENTIFIER {$$ = new Declarator($1);}
-	| declarator'[' INT_CONST ']'
+	: IDENTIFIER {$$ = new Declarator($1); std::cout << "Decl: " << $$->name << std::endl;}
+	| declarator'[' INT_CONST ']' {$$->Dimensions.push_back($3);  std::cout <<"Wassup: " << $3 << " " << $$->Dimensions.size() << std::endl;}
 	;
 
 initializer
-	: constant {$$ = new Initializer($1, std::vector<Initializer*>());}
-	| '['initializer_list ']'
+	: constant {$$ = new Initializer($1);}
+	| '['initializer_list ']' {$$ = new Initializer($2);} 
 	;
 	// | '[' initializer_list ','initializer ']'
 
 initializer_list 
-	: initializer
-	| initializer_list ',' initializer
+	: initializer {$$ = new std::vector<Initializer*>(); $$->push_back($1);}
+	| initializer_list ',' initializer {$$->push_back($3);}
 	;
 
 /* const_exp 
@@ -160,11 +168,13 @@ assign_stmt_list
 	| assign_stmt_list assign_stmt
 	;
 
-assign_stmt : IDENTIFIER assign_op exp ';'
+assign_stmt 	
+	: IDENTIFIER assign_op exp ';'
 	| ';'
 	;
 
-assign_op : ADD_ASSIGN
+assign_op 
+	: ADD_ASSIGN
 	| '='
 	| MUL_ASSIGN
 	| DIV_ASSIGN
@@ -176,35 +186,48 @@ assign_op : ADD_ASSIGN
 exp : additive_exp
 	;
 
-additive_exp : additive_exp  '+' multiplicative_exp
+additive_exp 
+	: additive_exp  '+' multiplicative_exp
 	| additive_exp '-' multiplicative_exp
 	| multiplicative_exp
 	;
-multiplicative_exp : multiplicative_exp '*' lib_exp
+	
+multiplicative_exp 
+	: multiplicative_exp '*' lib_exp
 	| multiplicative_exp '/' lib_exp
 	| multiplicative_exp '@' lib_exp
 	| lib_exp
 	;
 
-lib_exp : IDENTIFIER
+lib_exp 
+	: IDENTIFIER
 	| lib_funcs '(' exp ')'
 	| constant
 	;
 
-lib_funcs : SIN
+lib_funcs 
+	: SIN
 	| COS
 	| LOG
 	| EXP 
 	;
-gradient : GRADIENT '{' grad_stmt_list '}' 
+
+gradient 
+	: GRADIENT '{' grad_stmt_list '}' {$$ = $3;}
 	;
 
-grad_stmt_list : grad_stmt
-	| grad_stmt_list grad_stmt
+grad_stmt_list 
+	: grad_stmt {$$ = new std::vector<GradStmt*>(); $$->push_back($1);}
+	| grad_stmt_list grad_stmt {$1->push_back($2); $$ = $1;}
 	;
 
-grad_stmt : BACKWARD '(' IDENTIFIER ')' ';'
-	| GRAD'(' IDENTIFIER ')' ';'
+grad_type
+	: BACKWARD {$$ = GradType::BACKWARD;}
+	| GRAD {$$ = GradType::GRAD;}
+	;
+
+grad_stmt 
+	: grad_type '(' IDENTIFIER ')' ';' {$$ = new GradStmt($1, $3);}
 	;
 
 

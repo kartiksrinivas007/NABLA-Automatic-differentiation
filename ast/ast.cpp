@@ -45,10 +45,16 @@ ConstValue::ConstValue(float value)
     this->value.float_val = value;
 }
 
-Initializer::Initializer(ConstValue* value, std::vector<Initializer*> InitializerList)
+Initializer::Initializer(ConstValue* value)
 {
-    this->value = value;
-    this->InitializerList = InitializerList;
+    this->val.cvalue = value;
+    this->isScalar = true;
+}
+
+Initializer::Initializer(std::vector<Initializer*> *InitializerList)
+{
+    this->val.InitializerList = InitializerList;
+    this->isScalar = false;
 }
 
 AssgnStmt::AssgnStmt()
@@ -56,9 +62,10 @@ AssgnStmt::AssgnStmt()
 
 }
 
-GradStmt::GradStmt()
+GradStmt::GradStmt(GradType grad_type, std::string name)
 {
-
+    this->grad_type = grad_type;
+    this->name = name;
 }
 
 // int main()

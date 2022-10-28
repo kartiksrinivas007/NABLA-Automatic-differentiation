@@ -36,3 +36,7 @@ make debug
 ```Command
 cd Parser/ && bison -d grammar.y; cd ../Lexer/ &&lex lexer.l ;cd .. && g++ -o exec Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp
 ```
+
+```
+clang++ Lexer/lex.yy.c Parser/grammar.tab.c  ast/ast.cpp -o exec
+```

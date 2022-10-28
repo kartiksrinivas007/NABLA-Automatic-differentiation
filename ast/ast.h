@@ -50,6 +50,11 @@ class AssgnStmt;
 
 // Gradient class
 class GradStmt;
+enum class GradType
+{
+    GRAD,
+    BACKWARD
+};
 
 class Node
 {
@@ -124,9 +129,18 @@ public:
 class Initializer : public Node
 {
     public:
-    ConstValue *value;
-    std::vector<Initializer*> InitializerList;
-    Initializer(ConstValue*, std::vector<Initializer*>);
+    union type_value{
+        ConstValue *cvalue;
+        std::vector<Initializer*> *InitializerList;
+        constexpr type_value() : cvalue(nullptr) {}
+        ~type_value() {}
+    };
+    type_value val;
+    bool isScalar;
+    Initializer(ConstValue* value);
+    Initializer(std::vector<Initializer*> *InitializerList);
+    // Initializer(ConstValue*, std::vector<Initializer*>);
+
     virtual ~Initializer() = default;
 };
 
@@ -148,7 +162,9 @@ public:
     // Declarator *declarator;
     // Initializer *initializer;
     // GradStmt(Declarator*, Initializer*);
-    GradStmt();
+    GradType grad_type;
+    std::string name;
+    GradStmt(GradType, std::string);
     virtual ~GradStmt() = default;
 };
 
