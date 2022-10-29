@@ -1,0 +1,25 @@
+{
+  "name": "nabla-syntax-highlighter",
+  "displayName": "Nabla Syntax Highlighter",
+  "description": "A syntax highlighter for programming language Nabla",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.72.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "nabla",
+      "aliases": ["Nabla", "nabla"],
+      "extensions": [".nb"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "nabla",
+      "scopeName": "source.nb",
+      "path": "./syntaxes/nabla.tmLanguage.json"
+    }]
+  }
+}
