@@ -1,15 +1,19 @@
+%code requires
+{
+	#include "../ast/ast.h"
+}
 %{
 #include<stdio.h>
 #include<stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "ast.h"
+
 #include <stdarg.h>
 #include <string.h>
 
 extern int yylex();
 extern FILE* yyin;
-void yyerror(char *);
+void yyerror(const char *);
 
 
 #ifndef DEBUG 
@@ -17,18 +21,8 @@ void yyerror(char *);
 #else
 	#define SHOW
 #endif
-CompStatement *root;
 
-typedef struct node {
-	char *token;
-	// unsigned n_children;
-	// struct node** children;
-	struct node* child1;
-	struct node* child2;
-	struct node* child3;
-} node;
-
-void insert_node(char* token, node*, node*, node*); // Create a node with these children
+class Start* root;
 
 extern int yylineno;
 extern int yycolumn;
@@ -50,7 +44,35 @@ extern void warning(const char*);
 	float fval;
 	// some  technique required for the symbol table , to map strings to indices 
 	char *string;
-	class Expression *expr;
+	// class Expression *expr;
+	class Start * AstStart;
+
+// Declaration classes
+	class Decl* AstDecl;
+	GradSpecifier AstGradSpecifier;
+	TypeSpecifier AstTypeSpecifier;
+	GradType AstGradType;
+	class InitDeclarator* AstInitDeclarator;
+	class Declarator* AstDeclarator;
+	class Initializer* AstInitializer;
+	class ConstValue * AstConstValue;
+
+// Operations
+	class AssgnStmt* AstAssgnStmt;
+	LibFuncs AstLibFuncs;
+	AssignmentOperator AstAssignmentOperator;
+	class Expr* AstExpr;
+	class BinaryExpr* AstBinaryExpr;
+
+// Gradient
+	class GradStmt* AstGradStmt;
+
+
+	std::vector<Decl*> * AstDeclList;
+	std::vector<Initializer*> * AstInitializerList;
+	std::vector<GradStmt*> * AstGradStmtList;
+	std::vector<AssgnStmt*> * AstAssgnStmtList;
+
 
 }
 
@@ -65,289 +87,176 @@ extern void warning(const char*);
 %token<string> XOR_ASSIGN OR_ASSIGN TYPE_NAME
 %token<string> CHAR INT TENSOR FLOAT CNS VAR BOOL
 %token<string> IF ELIF ELSE LOOP ENDIF 
+%token<string> DECLARE OPERATIONS GRADIENT
+%type<AstDecl> decl
+%type<AstGradSpecifier> grad_specifier
+%type<AstTypeSpecifier> type_specifier
+%type<AstInitDeclarator> init_declarator
+%type<AstDeclarator> declarator
+%type<AstInitializer> initializer
+%type<AstConstValue> constant
+%type<AstStart> start
+%type<AstDeclList> decl_list
+%type<AstDeclList> declarations
+%type<AstInitializerList> initializer_list
+
+%type<AstAssgnStmt> assign_stmt
+%type<AstAssgnStmtList> assign_stmt_list
+%type<AstAssgnStmtList> operations
+%type<AstLibFuncs> lib_funcs
+%type<AstAssignmentOperator> assign_op
+%type<AstExpr> exp
+%type<AstExpr> additive_exp
+%type<AstExpr> multiplicative_exp
+%type<AstExpr> lib_exp
+
+%type<AstGradStmtList> grad_stmt_list
+%type<AstGradStmt> grad_stmt
+%type<AstGradStmtList> gradient
+%type<AstGradType> grad_type
 %start start
 
 // %define parse.error verbose 
 %locations
 %%
 
-start : compound_statement {SHOW("parsing complete! \n");}
-	   ;
-
-// Statements
-
-compound_statement 
-	: '{' '}' {printf("compound_statment is empty\n"); /*root = new CompStatement();*/}
-	| '{' binary_ds_list '}' {printf("cmp_stmt -> binary_ds_list\n");} 
-  | '{' error '}' {yyerrok;}
-	;
-	// | '{' declaration_list statement_list '}'  {printf("comp_stmt -> decl_stmt  + stmt_list\n");}
-	// | '{' statement_list '}'  {printf("comp_stmt -> stmt_list \n");}
-	// | '{' declaration_list '}' {printf("comp_stmt -> declaration_list\n");}
-	// ;
-binary_ds_list
-	: binary_ds_list binary_statement {SHOW ("binary_ds_list -> binary_ds_list + binary_statement\n");}
-	| binary_statement {SHOW ("binary_ds_list -> binary_statement\n");}
+start : declarations operations gradient {$$ = new Start($1,NULL,$3); root = $$;}
 	;
 
-binary_statement 
-	: declaration {SHOW ("binary_statment -> declaration\n");}
-	| statement {SHOW("binary_statement -> statement");}
-	;
-statement 
-	: expression_statement {SHOW("stmt -> exp_stmt\n");}
-	| compound_statement {SHOW("stmt -> comp_stmt\n");}
-	| selection_statement {SHOW("stmt -> selection_stmt\n");}// TODO: Add this in pdf, was missing there
-	| iteration_statement {SHOW("stmt -> iter_statementist\n");}
-	;
 
-selection_statement 
-	: 
-	/*|*/ if_section else_section ENDIF  {SHOW("selection_stmt -> if else endif\n");}
-	| if_section elif_section ENDIF	{SHOW("selection_stmt -> if elif endif\n");}
-	| if_section elif_section else_section ENDIF {SHOW("selection_stmt -> if elif else endif\n");}
-	| if_section ENDIF {SHOW("selection_stmt -> if endif\n");}
- 	;
+// Declaration
+declarations : DECLARE '{'decl_list'}' {$$ = $3;}
+	;	
 
-// declaration_list 
-// 	: declaration_list declaration {SHOW("decl_list -> decl_list decl\n");}
-// 	| declaration {SHOW("decl_list -> decl\n");}
-// 	;
-
-// statement_list 
-// 	: statement {SHOW("state_list -> stmt\n");}
-// 	| statement_list statement {SHOW("state_list -> state_list stmt\n");}
-// 	;
-
-expression_statement 
-	: ';' {SHOW("exp_stmt -> ;\n");}
-	| exp ';' {SHOW("exp_stmt -> exp ;\n");}
+decl_list 
+	: decl_list decl {$1->push_back($2); $$ = $1;}
+	| decl {$$ = new std::vector<Decl*>(); $$->push_back($1);}
 	;
 
-iteration_statement 
-	: LOOP '(' expression_statement expression_statement exp ')' statement {SHOW("iter_stmt -> %s (exp_stmt exp_stmt exp) stmt\n", $1);}
-	| LOOP '(' declaration expression_statement exp ')' statement {SHOW("iter_stmt -> %s (decl exp_stmt exp) stmt\n", $1);}
+decl : grad_specifier type_specifier init_declarator ';' {$$ = new Decl($1, $2, $3);}
 	;
 
-if_section 
-	: IF '(' exp ')' statement {SHOW("if_sec -> %s (exp) stmt\n", $1);}
+grad_specifier 
+	: CNS {$$ = GradSpecifier::CNS;}
+	| VAR {$$ = GradSpecifier::VAR;}
 	;
 
-else_section 
-	: ELSE statement {SHOW("else_sec -> %s stmt\n", $1);}
-	;
-
-elif_section 
-	: ELIF '(' exp ')' statement {SHOW("elif_sec -> %s (exp) stmt\n", $1);}
-	| elif_section ELIF '(' exp ')' statement {SHOW("elif_sec -> elif_sec %s (exp) stmt\n", $2);}
-	;
-
-// Declarations 
-declaration 
-	: declaration_type init_declarators ';' {SHOW("decl -> decl_type init_decls\n");}
-	| error ';' {yyerrok;}
-	;
-
-declaration_type
-	: grad_specifier type_specifier {SHOW("decl_type -> grad_spec type_spec\n");}
-	| type_specifier {SHOW("decl_type -> type_spec\n");}
-	;
-
-grad_specifier
-	: CNS {SHOW("grad_spec -> %s\n", $1);}
-	| VAR {SHOW("grad_spec -> %s\n", $1);}
-	;
-
-type_specifier
-	: CHAR {SHOW("type_spec -> %s\n", $1);}
-	| INT {SHOW("type_spec -> %s\n", $1);}
-	| FLOAT {SHOW("type_spec -> %s\n", $1);}
-	| BOOL {SHOW("type_spec -> %s\n", $1);}
-	| TENSOR {SHOW("type_spec -> %s\n", $1);}
-	;
-
-init_declarators
-	: init_declarator {SHOW("init_decls -> init_decl\n");}
-	| init_declarators ',' init_declarator {SHOW("init_decls -> init_decls init_decl\n");}
+type_specifier : CHAR {$$ = TypeSpecifier::CHAR;}
+	| INT	{$$ = TypeSpecifier::INT;}
+	| FLOAT	{$$ = TypeSpecifier::FLOAT;}
+	| BOOL	{$$ = TypeSpecifier::BOOL;}
+	| TENSOR	{$$ = TypeSpecifier::TENSOR;}
 	;
 
 init_declarator 
-	: declarator {SHOW("init_decl -> decl\n");}
-	| declarator '=' initializer {SHOW("int_decl -> decl = initializer\n");}
+	: declarator {$$ = new InitDeclarator($1, NULL);}
+	| declarator '=' initializer {$$ = new InitDeclarator($1, $3);}
 	;
 
-declarator
-	: IDENTIFIER {SHOW("decl -> %s\n", $1);}
-	| '('declarator')' {SHOW("decl -> (decl)\n");}
-	| declarator '[' conditional_exp ']' {SHOW("decl -> decl [conditional_exp]\n");}
+declarator 
+	: IDENTIFIER {$$ = new Declarator($1); std::cout << "Decl: " << $$->name << std::endl;}
+	| declarator'[' INT_CONST ']' {$$->Dimensions.push_back($3);  std::cout <<"Wassup: " << $3 << " " << $$->Dimensions.size() << std::endl;}
 	;
 
 initializer
-	: assignment_exp {SHOW("initializer -> assign_exp\n");}
-	| '[' initializer_list ']' {SHOW("initializer -> [initializer_list]\n");}
-	| '[' initializer_list ',' ']' {SHOW("initializer -> [initializer_list,]\n");}
+	: constant {$$ = new Initializer($1); /*std::cout << "Initializer: " << $1->value.int_val << std::endl;*/}
+	| '['initializer_list ']' {$$ = new Initializer($2); $$->printInitializerList();} 
+	;
+	// | '[' initializer_list ','initializer ']'
+
+initializer_list 
+	: initializer {$$ = new std::vector<Initializer*>(); $$->push_back($1);}
+	| initializer_list ',' initializer {$$ = $1; $$->push_back($3);}
 	;
 
-initializer_list
-	: initializer {SHOW("initializer_list -> initializer\n");}
-	| initializer_list ',' initializer {SHOW("initializer_list -> initializer_list, initializer\n");}
-	;
-
-// Expressions
-exp
-	: assignment_exp {SHOW("exp -> assign_exp\n");}
-	| exp ',' assignment_exp {SHOW("exp -> exp, assign_exp\n");}
-	;
-
-assignment_exp
-	: conditional_exp {SHOW("assign_exp -> cond_exp\n");}
-	| unary_exp assignment_operator assignment_exp {SHOW("assign_exp -> unary_exp assign_op assign_exp\n");}
-	;
-
-assignment_operator
-	: '=' {SHOW("assign_op -> =\n");}
-	| MUL_ASSIGN {SHOW("assign_op -> %s\n", $1);}
-	| DIV_ASSIGN {SHOW("assign_op -> %s\n", $1);}
-	| MOD_ASSIGN {SHOW("assign_op -> %s\n", $1);}
-	| ADD_ASSIGN {SHOW("assign_op -> %s\n", $1);}
-	| SUB_ASSIGN {SHOW("assign_op -> %s\n", $1);}
-	| LEFT_ASSIGN	{SHOW("assign_op -> %s\n", $1);}
-	| RIGHT_ASSIGN {SHOW("assign_op -> %s\n", $1);}
-	| AND_ASSIGN {SHOW("assign_op -> %s\n", $1);}
-	| XOR_ASSIGN {SHOW("assign_op -> %s\n", $1);}
-	| OR_ASSIGN {SHOW("assign_op -> %s\n", $1);}
-	| AT_ASSIGN {SHOW("assign_op -> %s\n", $1);}
-	;
-
-conditional_exp
-	: logical_or_exp {SHOW("cond_exp -> log_or_exp\n");}
-	| logical_or_exp '?' exp ':' conditional_exp {SHOW("cond_exp -> log_or_exp ? exp : cond_exp\n");}
-	;
-/* const_exp
-	: conditional_exp  {SHOW("const_exp -> cond_exp\n");}
-	// TODO: Add this in pdf, was missing there 
+/* const_exp 
+	: constant '+' constant
+	| constant
 	; */
-logical_or_exp
-	: logical_and_exp {SHOW("log_or_exp -> log_and_exp\n");}
-	| logical_or_exp OR_OP logical_and_exp {SHOW("log_or_exp -> log_or_exp %s log_and_exp\n", $2);}
+
+constant 
+	: INT_CONST {$$ = new ConstValue($1);}
+	| FLOAT_CONST {$$ = new ConstValue($1);}
 	;
 
-logical_and_exp
-	: inclusive_or_exp {SHOW("log_and_exp -> incl_or_exp\n");}
-	| logical_and_exp AND_OP inclusive_or_exp {SHOW("log_and_exp -> log_and_exp %s incl_or_exp\n", $2);}
+
+// Operations
+operations 
+	: OPERATIONS '{' assign_stmt_list '}' {$$ = $3;}
 	;
 
-inclusive_or_exp
-	: exclusive_or_exp {SHOW("incl_or_exp -> excl_or_exp\n");}
-	| inclusive_or_exp '|' exclusive_or_exp {SHOW("incl_or_exp -> incl_or_exp | excl_or_exp\n");}
+assign_stmt_list 
+	: assign_stmt {$$ = new std::vector<AssgnStmt*>(); $$->push_back($1);}
+	| assign_stmt_list assign_stmt {$$ = $1; $$->push_back($2);}
 	;
 
-exclusive_or_exp
-	: and_exp {SHOW("excl_or_exp -> and_exp\n");}
-	| exclusive_or_exp '^' and_exp 	{SHOW("excl_or_exp -> excl_or_exp ^ and_exp\n");}
+assign_stmt 	
+	: IDENTIFIER assign_op exp ';' {$$ = new AssgnStmt($1, $2, $3);}
+	| ';' {$$ = new AssgnStmt(nullptr, std::nullopt, nullptr);}
 	;
 
-and_exp
-	: equality_exp {SHOW("and_exp -> equ_exp\n");}
-	| and_exp '&' equality_exp {SHOW("and_exp -> and_exp & equ_exp\n");}
+assign_op 
+	: ADD_ASSIGN {$$ = AssignmentOperator::AST_ADD_ASSIGN;}
+	| '=' {$$ = AssignmentOperator::AST_ASSIGN;}
+	| MUL_ASSIGN {$$ = AssignmentOperator::AST_MUL_ASSIGN;}
+	| DIV_ASSIGN {$$ = AssignmentOperator::AST_DIV_ASSIGN;}
+	| SUB_ASSIGN {$$ = AssignmentOperator::AST_SUB_ASSIGN;}
+	| AT_ASSIGN {$$ = AssignmentOperator::AST_AT_ASSIGN;}
 	;
 
-equality_exp
-	: relational_exp {SHOW("equ_exp -> rel_exp\n");}
-	| equality_exp EQ_OP relational_exp {SHOW("equ_exp -> equ_exp %s rel_exp\n", $2);}
-	| equality_exp NE_OP relational_exp {SHOW("equ_exp -> equ_exp %s rel_exp\n", $2);}
+
+exp : additive_exp {$$ = $1; $$->printExpression(); std::cout << std::endl;}
 	;
 
-relational_exp
-	: shift_exp {SHOW("rel_exp -> shift_exp\n");}
-	| relational_exp '<' shift_exp {SHOW("rel_exp -> rel_exp < shift_exp\n");}
-	| relational_exp '>' shift_exp {SHOW("rel_exp -> rel_exp > shift_exp\n");}
-	| relational_exp LE_OP shift_exp {SHOW("rel_exp -> rel_exp %s shift_exp\n", $2);}
-	| relational_exp GE_OP shift_exp {SHOW("rel_exp -> rel_exp %s shift_exp\n", $2);}
-	; 
-
-shift_exp
-	: additive_exp {SHOW("shift_exp -> add_exp\n");}
-	| shift_exp LEFT_OP additive_exp {SHOW("shift_exp -> shift_exp %s add_exp\n", $2);}
-	| shift_exp RIGHT_OP additive_exp {SHOW("shift_exp -> shift_exp %s add_exp\n", $2);}
+additive_exp 
+	: additive_exp  '+' multiplicative_exp {$$ = new BinaryExpr($1, $3, '+');}
+	| additive_exp '-' multiplicative_exp {$$ = new BinaryExpr($1, $3, '-');}
+	| multiplicative_exp {$$ = $1;}
+	;
+	
+multiplicative_exp 
+	: multiplicative_exp '*' lib_exp {$$ = new BinaryExpr($1, $3, '*');}
+	| multiplicative_exp '/' lib_exp {$$ = new BinaryExpr($1, $3, '/');}
+	| multiplicative_exp '@' lib_exp {$$ = new BinaryExpr($1, $3, '@');}
+	| lib_exp {$$ = $1;}
 	;
 
-additive_exp
-	: multiplicative_exp {SHOW("add_exp -> mult_exp\n");}
-	| additive_exp '+' multiplicative_exp {SHOW("add_exp -> add_exp + mult_exp\n");}
-	| additive_exp '-' multiplicative_exp {SHOW("add_exp -> add_exp - mult_exp\n");}
+lib_exp 
+	: IDENTIFIER {$$ = new UnaryExpr(nullptr, std::nullopt, $1, nullptr);}
+	| lib_funcs '(' exp ')' {$$ = new UnaryExpr($3, $1, "", nullptr);}
+	| constant {$$ = new UnaryExpr(nullptr, std::nullopt, "", $1);}
 	;
 
-multiplicative_exp
-	: cast_exp {SHOW("mult_exp -> cast_exp\n");}
-	| multiplicative_exp '*' cast_exp {SHOW("mult_exp -> mult_exp * cast_exp\n");}
-	| multiplicative_exp '/' cast_exp {SHOW("mult_exp -> mult_exp / cast_exp\n");}
-	| multiplicative_exp '%' cast_exp {SHOW("mult_exp -> mult_exp modulo cast_exp\n");}
-	| multiplicative_exp '@' cast_exp {SHOW("mult_exp -> mult_exp matmul cast_exp\n");}
+lib_funcs 
+	: SIN {$$ = LibFuncs::SIN;}
+	| COS {$$ = LibFuncs::COS;}
+	| LOG {$$ = LibFuncs::LOG;}
+	| EXP {$$ = LibFuncs::EXP;}
 	;
 
-cast_exp
-	: unary_exp {SHOW("cast_exp -> unary_exp\n");}
-	| '(' type_specifier ')' cast_exp  {SHOW("cast_exp -> (type_specifier) cast_exp\n");}// TODO: Make change in grammar pdf
+// Gradient
+gradient 
+	: GRADIENT '{' grad_stmt_list '}' {$$ = $3;}
 	;
 
-unary_exp
-	: postfix_exp {SHOW("unary_exp -> postfix_exp\n");}
-	| INC_OP unary_exp {SHOW("unary_exp -> %s unary_exp\n", $1);}
-	| DEC_OP unary_exp {SHOW("unary_exp -> %s unary_exp\n", $1);}
-	| unary_operator cast_exp {SHOW("unary_exp -> unary_op cast_exp\n");}
-	//| '('type_specifier')'cast_exp // TODO: Make change in grammar pdf
-	| lib_funcs '(' conditional_exp ')' {SHOW("unary_exp -> lib_funcs (additive_exp)\n");}
+grad_stmt_list 
+	: grad_stmt {$$ = new std::vector<GradStmt*>(); $$->push_back($1);}
+	| grad_stmt_list grad_stmt {$1->push_back($2); $$ = $1;}
 	;
 
-// TODO: Make change in grammar pdf 
-lib_funcs
-	: GRAD {SHOW("lib_funcs -> %s\n", $1);}
-	| COS {SHOW("lib_funcs -> %s\n", $1);}
-	| SIN {SHOW("lib_funcs -> %s\n", $1);}
-	| EXP	{SHOW("lib_funcs -> %s\n", $1);}
-	| LOG	{SHOW("lib_funcs -> %s\n", $1);}
-	| BACKWARD	{SHOW("lib_funcs -> %s\n", $1);}
-	| SIZEOF {SHOW("lib_funcs -> %s\n", $1);}
-	| PRINT {SHOW("lib_funcs -> %s\n", $1);}
+grad_type
+	: BACKWARD {$$ = GradType::BACKWARD;}
+	| GRAD {$$ = GradType::GRAD;}
 	;
 
-unary_operator
-	: '&' {SHOW("unary_op -> &\n");}
-	//| '*' {SHOW("unary_op -> *\n");}
-	| '+' {SHOW("unary_op -> +\n");}
-	| '-' {SHOW("unary_op -> -\n");}
-	| '~' {SHOW("unary_op -> ~\n");}
-	| '!' {SHOW("unary_op -> !\n");}
-	| AT_OP {SHOW("unary_op -> %s\n", $1);}
+grad_stmt 
+	: grad_type '(' IDENTIFIER ')' ';' {$$ = new GradStmt($1, $3);}
 	;
 
-postfix_exp
-	: primary_exp {SHOW("postfix_exp -> primary_exp\n");}
-	| postfix_exp '[' exp ']' {SHOW("postfix_exp -> postfix_exp [ exp ]\n");}
-	| postfix_exp INC_OP {SHOW("postfix_exp -> postfix_exp %s\n", $2);}
-	| postfix_exp DEC_OP {SHOW("postfix_exp -> postfix_exp %s\n", $2);}
-	;
-
-primary_exp
-	: IDENTIFIER {SHOW("primary_exp -> %s\n", $1);}
-	| constant {SHOW("primary_exp -> constant\n");}
-	| '(' exp ')' {SHOW("primary_exp -> ( exp )\n");}
-	| '(' error ')' {yyerrok; lyyerror(@1,"error"); yyerrok; }
-	;
-
-// Constants
-constant
-	: INT_CONST {SHOW("constant -> %d\n", $1);}
-	| CHAR_CONST {SHOW("constant -> %s\n", $1);}
-	| FLOAT_CONST {SHOW("constant -> %f\n", $1);}
-	| CONSTANT {SHOW("constant -> %s\n", $1);}
-	| STRING_LITERAL
-	;
 
 %%
 
-void yyerror(char *s)
+void yyerror(const char *s)
 {
 		fprintf(stderr, "%s:%d:%d:\e[1;31m error:\e[0m %s at %s\n%*d |%s\n",filename, yylineno , yycolumn, s, yytext,(int)(strlen(filename)-1), yylineno, linebuf);
 		
@@ -406,11 +315,13 @@ int main(int argc, char const *argv[])
 			perror(argv[1]);
 			return 1;
 		}
-		filename = argv[1];
+		/* filename = basename(argv[1]); */
+		printf("File name : %s\n", filename);
 	}
 	else{
 		filename = "(stdin)";
 	}
 	yyparse();
+	
 	return 0;
 }

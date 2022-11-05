@@ -1,10 +1,13 @@
 .vscode/**
+**/.vscode/**
 **/*.out
 **/exec
 **/lex.yy.c
 **/y.tab.c
 **/y.tab.h
+**/*.tab.*
 parser-op.txt
 **/.DS_Store
 **/*.o
 Build/
+Build/**

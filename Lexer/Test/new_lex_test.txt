@@ -1,0 +1,33 @@
+declarations{
+    cns Tensor a[2][3] = [[1,2], [3,4]];
+    var Tensor a[1][1];
+    cns int a = 10;
+    var int b;
+    cns float a = 10.001;
+    var float b = 1e10;
+}
+operations{
+    x = a + b;
+    x = a-b;
+    x += a;
+    x @= x;
+    x = x @ y;
+    x = sin(x);
+    x = sin(x*x);
+    if(y < 2)
+    {
+        x +=y;
+    }
+    elif(x>2)
+    {
+
+    }
+    else
+    {
+
+    }
+}
+gradient{
+    grad(x);
+    backward(x);
+}
