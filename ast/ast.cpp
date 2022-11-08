@@ -105,6 +105,25 @@ BinaryExpr::BinaryExpr(Expr *lhs, Expr *rhs, char op)
     this->op = op;
 }
 
+std::string optofunc(char c){
+    switch(c){
+        case '+':
+            return "add";
+        case '-':
+            return "sub";
+        case '*':
+            return "mul";
+        case '/':
+            return "div";
+        case '^':
+            return "pow";
+        case '@':
+            return "cross";
+        default:
+            return "error";
+    }
+}
+
 void BinaryExpr::printExpression()
 {
     std::cout << "(";
@@ -112,6 +131,16 @@ void BinaryExpr::printExpression()
     std::cout << " " << this->op << " ";
     this->rhs->printExpression();
     std::cout << ")";
+}
+
+void BinaryExpr::transpile(std::ostream &out, int tab) const
+{
+    out << " " << optofunc( this->op );
+    out << "(";
+    this->lhs->transpile(out, tab);
+    out << ",";
+    this->rhs->transpile(out, tab);
+    out << ")";
 }
 
 UnaryExpr::UnaryExpr(Expr *expr, std::optional<LibFuncs> libfunc, std::string identifier, ConstValue *cvalue)
@@ -162,10 +191,201 @@ void UnaryExpr::printExpression()
     }
 }
 
+void UnaryExpr::transpile(std::ostream &out, int tab) const
+{
+    if (this->identifier != "")
+    {
+        out << this->identifier;
+    }
+    else if (this->cvalue != nullptr)
+    {
+        if (this->cvalue->isInt)
+        {
+            out << this->cvalue->value.int_val;
+        }
+        else
+        {
+            out << this->cvalue->value.float_val;
+        }
+    }
+    else
+    {
+        // out << "(";
+        switch (this->libfunc.value())
+        {
+            {
+            case LibFuncs::SIN:
+                out << "sin";
+                break;
+            case LibFuncs::COS:
+                out << "cos";
+                break;
+
+            default:
+                out << "Invalid libfunc";
+                break;
+            }
+        }
+        out << "(";
+        this->expr->transpile(out, tab);
+        out << ")";
+        // out << ")";
+    }
+}
+
 GradStmt::GradStmt(GradType grad_type, std::string name)
 {
     this->grad_type = grad_type;
     this->name = name;
+}
+
+// Transpiler
+std::map<GradSpecifier, std::string> GradSpecifierMap = {
+    {GradSpecifier::CNS, "CNS"},
+    {GradSpecifier::VAR, "VAR"}};
+
+std::map<GradSpecifier, std::string> GradSpecifierMapCpp = {
+    {GradSpecifier::CNS, "const"},
+    {GradSpecifier::VAR, ""}};
+
+std::map<TypeSpecifier, std::string> TypeSpecifierMap = {
+    {TypeSpecifier::CHAR, "CHAR"},
+    {TypeSpecifier::INT, "INT"},
+    {TypeSpecifier::FLOAT, "FLOAT"},
+    {TypeSpecifier::BOOL, "BOOL"},
+    {TypeSpecifier::TENSOR, "TENSOR"}};
+
+std::map<TypeSpecifier, std::string> TypeSpecifierMapCpp = {
+    {TypeSpecifier::CHAR, "char"},
+    {TypeSpecifier::INT, "int"},
+    {TypeSpecifier::FLOAT, "float"},
+    {TypeSpecifier::BOOL, "bool"},
+    {TypeSpecifier::TENSOR, "Tensor"}};
+
+std::map<GradType, std::string> GradTypeMapCpp = {
+    {GradType::GRAD, "grad"},
+    {GradType::BACKWARD, "backward"}};
+
+std::map<AssignmentOperator, std::string> AssignmentOperatorMapCpp = {
+    {AssignmentOperator::AST_ASSIGN, "="},
+    {AssignmentOperator::AST_ADD_ASSIGN, "+="},
+    {AssignmentOperator::AST_SUB_ASSIGN, "-="},
+    {AssignmentOperator::AST_MUL_ASSIGN, "*="},
+    {AssignmentOperator::AST_DIV_ASSIGN, "/="},
+    {AssignmentOperator::AST_AT_ASSIGN, "@="}};
+
+void Start::transpile(std::ostream &out, int tab ) const {
+    out << "#include <iostream>" << std::endl;
+    out << "#include <vector>" << std::endl << std::endl;
+    out << "#include \"Tensor.h\"" << std::endl << std::endl;
+    out << "using namespace std;" << std::endl << std::endl;
+    out << "using namespace nb;" << std::endl << std::endl;
+    out << "int main() {" << std::endl;
+
+    for (auto i : *this->DeclList) {
+        i->transpile(out, tab + 1);
+    }
+
+    for(auto i : *this->AssgnStmtList) {
+        i->transpile(out, tab + 1);
+    }
+
+    for(auto i : *this->GradStmtList) {
+        i->transpile(out, tab + 1);
+    }
+
+    out << std::string("\t",tab+1) <<"return 0;" << std::endl;
+    out << "}" << std::endl;
+
+}
+
+void Decl::transpile(std::ostream &out, int tab) const {
+    out << std::string("\t", tab)
+        << GradSpecifierMapCpp[this->GradType] << " "
+        << TypeSpecifierMapCpp[this->DataType] << " ";
+
+    if (InitDeclaratorList != nullptr)
+        this->InitDeclaratorList->transpile(out, tab);
+
+    out << ";" << std::endl;
+}
+
+void InitDeclarator::transpile(std::ostream &out, int tab) const {
+    if( this->declarator != nullptr ) {
+        this->declarator->transpile(out, tab);
+    }
+
+    if( this->initializer != nullptr ) {
+        out << " = ";
+        this->initializer->transpile(out, tab);
+    }
+
+}
+
+
+void Declarator::transpile(std::ostream &out, int tab) const {
+    out << this->name;
+    if( !this->Dimensions.empty()){
+        out << "({";
+
+        for(int i = 0; i < this->Dimensions.size(); i++) {
+            out << this->Dimensions[i];
+            if( i != this->Dimensions.size() - 1 ) {
+                out << ", ";
+            }
+        }
+
+        out << "})";
+    }
+
+}
+
+void Initializer::transpile(std::ostream &out, int tab) const {
+    if( this->isScalar ) {
+        if( this->val.cvalue->isInt ) {
+            out << this->val.cvalue->value.int_val;
+        } else {
+            out << this->val.cvalue->value.float_val;
+        }
+    } else {
+        out << "{";
+        for( auto i : *this->val.InitializerList ) {
+            i->transpile(out, tab);
+            if( i != this->val.InitializerList->back() ) {
+                out << ", ";
+            }
+            // out << ",";
+        }
+        out << "}";
+    }
+}
+
+
+void AssgnStmt::transpile(std::ostream &out, int tab) const {
+    out << std::string("\t", tab);
+
+    if(op.has_value()){
+        out << this->name << " " << AssignmentOperatorMapCpp[op.value()] << " ";
+    }
+    else{
+        out << this->name << " = ";
+    }
+
+    this->expr->transpile(out, tab);
+    // this->lhs->transpile(out, tab);
+    // out << " = ";
+    // this->rhs->transpile(out, tab);
+    
+    out << ";" << std::endl;
+
+}
+
+void Expr::transpile(std::ostream &out, int tab) const {
+
+}
+
+void GradStmt::transpile(std::ostream &out, int tab) const {
+    out << std::string("\t", tab) << GradTypeMapCpp[this->grad_type] << "(" << this->name << ");" << std::endl;
 }
 
 // int main()

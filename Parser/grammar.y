@@ -7,7 +7,7 @@
 #include<stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
+#include <fstream>
 #include <stdarg.h>
 #include <string.h>
 
@@ -120,7 +120,7 @@ extern void warning(const char*);
 %locations
 %%
 
-start : declarations operations gradient {$$ = new Start($1,NULL,$3); root = $$;}
+start : declarations operations gradient {$$ = new Start($1,$2,$3); root = $$;}
 	;
 
 
@@ -322,6 +322,11 @@ int main(int argc, char const *argv[])
 		filename = "(stdin)";
 	}
 	yyparse();
+
+	std::ofstream out("output.cpp");
+
+
+	root->transpile(out);
 	
 	return 0;
 }

@@ -6,19 +6,7 @@
 #include <vector>
 #include <memory>
 #include <optional>
-
-class Parent
-{
-public:
-    void func();
-    class Parent *child;
-};
-
-class Child : public Parent
-{
-public:
-    void func();
-};
+#include <map>
 
 // Abstract Node class
 class Node;
@@ -33,6 +21,7 @@ enum class GradSpecifier
     CNS,
     VAR
 };
+
 enum class TypeSpecifier
 {
     CHAR,
@@ -41,6 +30,7 @@ enum class TypeSpecifier
     BOOL,
     TENSOR
 };
+
 class ConstValue;
 class InitDeclarator;
 class Declarator;
@@ -64,6 +54,7 @@ enum AssignmentOperator
     AST_DIV_ASSIGN,
     AST_AT_ASSIGN
 };
+
 class Expr;
 class BinaryExpr;
 class UnaryExpr;
@@ -75,12 +66,13 @@ enum class GradType
     GRAD,
     BACKWARD
 };
-
+    
 class Node
 {
 public:
     Node();
     virtual ~Node() = default;
+    
     // virtual void print() = 0;
     // int row_num, col_num;
     // add codegen() function from llvm for IR gen
@@ -95,7 +87,9 @@ public:
     std::vector<class GradStmt *> *GradStmtList;
     Start(std::vector<class Decl *> *DeclList, std::vector<class AssgnStmt *> *AssgnStmtList, std::vector<class GradStmt *> *GradStmtList);
     virtual ~Start() = default;
+    void transpile(std::ostream &out,int tab=0) const;
 };
+
 
 // Decl Class stores the declarations of a variable such as their gradient specifier, data type and the pointer to the initializer
 // It also stores the initial value of the variable if it is initialized
@@ -107,6 +101,7 @@ public:
     InitDeclarator *InitDeclaratorList;
     Decl(GradSpecifier, TypeSpecifier, InitDeclarator *);
     virtual ~Decl() = default;
+    void transpile(std::ostream &out,int tab=0) const;
 };
 
 // InitDeclarator Class stores the pointer to the declarator and the pointer to the initializer
@@ -117,6 +112,7 @@ public:
     Initializer *initializer;
     InitDeclarator(Declarator *, Initializer *);
     virtual ~InitDeclarator() = default;
+    void transpile(std::ostream &out,int tab=0) const;
 };
 // Declarator Class stores the name of the variable and the dimensions of the variable
 class Declarator : public Node
@@ -126,6 +122,7 @@ public:
     std::vector<int> Dimensions;
     Declarator(std::string);
     virtual ~Declarator() = default;
+    void transpile(std::ostream &out,int tab=0) const;
 };
 
 class ConstValue : public Node
@@ -164,6 +161,7 @@ public:
 
     void printInitializerList();
     virtual ~Initializer() = default;
+    void transpile(std::ostream &out,int tab=0) const;
 };
 
 // Operations
@@ -178,6 +176,7 @@ public:
     Expr *expr;
     AssgnStmt(std::string, std::optional<AssignmentOperator>, Expr *);
     virtual ~AssgnStmt() = default;
+    void transpile(std::ostream &out,int tab=0) const;
 };
 
 class Expr : public Node
@@ -186,6 +185,7 @@ public:
     Expr();
     virtual void printExpression();
     virtual ~Expr() = default;
+    virtual void transpile(std::ostream &out, int tab = 0) const;
 };
 
 class BinaryExpr : public Expr
@@ -195,7 +195,8 @@ public:
     char op;
     BinaryExpr(Expr *lhs, Expr *rhs, char op);
     virtual ~BinaryExpr() = default;
-    virtual void printExpression();
+    virtual void printExpression() override;
+    void transpile(std::ostream &out,int tab=0) const override;
 };
 
 class UnaryExpr : public Expr
@@ -208,7 +209,8 @@ public:
 
     UnaryExpr(Expr *expr, std::optional<LibFuncs> libfunc, std::string identifier, ConstValue *cvalue);
     virtual ~UnaryExpr() = default;
-    virtual void printExpression();
+    virtual void printExpression() override;
+    void transpile(std::ostream &out,int tab=0) const override;
 };
 
 // Gradient
@@ -222,6 +224,7 @@ public:
     std::string name;
     GradStmt(GradType, std::string);
     virtual ~GradStmt() = default;
+    void transpile(std::ostream &out,int tab=0) const;
 };
 
 #endif
