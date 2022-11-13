@@ -1,6 +1,7 @@
 %code requires
 {
 	#include "../ast/ast.h"
+	#include "../semantic/traversal.h"
 }
 %{
 #include<stdio.h>
@@ -399,6 +400,7 @@ int main(int argc, char const *argv[])
 
 
 	root->transpile(out);
+	traverse_gradient(root->GradStmtList);
 	
 	return 0;
 }
