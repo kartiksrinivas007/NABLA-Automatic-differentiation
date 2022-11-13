@@ -182,6 +182,8 @@ public:
 class Expr : public Node
 {
 public:
+    std::vector<int> dimensions;
+    TypeSpecifier DataType;
     Expr();
     virtual void printExpression();
     virtual ~Expr() = default;
@@ -202,7 +204,7 @@ public:
 class UnaryExpr : public Expr
 {
 public:
-    Expr *expr;
+    Expr *expr; // expr for libfunc if present
     std::string identifier;
     ConstValue *cvalue;
     std::optional<LibFuncs> libfunc;
