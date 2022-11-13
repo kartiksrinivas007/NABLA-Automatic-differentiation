@@ -69,6 +69,7 @@ enum class GradType
     
 class Node
 {
+    
 public:
     Node();
     virtual ~Node() = default;
