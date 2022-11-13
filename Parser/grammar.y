@@ -10,7 +10,8 @@
 #include <fstream>
 #include <stdarg.h>
 #include <string.h>
-
+#include <iomanip>
+#include <vector>
 extern int yylex();
 extern FILE* yyin;
 void yyerror(const char *);
@@ -33,6 +34,34 @@ extern const char* filename;
 struct YYLTYPE;
 extern void lyyerror(struct YYLTYPE t,char *s,...);
 extern void warning(const char*);
+
+struct SymTabItem{
+	std::string name;
+	std::string dataType;
+	std::string type;
+	std::vector<int> Dims;
+	int rowNum;
+	int colNum;
+	struct SymTabItem* next;
+};
+#define SYM_SIZE 353
+struct SymTabItem* symbolTable[SYM_SIZE]; 
+
+void init_symtable(){
+	for(int i=0;i<SYM_SIZE;i++)
+		symbolTable[i]=NULL;
+}
+int hash(std::string name){
+	int val = 0;
+	for(char c: name){
+		val+=c;
+	}
+	return val % SYM_SIZE;
+}
+char dataType[10];
+char type[10];
+void insertToSymbTab(char);
+SymTabItem* search(std::string);
 %}
 
 // TODOs: 
@@ -137,15 +166,15 @@ decl : grad_specifier type_specifier init_declarator ';' {$$ = new Decl($1, $2, 
 	;
 
 grad_specifier 
-	: CNS {$$ = GradSpecifier::CNS;}
-	| VAR {$$ = GradSpecifier::VAR;}
+	: CNS {$$ = GradSpecifier::CNS;strcpy(type, $1);}
+	| VAR {$$ = GradSpecifier::VAR;strcpy(type, $1);}
 	;
 
-type_specifier : CHAR {$$ = TypeSpecifier::CHAR;}
-	| INT	{$$ = TypeSpecifier::INT;}
-	| FLOAT	{$$ = TypeSpecifier::FLOAT;}
-	| BOOL	{$$ = TypeSpecifier::BOOL;}
-	| TENSOR	{$$ = TypeSpecifier::TENSOR;}
+type_specifier : CHAR {$$ = TypeSpecifier::CHAR;strcpy(dataType, $1);}
+	| INT	{$$ = TypeSpecifier::INT;strcpy(dataType, $1);}
+	| FLOAT	{$$ = TypeSpecifier::FLOAT;strcpy(dataType, $1);}
+	| BOOL	{$$ = TypeSpecifier::BOOL;strcpy(dataType, $1);}
+	| TENSOR	{$$ = TypeSpecifier::TENSOR;strcpy(dataType, $1);}
 	;
 
 init_declarator 
@@ -154,8 +183,8 @@ init_declarator
 	;
 
 declarator 
-	: IDENTIFIER {$$ = new Declarator($1); std::cout << "Decl: " << $$->name << std::endl;}
-	| declarator'[' INT_CONST ']' {$$->Dimensions.push_back($3);  std::cout <<"Wassup: " << $3 << " " << $$->Dimensions.size() << std::endl;}
+	: IDENTIFIER {$$ = new Declarator($1);insertToSymbTab('V');std::cout << "Decl: " << $$->name << std::endl;}
+	| declarator'[' INT_CONST ']' {$$->Dimensions.push_back($3);search($$->name)->Dims.push_back($3);  std::cout <<"Wassup: " << $3 << " " << $$->Dimensions.size() << std::endl;}
 	;
 
 initializer
@@ -256,6 +285,34 @@ grad_stmt
 
 %%
 
+void insertToSymbTab(char c) {
+  SymTabItem* q=search(yytext);
+  
+  if(q==NULL) {
+	q=(SymTabItem*)malloc(sizeof(SymTabItem));
+ 	if(c == 'V') {
+      q->name=strdup(yytext);
+      q->dataType=strdup(dataType);
+      q->rowNum=yylineno;    
+      q->colNum=yycolumn;
+      q->type=strdup(type); 
+	  int val=hash(q->name);
+	  q->next=symbolTable[val];
+	  symbolTable[val]=q;
+     }
+  }
+  else{
+	yyerror("Repeat declaration found");
+  }
+}
+
+SymTabItem* search(std::string name) { 
+	int val = hash(name);
+	SymTabItem* ptr = symbolTable[val];
+	while ((ptr != NULL) && (name != ptr->name)) ptr = ptr->next;
+	return ptr;
+}
+
 void yyerror(const char *s)
 {
 		fprintf(stderr, "%s:%d:%d:\e[1;31m error:\e[0m %s at %s\n%*d |%s\n",filename, yylineno , yycolumn, s, yytext,(int)(strlen(filename)-1), yylineno, linebuf);
@@ -321,8 +378,23 @@ int main(int argc, char const *argv[])
 	else{
 		filename = "(stdin)";
 	}
+	init_symtable();
 	yyparse();
-
+	printf("Name\tDatatype\tVartype\tRow\tCol\n");
+	for(int i = 0; i<SYM_SIZE; i++){
+		SymTabItem* ptr=symbolTable[i];
+		while(ptr!=NULL){
+			/* printf("%s\t%s\t\t%s\t%d\t%d\n", 
+			ptr->name, ptr->dataType, ptr->type, ptr->rowNum, ptr->colNum); */
+			std::cout<<ptr->name<<std::setw(10)<<ptr->dataType<<std::setw(10)<<ptr->type<<std::setw(10)<<ptr->rowNum<<std::setw(10)<<ptr->colNum;
+			std::cout<<"    [";
+			for(int x: ptr->Dims){
+				std::cout<<x<<",";
+			}
+			std::cout<<"]\n";
+			ptr=ptr->next;
+		}
+	}
 	std::ofstream out("output.cpp");
 
 
