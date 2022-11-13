@@ -2,6 +2,7 @@
 {
 	#include "../ast/ast.h"
 	#include "../semantic/traversal.h"
+	/* #include "../Symbol_table/sym.h" */
 }
 %{
 #include<stdio.h>
@@ -14,6 +15,7 @@
 #include <iomanip>
 #include <vector>
 #include <unordered_map>
+#include "../Symbol_table/sym.h"
 
 extern int yylex();
 extern FILE* yyin;
@@ -33,26 +35,15 @@ extern int yycolumn;
 extern char yytext[];
 extern char linebuf[];
 extern const char* filename;
+
 // extern void yyerror(char *);
 struct YYLTYPE;
 extern void lyyerror(struct YYLTYPE t,char *s,...);
 extern void warning(const char*);
 
-struct SymTabItem{
-	std::string name;
-	std::string dataType;
-	std::string type;
-	std::vector<int> Dims;
-	int rowNum;
-	int colNum;
-};
-std::unordered_map<std::string,SymTabItem> symbolTable;
-
+std::unordered_map<std::string, SymTabItem> *symbolTable=new std::unordered_map<std::string,SymTabItem>(); 
 std::string dataType;
 std::string type;
-void insertToSymbTab();
-void Undeclaration_Error(std::string);
-SymTabItem* search(std::string);
 %}
 
 // TODOs: 
@@ -174,8 +165,8 @@ init_declarator
 	;
 
 declarator 
-	: IDENTIFIER {$$ = new Declarator($1);insertToSymbTab();std::cout << "Decl: " << $$->name << std::endl;}
-	| declarator'[' INT_CONST ']' {$$->Dimensions.push_back($3);search($$->name)->Dims.push_back($3);  std::cout <<"Wassup: " << $3 << " " << $$->Dimensions.size() << std::endl;}
+	: IDENTIFIER {$$ = new Declarator($1);insertToSymbTab(symbolTable,yytext,yylineno,yycolumn,dataType,type);std::cout << "Decl: " << $$->name << std::endl;}
+	| declarator'[' INT_CONST ']' {$$->Dimensions.push_back($3);search(symbolTable,$$->name)->Dims.push_back($3);  std::cout <<"Wassup: " << $3 << " " << $$->Dimensions.size() << std::endl;}
 	;
 
 initializer
@@ -242,7 +233,7 @@ multiplicative_exp
 	;
 
 lib_exp 
-	: IDENTIFIER {$$ = new UnaryExpr(nullptr, std::nullopt, $1, nullptr);Undeclaration_Error($1);}
+	: IDENTIFIER {$$ = new UnaryExpr(nullptr, std::nullopt, $1, nullptr);Undeclaration_Error(symbolTable,$1);}
 	| lib_funcs '(' exp ')' {$$ = new UnaryExpr($3, $1, "", nullptr);}
 	| constant {$$ = new UnaryExpr(nullptr, std::nullopt, "", $1);}
 	;
@@ -276,35 +267,6 @@ grad_stmt
 
 %%
 
-void insertToSymbTab() {
-	std::string t_name(yytext);
-  SymTabItem* q=search(yytext);
-  
-  if(q==NULL){
-		symbolTable[t_name].name=t_name;
-		symbolTable[t_name].dataType=dataType;
-		symbolTable[t_name].rowNum=yylineno;
-		symbolTable[t_name].colNum=yycolumn;
-		symbolTable[t_name].type=type;
-  }
-  else{
-	std::cerr<<"Repeat declaration found"<<std::endl;
-  }
-}
-
-void Undeclaration_Error(std::string inp1){
-	if(symbolTable.find(inp1)==symbolTable.end()){
-		std::cerr<<"undeclared variable \""<<inp1<< "\" is used "<<std::endl;
-	}
-}
-
-SymTabItem* search(std::string name) { 
-	auto it=symbolTable.find(name);
-	if(it==symbolTable.end()){
-		return NULL;
-	}
-	return &(it->second);
-}
 
 void yyerror(const char *s)
 {
@@ -365,15 +327,16 @@ int main(int argc, char const *argv[])
 			perror(argv[1]);
 			return 1;
 		}
-		/* filename = basename(argv[1]); */
+		filename = basename(argv[1]);
 		printf("File name : %s\n", filename);
 	}
 	else{
 		filename = "(stdin)";
 	}
 	yyparse();
+	std::cout<<(*symbolTable).size()<<"\n";
 	printf("Name\tDatatype\tVartype\tRow\tCol\n");
-	for(const auto& x:symbolTable){
+	for(const auto& x:(*symbolTable)){
 		std::cout<< x.first;
 		std::cout<<std::setw(10)<<x.second.dataType;
 		std::cout<<std::setw(10)<<x.second.type;

@@ -58,12 +58,12 @@ clean:
 	rm -f **/*.yy.c
 	rm -f $(BUILDDIR)/*
 
-our_build: ${LEXERFILE} ${PARSERFILE} ast/ast.cpp ast/ast.h
+our_build: ${LEXERFILE} ${PARSERFILE} ast/ast.cpp ast/ast.h 
 	flex ${LEXERFILE} && mv lex.yy.c Lexer/lex.yy.c
 	bison -d ${PARSERFILE} && mv grammar.tab.c Parser/grammar.tab.c && mv grammar.tab.h Parser/grammar.tab.h
-	clang++ ${CPPFLAGS} Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp -o ${TARGET} 
+	clang++ ${CPPFLAGS}  Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp  -o ${TARGET} 
 
 our_build2: ${LEXERFILE} ${PARSERFILE} ast/ast.cpp ast/ast.h
 	flex ${LEXERFILE} && mv lex.yy.c Lexer/lex.yy.c
 	bison -d ${PARSERFILE} && mv grammar.tab.c Parser/grammar.tab.c && mv grammar.tab.h Parser/grammar.tab.h
-	clang++ ${CPPFLAGS} Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp semantic/traversals.cpp -o ${TARGET} 
+	clang++ ${CPPFLAGS} Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp semantic/traversals.cpp Symbol_table/sym.cpp -o ${TARGET} 
