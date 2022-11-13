@@ -38,4 +38,21 @@ class Scalar: public Node{
     }
 };
 
+class Scalar_Variable : public Scalar{
+    public:
+    int scl_var_count;
+    Scalar_Variable(double d_data, int count): Scalar(d_data, count){
+        scl_var_count = count;
+        name = "Scalar_Var:" + std::to_string(scl_var_count);
+    }
+};
+
+class Scalar_constant : public Scalar{
+    public:
+    int scl_cns_count;
+    Scalar_constant(double d_data, int count): Scalar(d_data, count){
+        scl_cns_count = count;
+        name = "Scalar_Const:" + std::to_string(scl_cns_count);
+    }
+};
 #endif
