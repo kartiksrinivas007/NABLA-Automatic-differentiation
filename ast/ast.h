@@ -7,6 +7,8 @@
 #include <memory>
 #include <optional>
 #include <map>
+#include <unordered_map>
+#include "../Symbol_table/sym.h"
 
 // Abstract Node class
 class Node;
@@ -86,7 +88,8 @@ public:
     std::vector<class Decl *> *DeclList;
     std::vector<class AssgnStmt *> *AssgnStmtList;
     std::vector<class GradStmt *> *GradStmtList;
-    Start(std::vector<class Decl *> *DeclList, std::vector<class AssgnStmt *> *AssgnStmtList, std::vector<class GradStmt *> *GradStmtList);
+    std::unordered_map<std::string, SymTabItem> *symbolTable;
+    Start(std::vector<class Decl *> *DeclList, std::vector<class AssgnStmt *> *AssgnStmtList, std::vector<class GradStmt *> *GradStmtList, std::unordered_map<std::string, SymTabItem> *symbolTable);
     virtual ~Start() = default;
     void transpile(std::ostream &out,int tab=0) const;
 };

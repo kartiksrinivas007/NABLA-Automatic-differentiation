@@ -131,7 +131,7 @@ std::string type;
 %locations
 %%
 
-start : declarations operations gradient {$$ = new Start($1,$2,$3); root = $$;}
+start : declarations operations gradient {$$ = new Start($1,$2,$3, symbolTable); root = $$;}
 	;
 
 
@@ -353,7 +353,9 @@ int main(int argc, char const *argv[])
 
 
 	root->transpile(out);
-	traverse_gradient(root->GradStmtList);
+	/* traverse_gradient(root->GradStmtList); */
+	/* traverse_gradient2(root); */
+	traverse_declarations2(root);
 	
 	return 0;
 }

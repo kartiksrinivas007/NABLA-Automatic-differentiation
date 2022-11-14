@@ -3,6 +3,10 @@
 declare{
     cns int a = 3.3; // type error (int, bool) (cns,var)
     cns int c = [2,2]; // type error -> (int, float and bool) are not arrayable(tensors) (cns,var)
+    cns int d[1][1];
+    var float e[1][10][3];
+    var Tensor b;
+    cns Tensor f[1][2] = [[1,2,3], [1]];
     
 }
 operations{

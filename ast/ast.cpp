@@ -6,11 +6,12 @@ Node::Node()
     // std::cout << "Node::Node()" << std::endl;
 }
 
-Start::Start(std::vector<class Decl *> *DeclList, std::vector<class AssgnStmt *> *AssgnStmtList, std::vector<class GradStmt *> *GradStmtList)
+Start::Start(std::vector<class Decl *> *DeclList, std::vector<class AssgnStmt *> *AssgnStmtList, std::vector<class GradStmt *> *GradStmtList, std::unordered_map<std::string, SymTabItem> *symbolTable)
 {
     this->DeclList = DeclList;
     this->AssgnStmtList = AssgnStmtList;
     this->GradStmtList = GradStmtList;
+    this->symbolTable = symbolTable;
 }
 
 Decl::Decl(GradSpecifier GradType, TypeSpecifier DataType, InitDeclarator *InitDeclaratorList)
