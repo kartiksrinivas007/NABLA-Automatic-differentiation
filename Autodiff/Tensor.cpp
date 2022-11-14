@@ -59,6 +59,16 @@ Tensor Tensor::transpose(){
     return tr;
 }
 
+Tensor Tensor::negative(){
+    Tensor tr = Tensor(m, n);
+    for (int i=0;i<m;i++){
+        for (int j=0;j<n;j++){
+            tr.data[i][j] = -data[i][j];
+        }
+    }
+    return tr;
+}
+
 Tensor matmul(Tensor a, Tensor b){
     Tensor* c = new Tensor(a.m, b.n);
     for (int i = 0; i< a.m ; i++){
@@ -80,4 +90,34 @@ Tensor add(Tensor a, Tensor b){
         }
     }
     return *c;
+}
+
+Tensor mul(double a, Tensor b){
+    Tensor* c = new Tensor(b.m, b.n);
+    for(int i=0;i<b.m;i++){
+        for(int j=0;j<b.n;j++){
+            c->data[i][j] = a * b.data[i][j];
+        }
+    }
+    return *c;
+}
+
+Tensor mul(Tensor a, Tensor b){ //this performs element wise multiplication of two tensor quantities
+    Tensor *c = new Tensor(a.m, a.n);
+    for(int i=0;i<a.m;i++){
+        for(int j=0;j<a.n;j++){
+            c->data[i][j] = a.data[i][j] * b.data[i][j];
+        }
+    }
+    return *c;
+}
+
+double full_sum(Tensor a){ //finds the sum of all elements in a two dimesnsional tensor
+    double *sum = new double(0);
+    for(int i=0;i<a.m;i++){
+        for(int j=0;j<a.n;j++){
+            (*sum) += a.data[i][j];
+        }
+    }
+    return *sum;
 }

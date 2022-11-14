@@ -11,4 +11,5 @@ Node::Node(Tensor& t){
 
 Node::Node(){
     inputs.resize(0);
+    scalar_gradient = 0;
 }

@@ -29,12 +29,11 @@ class Constant: public Node{
 
 class Scalar: public Node{
     public:
-    double ddata;
     int scl_count;
     Scalar(double d_data, int count){
-        this->ddata = d_data;
-        scl_count = count;
-        name = "Scalar:" + std::to_string(scl_count);
+        // this->ddata = d_data;
+        // scl_count = count;
+        // name = "Scalar:" + std::to_string(scl_count);
     }
 };
 
@@ -42,16 +41,20 @@ class Scalar_Variable : public Scalar{
     public:
     int scl_var_count;
     Scalar_Variable(double d_data, int count): Scalar(d_data, count){
+        this->ddata = d_data;
         scl_var_count = count;
+        is_scalar = true;
         name = "Scalar_Var:" + std::to_string(scl_var_count);
     }
 };
 
-class Scalar_constant : public Scalar{
+class Scalar_Constant : public Scalar{
     public:
     int scl_cns_count;
-    Scalar_constant(double d_data, int count): Scalar(d_data, count){
+    Scalar_Constant(double d_data, int count): Scalar(d_data, count){
+        this->ddata  = d_data; //this innitializes a scalar constant
         scl_cns_count = count;
+        is_scalar = true;
         name = "Scalar_Const:" + std::to_string(scl_cns_count);
     }
 };
