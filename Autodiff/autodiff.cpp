@@ -9,17 +9,14 @@ int main ()
     Node* k = _g._scalar_variable(1.25);
     cout<<"K:"<<k->ddata<<endl;
     // to do b = k*a , and c = j@b
-    Node* a = _g._variable(2, 1, {{1}, {2}});
+    Node* a = _g._variable(2, 2, {{1, 0}, {0, 1}});
     Node* j = _g._variable(1, 2, {{2, 3}});
     Node* c = _g._variable(1, 1);
     cout<<"a"<<endl;
     a->data.print();
     cout<<"j"<<endl;
     j->data.print();
-    Node* b = _g._mul(k, a); 
-    cout<<"b: " << b <<endl;
-    b->data.print();
-    c = _g._matmul(j, b);
+    c = _g._matmul(j, _g._matmul(a, _g._trans(j)));
     cout<<"c: " << c <<endl;
     c->data.print();
 for (auto &it: _g.operators){
@@ -38,8 +35,6 @@ for (auto &it: _g.operators){
     a->gradient.print();
     cout<<"Grad of j"<<endl;
     j->gradient.print();
-    cout<<"Grad of b"<<endl;
-    b->gradient.print();
     cout<<"Grad of c"<<endl;
     c->gradient.print();
     cout<<"Grad of k"<<endl;

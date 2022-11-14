@@ -1,5 +1,20 @@
 #include "Operators.h"
 
+Transpose::Transpose(Node* a, int count){
+    trans_count = count;
+    inputs.push_back(a);
+    this->name = "Transpose: " + std::to_string(trans_count);
+    this->forward(a);
+}
+
+Node* Transpose::forward(const Node* a){
+    this->data = inputs[0]->data.transpose();
+    return this;
+}
+
+void Transpose::backward(){
+    inputs[0]->gradient = add(inputs[0]->gradient, this->gradient.transpose());
+}
 
 Add::Add(Node* a , Node* b, int count){
         // ::count++;
@@ -143,6 +158,5 @@ void Mul::backward(){
             this->inputs[1]->gradient = add(this->inputs[1]->gradient , mul(this->inputs[0]->data,  this->gradient));
         }
     }
-
-
 }
+

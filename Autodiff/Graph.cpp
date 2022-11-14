@@ -52,6 +52,13 @@ Node* Graph::_mul(double a, double b){
     return mul;
 }
 
+Node* Graph::_trans(Node* a){
+    Transpose* t = new Transpose(a, count);
+    operators.push_back(t);
+    count++;
+    return t;
+}
+
 Node* Graph::_variable(int m, int n, std::vector<std::vector<double>> vals){
     //create a variable node
     Variable *var = new Variable(m, n, vals, count);

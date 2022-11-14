@@ -18,6 +18,7 @@ class Graph{
 
     Node* _add(Node* a, Node* b);
     Node* _matmul(Node* a, Node* b);
+    Node* _trans(Node* a);
 
     Node* _mul(Node*a , Node*b);
     Node* _mul(double a, Node*b);

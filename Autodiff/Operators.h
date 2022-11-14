@@ -39,4 +39,12 @@ class Mul : public Operator{
     // std::pair<Tensor, Tensor> backward(Tensor dout);
 };
 
+class Transpose : public Operator{
+    public:
+    void backward();
+    int trans_count;
+    Transpose(Node* a, int count);
+    Node* forward(const Node* a);
+};
+
 #endif
