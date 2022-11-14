@@ -25,5 +25,7 @@ class Tensor{
 
 Tensor matmul(Tensor a, Tensor b);
 Tensor add(Tensor a, Tensor b);
-
+Tensor mul(double a, Tensor b);
+Tensor mul(Tensor a, Tensor b);
+double full_sum(Tensor a);
 #endif

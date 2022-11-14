@@ -9,9 +9,12 @@ class Node{
     std::string name;
     void print();
     bool is_visited = false;
+    bool is_scalar = false;
     std::vector<Node*> inputs;
     Tensor data;
+    double ddata; //this stores the value of a scalar
     Tensor gradient;
+    double scalar_gradient = 0; //this stores the gradient with respect to a scalar
     Node();
     Node(Tensor& data);
     Node& forward(const Node& a, const Node& b);
