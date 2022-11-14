@@ -117,13 +117,13 @@ void traverse_declarations2(Start *root)
                     std::cout << "Fatal: Type mismatch, tensor value being assigned to scalar: " << decl->InitDeclaratorList->declarator->name << std::endl;
                 }
             }
-            // Checks if the scalar variable declared is of scalar type and not tensor
+            //  Checks if the scalar variable declared is of scalar type and not tensor
             if (decl->InitDeclaratorList->declarator->Dimensions.size() != 0)
             {
                 std::cout << "Fatal: Type mismatch, scalar variable is not arrayable(tensor) type: " << decl->InitDeclaratorList->declarator->name << std::endl;
             }
         }
-        // Check if float value is being assigned to non float type variable
+        //  Check if float value is being assigned to non float type variable
         if (decl->DataType == TypeSpecifier::INT || decl->DataType == TypeSpecifier::BOOL)
         {
             if (decl->InitDeclaratorList->initializer != NULL)
@@ -138,7 +138,7 @@ void traverse_declarations2(Start *root)
             }
         }
 
-        // Check for tensors
+        //  Check for tensors
         if (decl->DataType == TypeSpecifier::TENSOR)
         {
             if (decl->InitDeclaratorList->declarator->Dimensions.size() == 0)
@@ -165,16 +165,40 @@ void traverse_declarations2(Start *root)
                     }
                     std::cout << "\n";
                 }
-                //TODO: if it is nx1 output is still n
-                // TODO: check tensor_init_shape with tensor_declare_shape
-
+                // TODO: if it is nx1 output is still n
+                //  TODO: check tensor_init_shape with tensor_declare_shape
             }
             else
             {
-
             }
         }
     }
+}
+
+void traverse_operations(Start *root)
+{
+    std::vector<AssgnStmt *> *AssgnStmtList = root->AssgnStmtList;
+    // should be equal to number of assignment statements
+    std::cout << "Traversing operations: " << AssgnStmtList->size() << std::endl;
+    for (auto assgn_stmt : *AssgnStmtList)
+    {
+        std::string var_name = assgn_stmt->name;
+        SymTabItem *symTabItem = search(root->symbolTable, var_name);
+        if (symTabItem == NULL)
+        {
+            std::cout << "Fatal: Variable " << var_name << " not found" << std::endl;
+            exit(0);
+        }
+        assgn_stmt->expr->initialize_expression_node_info(root->symbolTable);
+
+        // TODO: handle shorthand
+        // TODO: add errors for bool and char
+    }
+}
+
+// for initializing type and dimensions(if Tensor) of expression(class Expr) nodes
+void initialize_expression_node_info(Expr *expr)
+{
 }
 
 void traverse_gradient(std::vector<GradStmt *> *GradStmtList)

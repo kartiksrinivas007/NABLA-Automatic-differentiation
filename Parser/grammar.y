@@ -327,7 +327,7 @@ int main(int argc, char const *argv[])
 			perror(argv[1]);
 			return 1;
 		}
-		filename = basename(argv[1]);
+		/* filename = basename(argv[1]); */
 		printf("File name : %s\n", filename);
 	}
 	else{
@@ -352,11 +352,12 @@ int main(int argc, char const *argv[])
 	std::ofstream out("output.cpp");
 
 
-	root->transpile(out);
+	/* root->transpile(out); */
 	/* traverse_gradient(root->GradStmtList); */
 	/* traverse_gradient2(root); */
-	traverse_declarations2(root);
+	/* traverse_declarations2(root); */
 	
+	traverse_operations(root);
 	return 0;
 }
 

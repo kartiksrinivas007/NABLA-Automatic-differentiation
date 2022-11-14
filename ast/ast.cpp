@@ -99,6 +99,8 @@ Expr::Expr()
 
 void Expr::printExpression() {}
 
+void Expr::initialize_expression_node_info(std::unordered_map<std::string, SymTabItem> *symbolTable) {}
+
 BinaryExpr::BinaryExpr(Expr *lhs, Expr *rhs, char op)
 {
     this->lhs = lhs;
@@ -106,22 +108,24 @@ BinaryExpr::BinaryExpr(Expr *lhs, Expr *rhs, char op)
     this->op = op;
 }
 
-std::string optofunc(char c){
-    switch(c){
-        case '+':
-            return "_g._add";
-        case '-':
-            return "_g._sub";
-        case '*':
-            return "_g._mul";
-        case '/':
-            return "_g._div";
-        case '^':
-            return "_g._pow";
-        case '@':
-            return "_g._matmul";
-        default:
-            return "_g._error";
+std::string optofunc(char c)
+{
+    switch (c)
+    {
+    case '+':
+        return "_g._add";
+    case '-':
+        return "_g._sub";
+    case '*':
+        return "_g._mul";
+    case '/':
+        return "_g._div";
+    case '^':
+        return "_g._pow";
+    case '@':
+        return "_g._matmul";
+    default:
+        return "_g._error";
     }
 }
 
@@ -134,9 +138,102 @@ void BinaryExpr::printExpression()
     std::cout << ")";
 }
 
+void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string, SymTabItem> *symbolTable)
+{
+    this->lhs->initialize_expression_node_info(symbolTable);
+    this->rhs->initialize_expression_node_info(symbolTable);
+
+    if (this->op == '+' || this->op == '-')
+    {
+        // First check if both are tensors
+        // Then if one is a tensor and other is a scalar
+        // Then if both are int or float
+        if (this->lhs->DataType == TypeSpecifier::TENSOR && this->rhs->DataType == TypeSpecifier::TENSOR)
+        {
+            // both are tensors
+            if (this->lhs->dimensions != this->rhs->dimensions)
+            {
+                std::cout << "Fatal: Dimensions of operands for '+/-' do not match" << std::endl;
+                exit(1);
+            }
+            this->DataType = TypeSpecifier::TENSOR;
+            this->dimensions = this->lhs->dimensions;
+        }
+        else if ((this->lhs->DataType == TypeSpecifier::TENSOR && this->rhs->DataType != TypeSpecifier::TENSOR) || (this->lhs->DataType != TypeSpecifier::TENSOR && this->rhs->DataType == TypeSpecifier::TENSOR))
+        {
+            // one is a tensor and other is a int or float
+            std::cout << "Fatal: Tensor and scalar addition/subtraction not supported" << std::endl;
+            exit(1);
+        }
+        else
+        {
+            // if both are int or float
+
+            // if both ints then int otherwise float
+            if (this->lhs->DataType == TypeSpecifier::INT && this->rhs->DataType == TypeSpecifier::INT)
+            {
+                this->DataType = TypeSpecifier::INT;
+            }
+            else
+            {
+                this->DataType = TypeSpecifier::FLOAT;
+            }
+        }
+    }
+    else if (this->op == '*' || this->op == '/')
+    {
+        if (this->lhs->DataType == TypeSpecifier::TENSOR || this->rhs->DataType == TypeSpecifier::TENSOR)
+        {
+            std::cout << "Fatal: * and / not supported on Tensors" << std::endl;
+        }
+        else
+        {
+            // if both ints then int otherwise float
+            if (this->lhs->DataType == TypeSpecifier::INT && this->rhs->DataType == TypeSpecifier::INT)
+            {
+                this->DataType = TypeSpecifier::INT;
+            }
+            else
+            {
+                this->DataType = TypeSpecifier::FLOAT;
+            }
+        }
+    }
+    else if (this->op == '@')
+    {
+        if (this->lhs->DataType != TypeSpecifier::TENSOR || this->rhs->DataType != TypeSpecifier::TENSOR)
+        {
+            std::cout << "Fatal: @ only supported on Tensors" << std::endl;
+            exit(1);
+        }
+        else
+        {
+            if (this->lhs->dimensions.back() != this->rhs->dimensions.front())
+            {
+                std::cout << "Fatal: Dimensions of operands for '@' do not match" << std::endl;
+                exit(1);
+            }
+            this->DataType = TypeSpecifier::TENSOR;
+            for (int i = 0; i < this->lhs->dimensions.size() - 1; i++)
+            {
+                this->dimensions.push_back(this->lhs->dimensions[i]);
+            }
+            for (int i = 1; i < this->rhs->dimensions.size(); i++)
+            {
+                this->dimensions.push_back(this->rhs->dimensions[i]);
+            }
+        }
+    }
+    else
+    {
+        std::cout << "Fatal: Unknown operator(Shouldn't have reached here)" << std::endl;
+        exit(1);
+    }
+}
+
 void BinaryExpr::transpile(std::ostream &out, int tab) const
 {
-    out << " " << optofunc( this->op );
+    out << " " << optofunc(this->op);
     out << "(";
     this->lhs->transpile(out, tab);
     out << ",";
@@ -189,6 +286,55 @@ void UnaryExpr::printExpression()
         }
         this->expr->printExpression();
         std::cout << ")";
+    }
+}
+
+void UnaryExpr::initialize_expression_node_info(std::unordered_map<std::string, SymTabItem> *symbolTable)
+{
+    if (this->identifier != "")
+    {
+        SymTabItem *symTabItem = search(symbolTable, this->identifier);
+        if (symTabItem == NULL)
+        {
+            std::cout << "Fatal: Variable " << this->identifier << " not found" << std::endl;
+            exit(0);
+        }
+
+        if (symTabItem->dataType == "TENSOR")
+        {
+            this->DataType = TypeSpecifier::TENSOR;
+            this->dimensions = this->expr->dimensions;
+        }
+        else if (symTabItem->dataType == "INT")
+        {
+            this->DataType = TypeSpecifier::INT;
+        }
+        else if (symTabItem->dataType == "FLOAT")
+        {
+            this->DataType = TypeSpecifier::FLOAT;
+        }
+        else
+        {
+            std::cout << "Fatal: Unknown datatype" << std::endl;
+            exit(1);
+        }
+    }
+    else if (this->cvalue != nullptr)
+    {
+        if (this->cvalue->isInt)
+        {
+            this->DataType = TypeSpecifier::INT;
+        }
+        else
+        {
+            this->DataType = TypeSpecifier::FLOAT;
+        }
+    }
+    else
+    {
+        this->expr->initialize_expression_node_info(symbolTable);
+        this->DataType = this->expr->DataType;
+        this->dimensions = this->expr->dimensions;
     }
 }
 
@@ -275,95 +421,111 @@ std::map<AssignmentOperator, std::string> AssignmentOperatorMapCpp = {
     {AssignmentOperator::AST_DIV_ASSIGN, "/="},
     {AssignmentOperator::AST_AT_ASSIGN, "@="}};
 
-void Start::transpile(std::ostream &out, int tab ) const {
+void Start::transpile(std::ostream &out, int tab) const
+{
     out << "#include <iostream>" << std::endl;
-    out << "#include \"Graph.h\"" << std::endl << std::endl;
-    out << "using namespace std;" << std::endl << std::endl;
+    out << "#include \"Graph.h\"" << std::endl
+        << std::endl;
+    out << "using namespace std;" << std::endl
+        << std::endl;
     out << "int main() {" << std::endl;
-    out << std::string("\t",tab+1) <<"Graph _g;" << std::endl;
+    out << std::string("\t", tab + 1) << "Graph _g;" << std::endl;
 
-    for (auto i : *this->DeclList) {
+    for (auto i : *this->DeclList)
+    {
         i->transpile(out, tab + 1);
     }
 
-    for(auto i : *this->AssgnStmtList) {
+    for (auto i : *this->AssgnStmtList)
+    {
         i->transpile(out, tab + 1);
     }
 
-    for(auto i : *this->GradStmtList) {
+    for (auto i : *this->GradStmtList)
+    {
         i->transpile(out, tab + 1);
     }
 
-    out << std::string("\t",tab+1) <<"return 0;" << std::endl;
+    out << std::string("\t", tab + 1) << "return 0;" << std::endl;
     out << "}" << std::endl;
-
 }
 
-void Decl::transpile(std::ostream &out, int tab) const {
+void Decl::transpile(std::ostream &out, int tab) const
+{
     out << std::string("\t", tab)
         << "Node& " << this->InitDeclaratorList->declarator->name
         << " = "
         << "_g.";
 
-        switch( this->GradType){
-            case GradSpecifier::CNS:
-                out << "_constant";
-                break;
-            case GradSpecifier::VAR:
-                out << "_variable";
-                break;
-        }
+    switch (this->GradType)
+    {
+    case GradSpecifier::CNS:
+        out << "_constant";
+        break;
+    case GradSpecifier::VAR:
+        out << "_variable";
+        break;
+    }
 
-        out << "(";
+    out << "(";
 
-        this->InitDeclaratorList->transpile(out, tab);
+    this->InitDeclaratorList->transpile(out, tab);
 
-        out << ");" << std::endl;
+    out << ");" << std::endl;
 }
 
-void InitDeclarator::transpile(std::ostream &out, int tab) const {
-    if( this->declarator != nullptr ) {
+void InitDeclarator::transpile(std::ostream &out, int tab) const
+{
+    if (this->declarator != nullptr)
+    {
         this->declarator->transpile(out, tab);
     }
 
-    if( this->initializer != nullptr ) {
+    if (this->initializer != nullptr)
+    {
         out << ", ";
         this->initializer->transpile(out, tab);
     }
-
 }
 
-
-void Declarator::transpile(std::ostream &out, int tab) const {
+void Declarator::transpile(std::ostream &out, int tab) const
+{
     // out << this->name;
-    if( !this->Dimensions.empty()){
+    if (!this->Dimensions.empty())
+    {
 
-        for(int i = 0; i < this->Dimensions.size(); i++) {
+        for (int i = 0; i < this->Dimensions.size(); i++)
+        {
             out << this->Dimensions[i];
-            if( i != this->Dimensions.size() - 1 ) {
+            if (i != this->Dimensions.size() - 1)
+            {
                 out << ", ";
             }
         }
-
     }
-
 }
 
-void Initializer::transpile(std::ostream &out, int tab) const {
+void Initializer::transpile(std::ostream &out, int tab) const
+{
     if (this->isScalar)
     {
-        if( this->val.cvalue->isInt ) {
+        if (this->val.cvalue->isInt)
+        {
             out << this->val.cvalue->value.int_val;
-        } else {
+        }
+        else
+        {
             out << this->val.cvalue->value.float_val;
         }
     }
     else
     {
         out << "{";
-        for( auto i : *this->val.InitializerList ) {
+        for (auto i : *this->val.InitializerList)
+        {
             i->transpile(out, tab);
-            if( i != this->val.InitializerList->back() ) {
+            if (i != this->val.InitializerList->back())
+            {
                 out << ", ";
             }
             // out << ",";
@@ -372,14 +534,16 @@ void Initializer::transpile(std::ostream &out, int tab) const {
     }
 }
 
-
-void AssgnStmt::transpile(std::ostream &out, int tab) const {
+void AssgnStmt::transpile(std::ostream &out, int tab) const
+{
     out << std::string("\t", tab);
 
-    if(op.has_value()){
+    if (op.has_value())
+    {
         out << this->name << " " << AssignmentOperatorMapCpp[op.value()] << " ";
     }
-    else{
+    else
+    {
         out << this->name << " = ";
     }
 
@@ -387,17 +551,17 @@ void AssgnStmt::transpile(std::ostream &out, int tab) const {
     // this->lhs->transpile(out, tab);
     // out << " = ";
     // this->rhs->transpile(out, tab);
-    
+
     out << ";" << std::endl;
-
 }
 
-void Expr::transpile(std::ostream &out, int tab) const {
-
+void Expr::transpile(std::ostream &out, int tab) const
+{
 }
 
-void GradStmt::transpile(std::ostream &out, int tab) const {
-    out << std::string("\t", tab)<< "_g." << GradTypeMapCpp[this->grad_type] << "(" << this->name << ");" << std::endl;
+void GradStmt::transpile(std::ostream &out, int tab) const
+{
+    out << std::string("\t", tab) << "_g." << GradTypeMapCpp[this->grad_type] << "(" << this->name << ");" << std::endl;
 }
 
 // int main()

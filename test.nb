@@ -1,31 +1,36 @@
 // initialization at time of declaration
 
 declare{
+    cns int i1 = 1;
+    cns float f1 = 1.0;
+    cns Tensor tc1[3] = [1,2,3];
+    var Tensor tv2[3] = [1,2,3];
+    cns Tensor tc2[3] = [4,5,3];
     // cns int a = 3.3; // type error (int, bool) (cns,var)
-    // cns int c = [2,2]; // type error -> (int, float and bool) are not arrayable(tensors) (cns,var)
+    cns int c = [2,2]; // type error -> (int, float and bool) are not arrayable(tensors) (cns,var)
     // cns int c[1][1]; // type error -> (int, float and bool) are not arrayable(tensors) (cns,var)
 
     // cns Tensor b = [[1,2,3]]; // (cns,var) incomplete dimesion error -> dimension not mentioned, every tensor must have a dimension
-    cns Tensor c[1][2] = [[1,2,3]]; //(cns,var) error -> dimension mismatch 
+    // cns Tensor c[1][2] = [[1,2,3]]; //(cns,var) error -> dimension mismatch 
 
-    // below two to be handled in code generation
+    // TODO: below two to be handled in code generation
     // new-feature
     // cns Tensor d = 1.1; // (cns,var) allowed Tensor d = [[1.1]]; -> 1.1s is a scalar 
 
     // static initialization of tensors and variables with 0's
 
-    var int b[2][3] = [[1,1,1],[2,4,5],[7,8,9]];
+    // var int b[2][3] = [[1,1,1],[2,4,5],[7,8,9]];
 }
 operations{
     // undeclared variable error
     // dimensionality errors
     // c = b + d + f * sin(a * cos(a));
-    c = a + b + d;
+    c = a @ b * d;
     // d = c*b;
 }
 gradient{
     // only on vars
     // backward first on a variable and then gradient
-    backward(c);
+    // backward(c);
     grad(b);
 }

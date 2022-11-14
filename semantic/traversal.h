@@ -15,4 +15,5 @@ void traverse_gradient2(Start *root);
 
 void traverse_declarations2(Start *root);
 
+void traverse_operations(Start *root);
 #endif
