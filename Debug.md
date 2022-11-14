@@ -38,7 +38,7 @@ Add these files in `.vscode` folder
             "program": "${workspaceFolder}/Build/parser.out",
             "args": ["${workspaceFolder}/Build/test.nb"],
             "stopAtEntry": true,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}/Build",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
