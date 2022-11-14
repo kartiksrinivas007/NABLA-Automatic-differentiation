@@ -5,6 +5,7 @@
 #include "../ast/ast.h"
 #include <map>
 #include "../Symbol_table/sym.h"
+#include <algorithm>
 
 void traverse_declarations(std::vector<Decl *> *DeclList);
 

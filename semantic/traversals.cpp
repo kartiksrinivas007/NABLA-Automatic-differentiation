@@ -39,6 +39,43 @@ void traverse_declarations(std::vector<Decl *> *DeclList)
     }
 }
 
+int isUniformSize(Initializer *init, std::vector<int> &vec)
+{
+    if (init->isScalar == true)
+    {
+        return 1;
+    }
+    int size = init->val.InitializerList->size();
+    std::vector<int> tmp;
+    for (auto i : *init->val.InitializerList)
+    {
+        tmp.push_back(isUniformSize(i, vec));
+    }
+    if (std::all_of(tmp.begin(), tmp.end(), [&](int i)
+                    { return i == tmp[0]; }))
+    {
+        // vec.push_back(size);
+        return size;
+    }
+    else
+    {
+        // std::cout << "Fatal: Tensor dimensions not uniform" << std::endl;
+        return -1;
+    }
+}
+
+void ShapeTensor(Initializer *init, std::vector<int> &vec)
+{
+    if (init->isScalar == true)
+    {
+        return;
+    }
+    int size = init->val.InitializerList->size();
+    vec.push_back(size);
+    ShapeTensor(init->val.InitializerList->at(0), vec);
+    return;
+}
+
 void traverse_declarations2(Start *root)
 {
     std::vector<Decl *> *DeclList = root->DeclList;
@@ -80,13 +117,13 @@ void traverse_declarations2(Start *root)
                     std::cout << "Fatal: Type mismatch, tensor value being assigned to scalar: " << decl->InitDeclaratorList->declarator->name << std::endl;
                 }
             }
-            //Checks if the scalar variable declared is of scalar type and not tensor
-            if(decl->InitDeclaratorList->declarator->Dimensions.size() != 0)
+            // Checks if the scalar variable declared is of scalar type and not tensor
+            if (decl->InitDeclaratorList->declarator->Dimensions.size() != 0)
             {
                 std::cout << "Fatal: Type mismatch, scalar variable is not arrayable(tensor) type: " << decl->InitDeclaratorList->declarator->name << std::endl;
             }
         }
-        //Check if float value is being assigned to non float type variable
+        // Check if float value is being assigned to non float type variable
         if (decl->DataType == TypeSpecifier::INT || decl->DataType == TypeSpecifier::BOOL)
         {
             if (decl->InitDeclaratorList->initializer != NULL)
@@ -101,18 +138,41 @@ void traverse_declarations2(Start *root)
             }
         }
 
-        //Check for tensors
-        if(decl->DataType == TypeSpecifier::TENSOR)
+        // Check for tensors
+        if (decl->DataType == TypeSpecifier::TENSOR)
         {
-            if(decl->InitDeclaratorList->declarator->Dimensions.size() == 0)
+            if (decl->InitDeclaratorList->declarator->Dimensions.size() == 0)
             {
                 std::cout << "Fatal: Tensor variable shape not declared: " << decl->InitDeclaratorList->declarator->name << std::endl;
             }
-            else if(decl->InitDeclaratorList->initializer != NULL)
+            else if (decl->InitDeclaratorList->initializer != NULL)
             {
-                std::vector<int> tensor_shape = decl->InitDeclaratorList->declarator->Dimensions;
+                std::vector<int> tensor_declare_shape = decl->InitDeclaratorList->declarator->Dimensions;
+                std::vector<int> tensor_init_shape;
+                int size = isUniformSize(decl->InitDeclaratorList->initializer, tensor_init_shape);
+                if (size == -1)
+                {
+                    std::cout << "Fatal: Tensor dimensions not uniform: " << decl->InitDeclaratorList->declarator->name << std::endl;
+                }
+                std::cout << decl->InitDeclaratorList->declarator->name << " " << size << std::endl;
+                if (size != -1)
+                {
+                    ShapeTensor(decl->InitDeclaratorList->initializer, tensor_init_shape);
+
+                    for (int i = 0; i < tensor_init_shape.size(); i++)
+                    {
+                        std::cout << tensor_init_shape[i] << " ";
+                    }
+                    std::cout << "\n";
+                }
+                //TODO: if it is nx1 output is still n
+                // TODO: check tensor_init_shape with tensor_declare_shape
+
             }
-            else{}
+            else
+            {
+
+            }
         }
     }
 }
