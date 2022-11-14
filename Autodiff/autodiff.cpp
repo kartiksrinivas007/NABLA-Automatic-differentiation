@@ -6,17 +6,13 @@ int main ()
 {
     Graph _g;
     
-    Node* k = _g._scalar_variable(1.25);
-    cout<<"K:"<<k->ddata<<endl;
     // to do b = k*a , and c = j@b
     Node* a = _g._variable(2, 2, {{1, 0}, {0, 1}});
     Node* j = _g._variable(1, 2, {{2, 3}});
+    Node* k = _g._variable(1, 2, {{6, 5}});
+    Node* b = _g._sub(j, k);
     Node* c = _g._variable(1, 1);
-    cout<<"a"<<endl;
-    a->data.print();
-    cout<<"j"<<endl;
-    j->data.print();
-    c = _g._matmul(j, _g._matmul(a, _g._trans(j)));
+    c = _g._matmul(b, _g._matmul(a, _g._trans(b)));
     cout<<"c: " << c <<endl;
     c->data.print();
 for (auto &it: _g.operators){
@@ -37,8 +33,10 @@ for (auto &it: _g.operators){
     j->gradient.print();
     cout<<"Grad of c"<<endl;
     c->gradient.print();
+    cout<<"Grad of b"<<endl;
+    b->gradient.print();
     cout<<"Grad of k"<<endl;
-    cout << k->scalar_gradient << endl;
+    k->gradient.print();
 
     // Node& z = _g._matmul(_g._add(x2, y2), _g._add(x1, y1));
     // z.print();

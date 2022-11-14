@@ -59,6 +59,16 @@ Tensor Tensor::transpose(){
     return tr;
 }
 
+Tensor Tensor::negative(){
+    Tensor tr = Tensor(m, n);
+    for (int i=0;i<m;i++){
+        for (int j=0;j<n;j++){
+            tr.data[i][j] = -data[i][j];
+        }
+    }
+    return tr;
+}
+
 Tensor matmul(Tensor a, Tensor b){
     Tensor* c = new Tensor(a.m, b.n);
     for (int i = 0; i< a.m ; i++){

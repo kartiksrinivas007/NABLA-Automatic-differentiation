@@ -24,6 +24,14 @@ Node* Graph::_add(Node* a , Node* b){
     return add;
 }
 
+Node* Graph::_sub(Node* a , Node* b){
+    //create an add node
+    Sub *sub = new Sub(a, b, count);
+    operators.push_back(sub);
+    count++;
+    return sub;
+}
+
 Node* Graph::_mul(Node* a, Node* b){
     Mul *mul = new Mul(a, b, count);
     operators.push_back(mul);
@@ -58,6 +66,15 @@ Node* Graph::_trans(Node* a){
     count++;
     return t;
 }
+
+Node* Graph::_neg(Node* a){
+    Negative* n = new Negative(a, count);
+    operators.push_back(n);
+    count++;
+    return n;
+}
+
+
 
 Node* Graph::_variable(int m, int n, std::vector<std::vector<double>> vals){
     //create a variable node

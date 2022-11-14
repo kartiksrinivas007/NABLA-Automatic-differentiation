@@ -18,6 +18,7 @@ class Tensor{
     Tensor (int m, int n);
     Tensor (int m, int n, std::vector<std::vector<double>> vals);
     Tensor transpose();
+    Tensor negative();
     
     void print();
     std::pair<int, int> shape();

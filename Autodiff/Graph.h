@@ -17,8 +17,10 @@ class Graph{
     Node* _scalar_constant(double data);
 
     Node* _add(Node* a, Node* b);
+    Node* _sub(Node* a, Node* b);
     Node* _matmul(Node* a, Node* b);
     Node* _trans(Node* a);
+    Node* _neg(Node* a);
 
     Node* _mul(Node*a , Node*b);
     Node* _mul(double a, Node*b);

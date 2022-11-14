@@ -16,13 +16,66 @@ void Transpose::backward(){
     inputs[0]->gradient = add(inputs[0]->gradient, this->gradient.transpose());
 }
 
-Add::Add(Node* a , Node* b, int count){
-        // ::count++;
-        add_count = count;
-        inputs.push_back(a);
-        inputs.push_back(b);
-        this->name = "Add:" + std::to_string(add_count);
-        this->forward(a, b); //the construction itself will do the forward pass
+Negative::Negative(Node* a, int count){
+    neg_count = count;
+    inputs.push_back(a);
+    this->name = "Negative: " + std::to_string(neg_count);
+    this->forward(a);
+}
+
+Node* Negative::forward(const Node* a){
+    this->data = inputs[0]->data.negative();
+    return this;
+}
+
+void Negative::backward(){
+    inputs[0]->gradient = add(inputs[0]->gradient, this->gradient.negative());
+}
+
+Sub::Sub(Node* a, Node* b, int count){
+    sub_count = count;
+    inputs.push_back(a);
+    inputs.push_back(b);
+    this->name = "Sub:" + std::to_string(sub_count);
+    this->forward(a, b);
+}
+
+Node* Sub::forward(const Node* a, const Node* b){
+    if(a->is_scalar && b->is_scalar){
+        this->ddata = a->ddata - b->ddata;
+        this->is_scalar = true; //you are a scalar now!
+        return this; //return yourself 
+    }
+    Tensor* c = new Tensor(a->data.m, a->data.n);
+    for(int i=0;i<a->data.m;i++){
+        for(int j=0;j<a->data.n;j++){
+            c->data[i][j] = a->data.data[i][j] - b->data.data[i][j];
+        }
+    } //this gradient should be zero and also initialized
+    // Node* n_c = new Node(*c);
+    this->data = *c;
+    this->gradient = Tensor(c->m, c->n); //#!!!!!!! I am initializing my gradient tensor to all zeros ? is this fine!!?
+    return this;
+}
+
+void Sub::backward()
+{
+    if(this->is_scalar){
+            inputs[0]->scalar_gradient += this->scalar_gradient;
+            inputs[1]->scalar_gradient -= this->scalar_gradient;
+            return;
+    }
+    inputs[0]->gradient = add(inputs[0]->gradient , this->gradient) ; //should be an addition to the gradient flow,, not a copy right?
+    inputs[1]->gradient = add(inputs[1]->gradient , this->gradient.negative()) ; //should be an addition to the gradient flow,, not a copy right?
+}
+
+Add::Add(Node* a, Node* b, int count){
+    // ::count++;
+    add_count = count;
+    inputs.push_back(a);
+    inputs.push_back(b);
+    this->name = "Add:" + std::to_string(add_count);
+    this->forward(a, b); //the construction itself will do the forward pass
 }
 
 Node* Add::forward(const Node* a, const Node* b)
@@ -50,6 +103,7 @@ void Add::backward()
         for (auto &x: inputs){
             x->scalar_gradient += this->scalar_gradient;
         }
+        return;
     }
     for(auto& x : inputs){
         x->gradient = add(x->gradient , this->gradient) ; //should be an addition to the gradient flow,, not a copy right?
