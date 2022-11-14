@@ -89,7 +89,6 @@ Tensor mul(double a, Tensor b){
             c->data[i][j] = a * b.data[i][j];
         }
     }
-    std::cout<<"Element wise Multiplication"<<std::endl;
     return *c;
 }
 
@@ -111,5 +110,4 @@ double full_sum(Tensor a){ //finds the sum of all elements in a two dimesnsional
         }
     }
     return *sum;
-    std::cout<<"Les go full sum complete"<<std::endl;
 }

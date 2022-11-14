@@ -16,8 +16,8 @@ class Add : public Operator{
     public:
     void backward();
     int add_count;
-    Add(Node& a , Node& b, int count);
-    Node& forward(const Node& a, const Node& b);
+    Add(Node* a , Node* b, int count);
+    Node* forward(const Node* a, const Node* b);
     // std::pair<Tensor, Tensor> backward(Tensor dout);
 };
 
@@ -25,8 +25,8 @@ class Multiply : public Operator{
     public:
     void backward();
     int mul_count;
-    Multiply(Node& a , Node& b , int count);
-    Node& forward(const Node& a, const Node& b);
+    Multiply(Node* a , Node* b , int count);
+    Node* forward(const Node* a, const Node* b);
     // std::pair<Tensor, Tensor> backward(Tensor dout);
 };
 
@@ -34,8 +34,8 @@ class Mul : public Operator{
     public:
     void backward();
     int mul_count;
-    Mul(Node& a , Node& b , int count);
-    Node& forward(const Node& a, const Node& b);
+    Mul(Node* a , Node* b , int count);
+    Node* forward(const Node* a, const Node* b);
     // std::pair<Tensor, Tensor> backward(Tensor dout);
 };
 
