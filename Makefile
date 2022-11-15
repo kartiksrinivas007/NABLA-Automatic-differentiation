@@ -1,64 +1,66 @@
-LEXERDIR = Lexer/
-PARSERDIR = Parser/
-LEXERFILE = $(LEXERDIR)lexer.l
-PARSERFILE = $(PARSERDIR)grammar.y
-BUILDDIR = Build/
+ASTDIR = ast
+LEXERDIR = Lexer
+PARSERDIR = Parser
+SYMBOLDIR = Symbol_table
+SEMANTICDIR = semantic
+BUILDDIR = Build
+LEXERFILE = $(LEXERDIR)/lexer.l
+PARSERFILE = $(PARSERDIR)/grammar.y
 TARGET = exec
+CPP = clang++
 CPPFLAGS = -std=c++17
 
-# .PHONY: build run test_lexer test_parser clean
+# LLVMFLAGS = `llvm-config --cxxflags --ldflags --system-libs --libs core`
 
-# $(TARGET): $(LEXERFILE) $(PARSERFILE)
-# 	mkdir -p $(BUILDDIR)
-# 	cd $(BUILDDIR);\
-# 	bison -d ../$(PARSERFILE); lex ../$(LEXERFILE);\
-# 	clang++ ${CPPFLAGS} grammar.tab.c lex.yy.c -o $(TARGET)
-# 	cp $(BUILDDIR)$(TARGET) $(TARGET)
+.PHONY: build $(LEXERDIR) $(PARSERDIR) ${BUILDDIR} ${ASTDIR} ${SEMANTICDIR} ${SYMBOLDIR} debug test_lexer test_parser clean
+.SILENT: $(LEXERDIR) $(PARSERDIR) ${BUILDDIR} ${ASTDIR} ${SEMANTICDIR} ${SYMBOLDIR}
 
-# build: Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp ast/ast.h
-# 	mkdir -p $(BUILDDIR)
-# 	clang++ ${CPPFLAGS} -o ${TARGET} Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp
-# 	cp ${TARGET} $(BUILDDIR)${TARGET}
+build: $(LEXERDIR) $(PARSERDIR) ${BUILDDIR} ${SEMANTICDIR} ${SYMBOLDIR}
+	clang++ ${CPPFLAGS} -o ${TARGET} Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp semantic/traversals.cpp Symbol_table/sym.cpp
+	cp ${TARGET} $(BUILDDIR)/${TARGET}
 
-# debug: Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp ast/ast.h copy_all
-# 	mkdir -p $(BUILDDIR)
-# 	cd $(BUILDDIR) &&\
-# 	g++ -g -o ${TARGET} grammar.tab.c lex.yy.c ast.cpp
+debug: $(LEXERDIR) $(PARSERDIR) ${BUILDDIR} ${ASTDIR} ${SEMANTICDIR} ${SYMBOLDIR}
+	clang++ Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp semantic/traversals.cpp Symbol_table/sym.cpp ${CPPFLAGS} -g -o ${BUILDDIR}/debug.out 
+	cp test.nb ${BUILDDIR}
 
-# copy_all:
-# 	cp  Lexer/*.l $(BUILDDIR)
-# 	cp  Lexer/*.c $(BUILDDIR)
-# 	cp  Parser/*.h $(BUILDDIR)
-# 	cp  Parser/*.c $(BUILDDIR)
-# 	cp  Parser/*.y $(BUILDDIR)
-# 	cp  ast/*.h $(BUILDDIR)
-# 	cp  ast/*.cpp $(BUILDDIR)
-# 	cp  test.nb $(BUILDDIR)
+${BUILDDIR}:
+	mkdir -p ${BUILDDIR}
 
-# Parser/grammar.tab.c: Parser/grammar.y
-# 	cd Parser && make build
+$(LEXERDIR): ${BUILDDIR}
+	$(MAKE) --no-print-directory -C $@ build
+	cp $(LEXERDIR)/*.* $(BUILDDIR)
 
-# Lexer/lex.yy.c: Lexer/lexer.l Parser/grammar.tab.h
-# 	cd Lexer && make build
+$(PARSERDIR): ${BUILDDIR}
+	$(MAKE) --no-print-directory -C $@ build
+	cp $(PARSERDIR)/*.* $(BUILDDIR)
 
-# test_lexer: 
-# 	cd $(LEXERDIR); make test
+${ASTDIR}: ${BUILDDIR}
+	cp ${ASTDIR}/*.* $(BUILDDIR)
 
-# test_parser:
-# 	cd $(PARSERDIR); make test
+${SEMANTICDIR}: ${BUILDDIR}
+	cp ${SEMANTICDIR}/*.* $(BUILDDIR)
 
-# clean:
-# 	rm -f *.out
-# 	rm -f **/*.out
-# 	rm -f *.tab.c
-# 	rm -f **/*.tab.c
-# 	rm -f *.tab.h
-# 	rm -f **/*.tab.h
-# 	rm -f *.yy.c
-# 	rm -f **/*.yy.c
-# 	rm -f $(BUILDDIR)/*
+${SYMBOLDIR}: ${BUILDDIR}
+	cp ${SYMBOLDIR}/*.* $(BUILDDIR)
 
-our_build: ${LEXERFILE} ${PARSERFILE} ast/ast.cpp ast/ast.h
+test_lexer: $(LEXERDIR)
+	$(MAKE) -C $< test
+
+test_parser: $(PARSERDIR)
+	$(MAKE) -C $< test
+
+clean:
+	rm -rf $(BUILDDIR)
+	rm -f $(TARGET)
+	$(MAKE) --no-print-directory -C $(LEXERDIR) clean
+	$(MAKE) --no-print-directory -C $(PARSERDIR) clean
+
+our_build: ${LEXERFILE} ${PARSERFILE} ast/ast.cpp ast/ast.h 
 	flex ${LEXERFILE} && mv lex.yy.c Lexer/lex.yy.c
 	bison -d ${PARSERFILE} && mv grammar.tab.c Parser/grammar.tab.c && mv grammar.tab.h Parser/grammar.tab.h
-	clang++ ${CPPFLAGS} Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp -o ${TARGET} 
+	clang++ ${CPPFLAGS}  Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp  -o ${TARGET} 
+
+our_build2: ${LEXERFILE} ${PARSERFILE} ast/ast.cpp ast/ast.h
+	flex ${LEXERFILE} && mv lex.yy.c Lexer/lex.yy.c
+	bison -d ${PARSERFILE} && mv grammar.tab.c Parser/grammar.tab.c && mv grammar.tab.h Parser/grammar.tab.h
+	clang++ ${CPPFLAGS} Parser/grammar.tab.c Lexer/lex.yy.c ast/ast.cpp semantic/traversals.cpp Symbol_table/sym.cpp -o ${TARGET} 

@@ -1,15 +1,21 @@
 %code requires
 {
 	#include "../ast/ast.h"
+	#include "../semantic/traversal.h"
+	/* #include "../Symbol_table/sym.h" */
 }
 %{
 #include<stdio.h>
 #include<stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
+#include <fstream>
 #include <stdarg.h>
 #include <string.h>
+#include <iomanip>
+#include <vector>
+#include <unordered_map>
+#include "../Symbol_table/sym.h"
 
 extern int yylex();
 extern FILE* yyin;
@@ -29,10 +35,15 @@ extern int yycolumn;
 extern char yytext[];
 extern char linebuf[];
 extern const char* filename;
+
 // extern void yyerror(char *);
 struct YYLTYPE;
 extern void lyyerror(struct YYLTYPE t,char *s,...);
 extern void warning(const char*);
+
+std::unordered_map<std::string, SymTabItem> *symbolTable=new std::unordered_map<std::string,SymTabItem>(); 
+std::string dataType;
+std::string type;
 %}
 
 // TODOs: 
@@ -120,7 +131,7 @@ extern void warning(const char*);
 %locations
 %%
 
-start : declarations operations gradient {$$ = new Start($1,NULL,$3); root = $$;}
+start : declarations operations gradient {$$ = new Start($1,$2,$3, symbolTable); root = $$;}
 	;
 
 
@@ -137,15 +148,15 @@ decl : grad_specifier type_specifier init_declarator ';' {$$ = new Decl($1, $2, 
 	;
 
 grad_specifier 
-	: CNS {$$ = GradSpecifier::CNS;}
-	| VAR {$$ = GradSpecifier::VAR;}
+	: CNS {$$ = GradSpecifier::CNS;type= $1;}
+	| VAR {$$ = GradSpecifier::VAR;type= $1;}
 	;
 
-type_specifier : CHAR {$$ = TypeSpecifier::CHAR;}
-	| INT	{$$ = TypeSpecifier::INT;}
-	| FLOAT	{$$ = TypeSpecifier::FLOAT;}
-	| BOOL	{$$ = TypeSpecifier::BOOL;}
-	| TENSOR	{$$ = TypeSpecifier::TENSOR;}
+type_specifier : CHAR {$$ = TypeSpecifier::CHAR;dataType= $1;}
+	| INT	{$$ = TypeSpecifier::INT;dataType= $1;}
+	| FLOAT	{$$ = TypeSpecifier::FLOAT;dataType= $1;}
+	| BOOL	{$$ = TypeSpecifier::BOOL;dataType= $1;}
+	| TENSOR	{$$ = TypeSpecifier::TENSOR;dataType= $1;}
 	;
 
 init_declarator 
@@ -154,8 +165,8 @@ init_declarator
 	;
 
 declarator 
-	: IDENTIFIER {$$ = new Declarator($1); std::cout << "Decl: " << $$->name << std::endl;}
-	| declarator'[' INT_CONST ']' {$$->Dimensions.push_back($3);  std::cout <<"Wassup: " << $3 << " " << $$->Dimensions.size() << std::endl;}
+	: IDENTIFIER {$$ = new Declarator($1);insertToSymbTab(symbolTable,yytext,yylineno,yycolumn,dataType,type);std::cout << "Decl: " << $$->name << std::endl;}
+	| declarator'[' INT_CONST ']' {$$->Dimensions.push_back($3);search(symbolTable,$$->name)->Dims.push_back($3);  std::cout <<"Wassup: " << $3 << " " << $$->Dimensions.size() << std::endl;}
 	;
 
 initializer
@@ -222,7 +233,7 @@ multiplicative_exp
 	;
 
 lib_exp 
-	: IDENTIFIER {$$ = new UnaryExpr(nullptr, std::nullopt, $1, nullptr);}
+	: IDENTIFIER {$$ = new UnaryExpr(nullptr, std::nullopt, $1, nullptr);Undeclaration_Error(symbolTable,$1);}
 	| lib_funcs '(' exp ')' {$$ = new UnaryExpr($3, $1, "", nullptr);}
 	| constant {$$ = new UnaryExpr(nullptr, std::nullopt, "", $1);}
 	;
@@ -255,6 +266,7 @@ grad_stmt
 
 
 %%
+
 
 void yyerror(const char *s)
 {
@@ -322,6 +334,30 @@ int main(int argc, char const *argv[])
 		filename = "(stdin)";
 	}
 	yyparse();
+	std::cout<<(*symbolTable).size()<<"\n";
+	printf("Name\tDatatype\tVartype\tRow\tCol\n");
+	for(const auto& x:(*symbolTable)){
+		std::cout<< x.first;
+		std::cout<<std::setw(10)<<x.second.dataType;
+		std::cout<<std::setw(10)<<x.second.type;
+		std::cout<<std::setw(10)<<x.second.rowNum;
+		std::cout<<std::setw(10)<<x.second.colNum;
+		std::cout<<"[";
+		for(auto& y: x.second.Dims){
+			std::cout<<y<<",";
+		}
+		std::cout<<"]";
+		std::cout<<"\n";
+	}
+	std::ofstream out("output.cpp");
+
+
+	/* root->transpile(out); */
+	/* traverse_gradient(root->GradStmtList); */
+	/* traverse_gradient2(root); */
+	/* traverse_declarations2(root); */
 	
+	traverse_operations(root);
 	return 0;
 }
+
