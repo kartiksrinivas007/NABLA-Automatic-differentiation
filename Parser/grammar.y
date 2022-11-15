@@ -21,6 +21,7 @@ extern int yylex();
 extern FILE* yyin;
 void yyerror(const char *);
 
+static int error_count = 0;
 
 #ifndef DEBUG 
 	#define SHOW printf
@@ -269,17 +270,18 @@ grad_stmt
 
 
 void yyerror(const char *s)
-{
-		fprintf(stderr, "%s:%d:%d:\e[1;31m error:\e[0m %s at %s\n%*d |%s\n",filename, yylineno , yycolumn, s, yytext,(int)(strlen(filename)-1), yylineno, linebuf);
+{	
+	error_count++;
+	fprintf(stderr, "%s:%d:%d:\e[1;31m error:\e[0m %s at %s\n%*d |%s\n",filename, yylineno , yycolumn, s, yytext,(int)(strlen(filename)-1), yylineno, linebuf);
+	
+	if(yylloc.first_line == yylloc.last_line){
+		fprintf(stderr, "%*s\e[1;31m%*s", (int)(strlen(filename)+1),"|",yylloc.first_column,"^");
 		
-		if(yylloc.first_line == yylloc.last_line){
-			fprintf(stderr, "%*s\e[1;31m%*s", (int)(strlen(filename)+1),"|",yylloc.first_column,"^");
-			
-			for(int i = yylloc.first_column+1; i<=yylloc.last_column;i++){
-				fprintf(stderr, "_");
-				}
-			fprintf(stderr, "\e[0m\n\n");
-		}
+		for(int i = yylloc.first_column+1; i<=yylloc.last_column;i++){
+			fprintf(stderr, "_");
+			}
+		fprintf(stderr, "\e[0m\n\n");
+	}
 }
 
 void warning(const char* s){
@@ -296,6 +298,8 @@ void warning(const char* s){
 }
 
 void lyyerror(YYLTYPE t,char *s,...){
+	error_count++;
+	
 	va_list ap;
 	va_start(ap,s);
 
@@ -313,44 +317,41 @@ void lyyerror(YYLTYPE t,char *s,...){
 	
 }
 
+bool verbose = false;
+
 int main(int argc, char const *argv[])
 {
-	// printf("Input argument Number : %d", argc);
-	/* Parent p;
-	p.func();
-	Child c;
-	c.func();
-	// including ast.cpp statement class
-	Statement *s = new Statement(); */
+
 	if(argc > 1){
-		if((yyin = fopen(argv[1],"r")) == NULL){
-			perror(argv[1]);
-			return 1;
+		for(int i = 1; i < argc; i++){
+			if(strcmp(argv[i],"-v") == 0){
+				verbose = true;
+			}
+			else{
+				yyin = fopen(argv[i],"r");
+				filename = argv[i];
+				if(yyin == NULL){
+					fprintf(stderr, "File %s not found\n", argv[i]);
+					return 1;
+				}
+			}
 		}
-		/* filename = basename(argv[1]); */
-		printf("File name : %s\n", filename);
 	}
 	else{
 		filename = "(stdin)";
 	}
-	yyparse();
-	std::cout<<(*symbolTable).size()<<"\n";
-	printf("Name\tDatatype\tVartype\tRow\tCol\n");
-	for(const auto& x:(*symbolTable)){
-		std::cout<< x.first;
-		std::cout<<std::setw(10)<<x.second.dataType;
-		std::cout<<std::setw(10)<<x.second.type;
-		std::cout<<std::setw(10)<<x.second.rowNum;
-		std::cout<<std::setw(10)<<x.second.colNum;
-		std::cout<<"[";
-		for(auto& y: x.second.Dims){
-			std::cout<<y<<",";
-		}
-		std::cout<<"]";
-		std::cout<<"\n";
-	}
-	std::ofstream out("output.cpp");
 
+	yyparse();
+	if(error_count){
+		fprintf(stderr, "\e[1;31m%d error(s) found\e[0m\n", error_count);
+		return error_count;
+	}
+
+	std::ofstream out("output.cpp");
+	
+	if(verbose){
+		printSymbTab(symbolTable);
+	}
 
 	/* root->transpile(out); */
 	/* traverse_gradient(root->GradStmtList); */

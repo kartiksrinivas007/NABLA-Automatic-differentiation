@@ -31,3 +31,25 @@ SymTabItem* search(std::unordered_map<std::string,SymTabItem>* symbolTable,std::
 	}
 	return &(it->second);
 }
+
+void printSymbTab(std::unordered_map<std::string,SymTabItem>* symbolTable){
+    std::cout << "Symbol Table: ";
+    std::cout << (*symbolTable).size() << "\n";
+    printf("Name\tDatatype\tVartype\tRow\tCol\n");
+    for (const auto &x : (*symbolTable))
+    {
+        std::cout << x.first;
+        std::cout << std::setw(10) << x.second.dataType;
+        std::cout << std::setw(10) << x.second.type;
+        std::cout << std::setw(10) << x.second.rowNum;
+        std::cout << std::setw(10) << x.second.colNum;
+        std::cout << "[";
+        for (auto &y : x.second.Dims)
+        {
+            std::cout << y << ",";
+        }
+        std::cout << "]";
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+}

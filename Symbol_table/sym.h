@@ -18,3 +18,4 @@ class SymTabItem{
 void insertToSymbTab(std::unordered_map<std::string,SymTabItem>* ,char* ,int ,int ,std::string ,std::string);
 void Undeclaration_Error(std::unordered_map<std::string,SymTabItem>* ,std::string );
 SymTabItem* search(std::unordered_map<std::string,SymTabItem>* ,std::string);
+void printSymbTab(std::unordered_map<std::string,SymTabItem>* );
