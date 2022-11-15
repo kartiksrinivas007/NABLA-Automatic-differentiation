@@ -1,25 +1,37 @@
 EXEC = parser.out
+BUILDDIR = Build
 BISON = bison
+CC = clang++
+CFLAGS = -g -std=c++17
 
-.SILENT: test run ../Lexer/lex.yy.c
+OBJECTS = $(BUILDDIR)/grammar.tab.o $(BUILDDIR)/lex.yy.o
+
+.SILENT: test run
 .PHONY: clean build test run
 
-$(EXEC) : grammar.y ../Lexer/lex.yy.c
-	bison -d grammar.y
-	g++ grammar.tab.c ../Lexer/lex.yy.c ../ast/ast.cpp -o $(EXEC) 
+$(EXEC): $(OBJECTS)
+	$(CC) -o $(EXEC) ${OBJECTS} $(CFLAGS)
 
-../Lexer/lex.yy.c: ../Lexer/lexer.l
-	cd ../Lexer && make build && cp lex.yy.c ../Parser
+debug: $(OBJECTS)
+	$(CC) -o debug.out ${OBJECTS} $(CFLAGS)
 
-build : grammar.y
+grammar.tab.c grammar.tab.h: grammar.y
 	$(BISON) -d grammar.y
+	
+lex.yy.c: lexer.l grammar.tab.h
+	lex lexer.l
+
+$(BUILDDIR)/%.o: %.c
+	mkdir -p $(BUILDDIR)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 test: ${EXEC}
 	cd Test && ./test.sh
 
-run: $(EXEC)
-	./$(EXEC) < Test/tmp.txt
-
-clean: 
+clean:
+	rm -f *.yy.c
+	rm -f *.tab.c
+	rm -f *.tab.h
 	rm -f *.out
-	rm -f *.tab.*
+	rm -f $(BUILDDIR)/*.o
+	rm -f $(BUILDDIR)/*.out
