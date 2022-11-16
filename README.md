@@ -40,37 +40,25 @@ After this we will be able to use the chain rule to calculate the gradients of t
 
 To see the class Hierarchy please switch to the branch `AST` and see files `ast.h` and `ast.cpp`
 
-## Testing The Lexer
+## Testing
 
 ---
 
-Run the Following commands to test the Lexer,
+Go inside the lexer folder and run these commands to test lexer
 ```console
-make build
-make test_lexer
+make 
+make test
 ```
-To run the parser and the Lexer jointly please use the following commands 
 
+Go inside the Parser folder and run these commands to test Parser
 ```console
-make build
-make test_parser
+make 
+make test
 ```
 
-These will also work
-
-```bash
-yacc -d Parser/grammar.y && lex Lexer/lexer.l && gcc lex.yy.c y.tab.c -o exec 
-./exec < Parser/Test/err_ex01.nb  
-```
-
-## Symbol table 
-
----
-
-Please switch to the branch symbol-table
-
+Go inside the Semantic folder and run these commands to test semantic analysis
 ```console
-git checkout symbol-table
-make build
-echo "Now run any Test case under Parser/Test"
+make 
+make test
 ```
+
