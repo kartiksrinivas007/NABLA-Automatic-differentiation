@@ -139,7 +139,7 @@ Node* Multiply :: forward(const Node* a, const Node* b)
 void Multiply :: backward(){
     this->inputs[0]->gradient = matmul(this->gradient, inputs[1]->data.transpose());
     this->inputs[1]->gradient = matmul(inputs[0]->data.transpose(), this->gradient);
-    std::cout<<"Setting gradients for matmul op"<<std::endl;
+    // std::cout<<"Setting gradients for matmul op"<<std::endl;
 }
 
 Mul::Mul(Node* a , Node* b , int count){
