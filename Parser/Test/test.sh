@@ -6,7 +6,9 @@ passed=0
 failed=0
 if [ -f ${EXEC} ]
 then  
-    echo "Checking correct programs"
+    echo -e "\e[1mTesting correct files\e[0m"
+    echo "---------------------"
+
     for file in ${CORR_TESTFILES}
     do
         ${EXEC} ${file} > log  2>&1
@@ -30,7 +32,10 @@ fi
 
 # Checking for Error code
 
-echo "Checking for incorrect programs"
+
+echo -e "\e[1mTesting incorrect files\e[0m"
+echo "---------------------"
+
 ERROR_FILES=`ls *.nb | grep err`
 for file in $ERROR_FILES
 do

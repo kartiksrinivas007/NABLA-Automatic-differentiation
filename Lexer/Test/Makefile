@@ -1,12 +1,8 @@
 all-tests := $(addsuffix .test, $(basename $(wildcard *.test-in)))
 prog-tests := $(addsuffix .nb.test, $(basename $(wildcard *.nb)))
-EXEC := test_lexer.out
+EXEC := lexer.out
 
 .PHONY : test all %.test
-
-$(EXEC) :
-		lex test_lexer.l
-		gcc -o $(EXEC) lex.yy.c 
 
 test : $(EXEC) $(all-tests) $(prog-tests)
 		(grep 1 .command.status > .command.null &&\
