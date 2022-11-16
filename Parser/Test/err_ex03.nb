@@ -1,8 +1,8 @@
 declare{
-    cns Tensor a[2][2] = [1, 2], [3, 4];   //ERROR_EXPECTED
+    cns Tensor a[2][2] = [[1, 2], [3, 4]];   
     cns Tensor b[2][2] = [[5, 6], [7, 8]]; 
     var Tensor c[2][2];
-    var TEnsor d[2][2];
+    var TEnsor d[2][2];   //ERROR_EXPECTED
 }
 operations{
       c= 2*a;

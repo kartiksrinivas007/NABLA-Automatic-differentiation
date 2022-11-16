@@ -1,10 +1,10 @@
 declare{
-    cns int a = 6;
+    cns int a = 'b';   //ERROR_EXPECTED
     var int c;
 }
 operations{
-    c = sin(a+cos(a););  //ERROR_EXPECTED
-}
+    c = sin(a+cos(a));  
 gradient{
+    backward(c);
     grad(c);
 }
