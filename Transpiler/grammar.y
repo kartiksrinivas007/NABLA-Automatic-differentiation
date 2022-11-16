@@ -352,11 +352,9 @@ int main(int argc, char const *argv[])
 		printSymbTab(symbolTable);
 	}
 
-	/* traverse_gradient(root->GradStmtList); */
-	/* traverse_gradient2(root); */
-	/* traverse_declarations2(root); */
-	
-	/* traverse_operations(root); */
+	traverse_declarations(root);
+	traverse_gradient(root);
+	traverse_operations(root);
 	root->transpile(out);
 	return 0;
 }
