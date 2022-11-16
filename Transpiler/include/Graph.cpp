@@ -127,12 +127,12 @@ void Graph::backward(Node* f){
             std::cout << "Output should be a 1x1 Tensor or a scalar !" << std::endl;
             return;
         }
-        std::cout<<"Output is a 1x1 Tensor"<<std::endl;
+        // std::cout<<"Output is a 1x1 Tensor"<<std::endl;
         f->gradient = Tensor(1, 1, {{1}});
-        std::cout<<"Address of f "<< f <<std::endl; 
+        // std::cout<<"Address of f "<< f <<std::endl; 
         reverse(operators.begin(), operators.end());
         for(auto& op : operators){ //DURING THE DEBUG PHASE , F AND THE FINAL OP ARE POINTING TO DIFFERENT LOCATIONS!!!!!
-            std::cout<<"Address of op : "<<op<<std::endl;
+            // std::cout<<"Address of op : "<<op<<std::endl;
             if(!op->is_visited){
                 op->backward();
                 op->is_visited = true;

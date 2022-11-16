@@ -445,7 +445,7 @@ std::map<AssignmentOperator, std::string> AssignmentOperatorMapCpp = {
 void Start::transpile(std::ostream &out, int tab) const
 {
     out << "#include <iostream>" << std::endl;
-    out << "#include \"Graph.h\"" << std::endl
+    out << "#include \"include/Graph.h\"" << std::endl
         << std::endl;
     out << "using namespace std;" << std::endl
         << std::endl;
@@ -474,7 +474,7 @@ void Start::transpile(std::ostream &out, int tab) const
 void Decl::transpile(std::ostream &out, int tab) const
 {
     out << std::string("\t", tab)
-        << "Node& " << this->InitDeclaratorList->declarator->name
+        << "Node* " << this->InitDeclaratorList->declarator->name
         << " = "
         << "_g.";
 
@@ -582,7 +582,12 @@ void Expr::transpile(std::ostream &out, int tab) const
 
 void GradStmt::transpile(std::ostream &out, int tab) const
 {
-    out << std::string("\t", tab) << "_g." << GradTypeMapCpp[this->grad_type] << "(" << this->name << ");" << std::endl;
+    if( this->grad_type == GradType::GRAD ){
+        out << std::string("\t", tab) << this->name << "->gradient.print();" << std::endl;
+    }
+    else{
+        out << std::string("\t", tab) << "_g." << GradTypeMapCpp[this->grad_type] << "(" << this->name << ");" << std::endl;
+    }
 }
 
 // int main()

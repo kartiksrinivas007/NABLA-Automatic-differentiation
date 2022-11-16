@@ -356,7 +356,7 @@ int main(int argc, char const *argv[])
 	/* traverse_gradient2(root); */
 	/* traverse_declarations2(root); */
 	
-	traverse_operations(root);
+	/* traverse_operations(root); */
 	root->transpile(out);
 	return 0;
 }
