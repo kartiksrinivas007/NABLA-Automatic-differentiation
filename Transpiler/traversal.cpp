@@ -1,5 +1,18 @@
 #include "traversal.h"
 
+template <typename S>
+std::ostream &operator<<(std::ostream &os, const std::vector<S> &vector)
+{
+    // Printing all the elements
+    // using <<
+    for (auto element : vector)
+    {
+        os << element << " ";
+    }
+    os << "\n";
+    return os;
+}
+
 void traverse_declarations(std::vector<Decl *> *DeclList)
 {
     for (auto decl : *DeclList)
@@ -76,6 +89,7 @@ void ShapeTensor(Initializer *init, std::vector<int> &vec)
     return;
 }
 
+// Semantic Analysis for Declarations part of the program
 void traverse_declarations2(Start *root)
 {
     std::vector<Decl *> *DeclList = root->DeclList;
@@ -114,13 +128,16 @@ void traverse_declarations2(Start *root)
             {
                 if (decl->InitDeclaratorList->initializer->isScalar == false)
                 {
-                    std::cout << "Fatal: Type mismatch, tensor value being assigned to scalar: " << decl->InitDeclaratorList->declarator->name << std::endl;
+                    // Find the row and col from symbol table
+                    SymTabItem *symTabItem = search(root->symbolTable, decl->InitDeclaratorList->declarator->name);
+                    std::cout << "Fatal: Type mismatch at " << symTabItem->rowNum << ":" << symTabItem->colNum << "\n\tTensor value being assigned to scalar: " << decl->InitDeclaratorList->declarator->name << std::endl;
                 }
             }
             //  Checks if the scalar variable declared is of scalar type and not tensor
             if (decl->InitDeclaratorList->declarator->Dimensions.size() != 0)
             {
-                std::cout << "Fatal: Type mismatch, scalar variable is not arrayable(tensor) type: " << decl->InitDeclaratorList->declarator->name << std::endl;
+                SymTabItem *symTabItem = search(root->symbolTable, decl->InitDeclaratorList->declarator->name);
+                std::cout << "Fatal: Type mismatch at " << symTabItem->rowNum << ":" << symTabItem->colNum << "\n\tScalar variable is not arrayable(tensor) type: " << decl->InitDeclaratorList->declarator->name << std::endl;
             }
         }
         //  Check if float value is being assigned to non float type variable
@@ -132,7 +149,8 @@ void traverse_declarations2(Start *root)
                 {
                     if (decl->InitDeclaratorList->initializer->isScalar == true && decl->InitDeclaratorList->initializer->val.cvalue->isInt == false)
                     {
-                        std::cout << "Fatal: Type mismatch, float value being assigned to non float variable: " << decl->InitDeclaratorList->declarator->name << std::endl;
+                        SymTabItem *symTabItem = search(root->symbolTable, decl->InitDeclaratorList->declarator->name);
+                        std::cout << "Fatal: Type mismatch at " << symTabItem->rowNum << ":" << symTabItem->colNum << "\n\tFloat value being assigned to non float variable: " << decl->InitDeclaratorList->declarator->name << std::endl;
                     }
                 }
             }
@@ -141,18 +159,22 @@ void traverse_declarations2(Start *root)
         //  Check for tensors
         if (decl->DataType == TypeSpecifier::TENSOR)
         {
+            // Check if tensor shape is declared
             if (decl->InitDeclaratorList->declarator->Dimensions.size() == 0)
             {
-                std::cout << "Fatal: Tensor variable shape not declared: " << decl->InitDeclaratorList->declarator->name << std::endl;
+                SymTabItem *symTabItem = search(root->symbolTable, decl->InitDeclaratorList->declarator->name);
+                std::cout << "Fatal: Type mismatch at " << symTabItem->rowNum << ":" << symTabItem->colNum << "\n\tTensor variable shape not declared: " << decl->InitDeclaratorList->declarator->name << std::endl;
             }
             else if (decl->InitDeclaratorList->initializer != NULL)
             {
+                // Check if Tensor shape is uniform
                 std::vector<int> tensor_declare_shape = decl->InitDeclaratorList->declarator->Dimensions;
                 std::vector<int> tensor_init_shape;
                 int size = isUniformSize(decl->InitDeclaratorList->initializer, tensor_init_shape);
                 if (size == -1)
                 {
-                    std::cout << "Fatal: Tensor dimensions not uniform: " << decl->InitDeclaratorList->declarator->name << std::endl;
+                    SymTabItem *symTabItem = search(root->symbolTable, decl->InitDeclaratorList->declarator->name);
+                    std::cout << "Fatal: Type mismatch at " << symTabItem->rowNum << ":" << symTabItem->colNum << "\n\tTensor dimensions not uniform: " << decl->InitDeclaratorList->declarator->name << std::endl;
                 }
                 std::cout << decl->InitDeclaratorList->declarator->name << " " << size << std::endl;
                 if (size != -1)
@@ -191,14 +213,43 @@ void traverse_operations(Start *root)
         }
         assgn_stmt->expr->initialize_expression_node_info(root->symbolTable);
 
-        // TODO: handle shorthand
-        // TODO: add errors for bool and char
-    }
-}
+        std::cout << "Dimensions of expr " << assgn_stmt->expr->dimensions << std::endl;
+        if (symTabItem->dataType == "int")
+        {
+            if (assgn_stmt->expr->DataType != TypeSpecifier::INT)
+            {
+                std::cout << "Fatal: RHS and LHS not of same type\n";
+                std::cout << "LHS of type: " << symTabItem->dataType << "\n";
+                exit(0);
+                // TODO: handle shorthand
+                // TODO: add errors for bool and char
+            }
+        }
+        else if (symTabItem->dataType == "float")
+        {
+            if (assgn_stmt->expr->DataType == TypeSpecifier::TENSOR)
+            {
+                std::cout << "Fatal: RHS and LHS not of same type\n";
+                std::cout << "LHS of type: " << symTabItem->dataType << "\n";
+                exit(0);
+            }
+        }
+        else if (symTabItem->dataType == "Tensor")
+        {
+            if (assgn_stmt->expr->DataType != TypeSpecifier::TENSOR)
+            {
+                std::cout << "Fatal: RHS and LHS not of same type\n";
+                std::cout << "LHS of type: " << symTabItem->dataType << "\n";
+                exit(0);
+            }
 
-// for initializing type and dimensions(if Tensor) of expression(class Expr) nodes
-void initialize_expression_node_info(Expr *expr)
-{
+            if (assgn_stmt->expr->dimensions != symTabItem->Dims)
+            {
+                std::cout << "Fatal: RHS and LHS not of same dimensions\n";
+                exit(0);
+            }
+        }
+    }
 }
 
 void traverse_gradient(std::vector<GradStmt *> *GradStmtList)
@@ -243,17 +294,17 @@ void traverse_gradient(std::vector<GradStmt *> *GradStmtList)
     }
 }
 
+// Semantic Analysis for Gradient part of the program
 void traverse_gradient2(Start *root)
 {
     std::vector<GradStmt *> *GradStmtList = root->GradStmtList;
     bool anyError = false;
-    std::cout << "Gradient Semantic Analysis" << std::endl;
+    // std::cout << "Gradient Semantic Analysis" << std::endl;
     // checking if gradient is being done for vars only
     for (auto gradStmt : *GradStmtList)
     {
         std::string gradName = gradStmt->name;
-        // find(name in symbol table and get its type as cns or var)
-        //  if not found then throw error
+        // Checking if variable exists
         SymTabItem *symTabItem = search(root->symbolTable, gradName);
         if (symTabItem == NULL)
         {
@@ -262,9 +313,11 @@ void traverse_gradient2(Start *root)
         }
         else
         {
+            // Checking if variable is a constant as its gradient cannot be taken
             if (symTabItem->type == "cns")
             {
-                std::cout << "Fatal: Cannot take gradient of a constant: " << gradName << std::endl;
+                SymTabItem *symTabItem = search(root->symbolTable, gradStmt->name);
+                std::cout << "Fatal: Type mismatch at " << symTabItem->rowNum << ":" << symTabItem->colNum << "\n\tCannot take gradient of a constant: " << gradName << std::endl;
                 // anyError = true;
             }
         }
@@ -285,7 +338,8 @@ void traverse_gradient2(Start *root)
             {
                 if (gradStmt_type == GradType::GRAD)
                 {
-                    std::cout << "Fatal: Cannot take gradient of: '" << gradStmt_name << "' without taking backward first" << std::endl;
+                    SymTabItem *symTabItem = search(root->symbolTable, gradStmt->name);
+                    std::cout << "Fatal: Type mismatch at " << symTabItem->rowNum << ":" << symTabItem->colNum << "\n\tCannot take gradient of: '" << gradStmt_name << "' without taking backward first" << std::endl;
                     anyError = true;
                 }
                 else
@@ -295,5 +349,5 @@ void traverse_gradient2(Start *root)
             }
         }
     }
-    std::cout << "Gradient Semantic Analysis Over" << std::endl;
+    // std::cout << "Gradient Semantic Analysis Over" << std::endl;
 }

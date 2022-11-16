@@ -2,6 +2,7 @@
 **/.vscode/**
 **/*.out
 **/exec
+**/nabla
 **/lex.yy.c
 **/y.tab.c
 **/y.tab.h
@@ -13,3 +14,4 @@ Build/
 Build/**
 Autodiff/autodiff
 docs/**
+**/output.cpp

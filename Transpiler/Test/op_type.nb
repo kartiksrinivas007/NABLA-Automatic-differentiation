@@ -1,0 +1,14 @@
+declare{
+    cns int a;
+    cns float b;
+    cns Tensor c[2][7];
+    var int d;
+}
+operations{
+    // a = b; // Type Error
+    // a = c; // Type Error
+    c = a; // Type Error
+}
+gradient{
+    backward(d);
+}

@@ -1,6 +1,19 @@
 #include "ast.h"
 // #include <iostream>
 
+template <typename S>
+std::ostream &operator<<(std::ostream &os, const std::vector<S> &vector)
+{
+    // Printing all the elements
+    // using <<
+    for (auto element : vector)
+    {
+        os << element << " ";
+    }
+    os << "\n";
+    return os;
+}
+
 Node::Node()
 {
     // std::cout << "Node::Node()" << std::endl;
@@ -95,6 +108,7 @@ AssgnStmt::AssgnStmt(std::string name, std::optional<AssignmentOperator> op, Exp
 
 Expr::Expr()
 {
+    this->dimensions = std::vector<int>();
 }
 
 void Expr::printExpression() {}
@@ -140,7 +154,11 @@ void BinaryExpr::printExpression()
 
 void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string, SymTabItem> *symbolTable)
 {
+    std::cout << "BinaryExpr::initialize_expression_node_info: " << this->op << std::endl;
+
+    std::cout << "lhs: " << std::endl;
     this->lhs->initialize_expression_node_info(symbolTable);
+    std::cout << "rhs: " << std::endl;
     this->rhs->initialize_expression_node_info(symbolTable);
 
     if (this->op == '+' || this->op == '-')
@@ -291,31 +309,34 @@ void UnaryExpr::printExpression()
 
 void UnaryExpr::initialize_expression_node_info(std::unordered_map<std::string, SymTabItem> *symbolTable)
 {
+    std::cout << "Entered unary expr" << std::endl;
     if (this->identifier != "")
     {
+        std::cout << "Identifier: " << this->identifier << std::endl;
         SymTabItem *symTabItem = search(symbolTable, this->identifier);
+        std::cout << "Here\n";
         if (symTabItem == NULL)
         {
             std::cout << "Fatal: Variable " << this->identifier << " not found" << std::endl;
             exit(0);
         }
 
-        if (symTabItem->dataType == "TENSOR")
+        if (symTabItem->dataType == "Tensor")
         {
             this->DataType = TypeSpecifier::TENSOR;
-            this->dimensions = this->expr->dimensions;
+            this->dimensions = symTabItem->Dims;
         }
-        else if (symTabItem->dataType == "INT")
+        else if (symTabItem->dataType == "int")
         {
             this->DataType = TypeSpecifier::INT;
         }
-        else if (symTabItem->dataType == "FLOAT")
+        else if (symTabItem->dataType == "float")
         {
             this->DataType = TypeSpecifier::FLOAT;
         }
         else
         {
-            std::cout << "Fatal: Unknown datatype" << std::endl;
+            std::cout << "Fatal: Unknown datatype of " << this->identifier << std::endl;
             exit(1);
         }
     }
