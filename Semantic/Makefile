@@ -1,5 +1,6 @@
-EXEC = nabla
+EXEC = semantic.out
 BUILDDIR = Build
+TESTDIR = Test
 FLEX = flex
 BISON = bison
 CXX = clang++
@@ -27,6 +28,9 @@ $(BUILDDIR)/%.o: %.c %.h
 $(BUILDDIR)/%.o: %.c
 	@mkdir -p $(BUILDDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+test: $(EXEC)
+	cd $(TESTDIR) && ./test.sh
 
 clean:
 	rm -f *.yy.c

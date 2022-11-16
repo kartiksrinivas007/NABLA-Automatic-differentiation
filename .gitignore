@@ -12,3 +12,4 @@ parser-op.txt
 Build/
 Build/**
 Autodiff/autodiff
+docs/**

@@ -98,6 +98,7 @@ decl_list
 	;
 
 decl : grad_specifier type_specifier init_declarator ';' 
+	| error ';' { yyerror("Syntax error in declaration"); yyerrok; }
 	;
 
 grad_specifier 
