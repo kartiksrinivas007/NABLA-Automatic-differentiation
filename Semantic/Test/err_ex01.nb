@@ -1,0 +1,10 @@
+declare{
+    cns int a = 6;
+    var int c;
+}
+operations{
+    c = sin(a+cos(a););  //ERROR_EXPECTED
+}
+gradient{
+    grad(c);
+}

@@ -1,6 +1,6 @@
 declare
 {
-    var int a  // ERROR_EXPECTED
+    var int a;
     cns int b;
 }
 operations{
