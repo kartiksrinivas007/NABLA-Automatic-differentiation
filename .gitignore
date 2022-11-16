@@ -13,5 +13,5 @@ parser-op.txt
 Build/
 Build/**
 Autodiff/autodiff
-docs/**
+**/docs/**
 **/output.cpp
