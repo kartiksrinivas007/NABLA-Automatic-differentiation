@@ -87,7 +87,7 @@ std::string type;
 
 }
 
-%token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD 
+%token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD TRANSPOSE
 %token<ival> INT_CONST 
 %token<fval> FLOAT_CONST 
 %token<string> CHAR_CONST 
@@ -243,6 +243,7 @@ lib_funcs
 	| COS {$$ = LibFuncs::COS;}
 	| LOG {$$ = LibFuncs::LOG;}
 	| EXP {$$ = LibFuncs::EXP;}
+	| TRANSPOSE {$$ = LibFuncs::TRANSPOSE;}
 	;
 
 // Gradient

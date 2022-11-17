@@ -45,7 +45,8 @@ enum class LibFuncs
     SIN,
     COS,
     LOG,
-    EXP
+    EXP,
+    TRANSPOSE
 };
 enum AssignmentOperator
 {
