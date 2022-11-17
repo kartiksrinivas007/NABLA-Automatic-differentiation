@@ -312,6 +312,7 @@ void UnaryExpr::initialize_expression_node_info(std::unordered_map<std::string, 
     std::cout << "Entered unary expr" << std::endl;
     if (this->identifier != "")
     {
+        // Identifier
         std::cout << "Identifier: " << this->identifier << std::endl;
         SymTabItem *symTabItem = search(symbolTable, this->identifier);
         std::cout << "Here\n";
@@ -342,6 +343,7 @@ void UnaryExpr::initialize_expression_node_info(std::unordered_map<std::string, 
     }
     else if (this->cvalue != nullptr)
     {
+        // Constant
         if (this->cvalue->isInt)
         {
             this->DataType = TypeSpecifier::INT;
@@ -353,9 +355,19 @@ void UnaryExpr::initialize_expression_node_info(std::unordered_map<std::string, 
     }
     else
     {
+        // libfunc
         this->expr->initialize_expression_node_info(symbolTable);
         this->DataType = this->expr->DataType;
-        this->dimensions = this->expr->dimensions;
+        if (this->libfunc == LibFuncs::TRANSPOSE)
+        {
+            this->dimensions = this->expr->dimensions;
+            std::reverse(this->dimensions.begin(), this->dimensions.end());
+        }
+        else
+        {
+            // SIN COS....
+            this->dimensions = this->expr->dimensions;
+        }
     }
 }
 
@@ -582,10 +594,12 @@ void Expr::transpile(std::ostream &out, int tab) const
 
 void GradStmt::transpile(std::ostream &out, int tab) const
 {
-    if( this->grad_type == GradType::GRAD ){
+    if (this->grad_type == GradType::GRAD)
+    {
         out << std::string("\t", tab) << this->name << "->gradient.print();" << std::endl;
     }
-    else{
+    else
+    {
         out << std::string("\t", tab) << "_g." << GradTypeMapCpp[this->grad_type] << "(" << this->name << ");" << std::endl;
     }
 }
