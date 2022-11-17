@@ -1,4 +1,5 @@
 #include "ast.h"
+#include <algorithm>
 // #include <iostream>
 
 template <typename S>

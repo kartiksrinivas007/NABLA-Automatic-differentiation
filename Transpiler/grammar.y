@@ -15,6 +15,12 @@
 #include <vector>
 #include <unordered_map>
 #include "sym.h"
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <array>
 
 extern int yylex();
 extern FILE* yyin;
@@ -317,6 +323,22 @@ void lyyerror(YYLTYPE t,char *s,...){
 	
 }
 
+std::string exec(const char *cmd)
+{
+    std::array<char, 128> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    if (!pipe)
+    {
+        throw std::runtime_error("popen() failed!");
+    }
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+    {
+        result += buffer.data();
+    }
+    return result;
+}
+
 bool verbose = false;
 
 int main(int argc, char const *argv[])
@@ -347,7 +369,8 @@ int main(int argc, char const *argv[])
 		return error_count;
 	}
 
-	std::ofstream out("output.cpp");
+	std::string outputFile = std::string(filename) + ".cpp";
+	std::ofstream out(outputFile);
 	
 	if(verbose){
 		printSymbTab(symbolTable);
@@ -357,6 +380,13 @@ int main(int argc, char const *argv[])
 	traverse_gradient(root);
 	traverse_operations(root);
 	root->transpile(out);
+
+	out.close();
+
+	std::string cmd = "g++ -std=c++17 "+ outputFile + " -L lib -lnb -o " + std::string(filename) + ".out";
+	std::cout << cmd << std::endl;
+	std::string result = exec(cmd.c_str());
+
 	return 0;
 }
 
