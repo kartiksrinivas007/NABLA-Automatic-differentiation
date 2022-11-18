@@ -445,6 +445,15 @@ void UnaryExpr::transpile(std::ostream &out, int tab) const
             case LibFuncs::COS:
                 out << "-g._cos";
                 break;
+            case LibFuncs::TRANSPOSE:
+                out << "_g._trans";
+                break;
+            case LibFuncs::EXP:
+                out << "_g._exp";
+                break;
+            case LibFuncs::LOG:
+                out << "_g._log";
+                break;
 
             default:
                 out << "Invalid libfunc";
@@ -502,7 +511,7 @@ std::map<AssignmentOperator, std::string> AssignmentOperatorMapCpp = {
 void Start::transpile(std::ostream &out, int tab) const
 {
     out << "#include <iostream>" << std::endl;
-    out << "#include \"include/Graph.h\"" << std::endl
+    out << "#include \"../include/Graph.h\"" << std::endl
         << std::endl;
     out << "using namespace std;" << std::endl
         << std::endl;
