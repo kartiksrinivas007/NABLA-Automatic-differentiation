@@ -199,23 +199,67 @@ void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string,
             }
         }
     }
-    else if (this->op == '*' || this->op == '/')
+    else if (this->op == '*')
     {
-        if (this->lhs->DataType == TypeSpecifier::TENSOR || this->rhs->DataType == TypeSpecifier::TENSOR)
+        // if both ints then int otherwise float
+        if (this->lhs->DataType == TypeSpecifier::INT && this->rhs->DataType == TypeSpecifier::INT)
         {
-            std::cout << "Fatal: * and / not supported on Tensors" << std::endl;
+            this->DataType = TypeSpecifier::INT;
+        }
+        else if (this->lhs->DataType == TypeSpecifier::FLOAT && this->rhs->DataType == TypeSpecifier::FLOAT)
+        {
+            this->DataType = TypeSpecifier::FLOAT;
+        }
+        else if (this->lhs->DataType == TypeSpecifier::TENSOR && this->rhs->DataType == TypeSpecifier::TENSOR)
+        {
+            this->DataType = TypeSpecifier::TENSOR;
+            if (this->lhs->dimensions != this->rhs->dimensions)
+            {
+                std::cout << "Fatal: Dimensions of operands for '*' do not match" << std::endl;
+                exit(1);
+            }
+            this->dimensions = this->lhs->dimensions;
+        }
+        else if (this->lhs->DataType == TypeSpecifier::TENSOR && this->rhs->DataType != TypeSpecifier::TENSOR)
+        {
+            this->DataType = TypeSpecifier::TENSOR;
+            this->dimensions = this->lhs->dimensions;
+        }
+        else if (this->lhs->DataType != TypeSpecifier::TENSOR && this->rhs->DataType == TypeSpecifier::TENSOR)
+        {
+            this->DataType = TypeSpecifier::TENSOR;
+            this->dimensions = this->rhs->dimensions;
+        }
+        else if (this->lhs->DataType == TypeSpecifier::FLOAT || this->rhs->DataType != TypeSpecifier::FLOAT)
+        {
+            this->DataType = TypeSpecifier::FLOAT;
         }
         else
         {
-            // if both ints then int otherwise float
-            if (this->lhs->DataType == TypeSpecifier::INT && this->rhs->DataType == TypeSpecifier::INT)
-            {
-                this->DataType = TypeSpecifier::INT;
-            }
-            else
-            {
-                this->DataType = TypeSpecifier::FLOAT;
-            }
+            std::cout << "Fatal: Invalid operands for '*'" << std::endl;
+            exit(1);
+        }
+    }
+    else if (this->op == '/')
+    {
+        if (this->rhs->DataType == TypeSpecifier::TENSOR)
+        {
+            std::cout << "Fatal: Anything divided by Tensor is not supported" << std::endl;
+            exit(1);
+        }
+
+        if (this->lhs->DataType == TypeSpecifier::TENSOR)
+        {
+            this->DataType = TypeSpecifier::TENSOR;
+            this->dimensions = this->lhs->dimensions;
+        }
+        else if (this->lhs->DataType == TypeSpecifier::INT && this->rhs->DataType == TypeSpecifier::INT)
+        {
+            this->DataType = TypeSpecifier::INT;
+        }
+        else
+        {
+            this->DataType = TypeSpecifier::FLOAT;
         }
     }
     else if (this->op == '@')
@@ -458,7 +502,7 @@ std::map<AssignmentOperator, std::string> AssignmentOperatorMapCpp = {
 void Start::transpile(std::ostream &out, int tab) const
 {
     out << "#include <iostream>" << std::endl;
-    out << "#include \"../include/Graph.h\"" << std::endl
+    out << "#include \"include/Graph.h\"" << std::endl
         << std::endl;
     out << "using namespace std;" << std::endl
         << std::endl;
