@@ -67,7 +67,8 @@ class GradStmt;
 enum class GradType
 {
     GRAD,
-    BACKWARD
+    BACKWARD,
+    PRINT
 };
 
 class Node

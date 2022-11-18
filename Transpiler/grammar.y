@@ -265,6 +265,7 @@ grad_stmt_list
 grad_type
 	: BACKWARD {$$ = GradType::BACKWARD;}
 	| GRAD {$$ = GradType::GRAD;}
+	| PRINT {$$ = GradType::PRINT;}
 	;
 
 grad_stmt 
