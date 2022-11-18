@@ -31,6 +31,16 @@ After this we will be able to use the chain rule to calculate the gradients of t
 
 ![alt text](Whitepaper/images/comp_graph2.png)
 
+## Documentation
+
+To generate the documentation for the project, run the following command in the root directory of the project
+
+```bash
+doxygen
+```
+
+The documentation for the project can be found [here](https://ganesh-rb.github.io/Nabla-documentation/)
+
 ## The Class Hierarchy
 
 ---
