@@ -1,0 +1,15 @@
+declare{
+    cns Tensor a[1][2][2]=[[[1,4],[2,3]]];
+    var Tensor b[2]=[6,9];
+    var Tensor c[1][1]=[[6]];
+    cns Tensor d[2][1]=[[1],[1]];
+    var Tensor e[1][2]=[[4,5]];
+}
+operations{
+    e = a@b;
+    c=e@d;
+}
+gradient{
+    backward(c);
+    grad(c);
+}
