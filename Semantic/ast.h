@@ -45,7 +45,8 @@ enum class LibFuncs
     SIN,
     COS,
     LOG,
-    EXP
+    EXP,
+    TRANSPOSE
 };
 enum AssignmentOperator
 {
@@ -66,7 +67,8 @@ class GradStmt;
 enum class GradType
 {
     GRAD,
-    BACKWARD
+    BACKWARD,
+    PRINT
 };
 
 class Node

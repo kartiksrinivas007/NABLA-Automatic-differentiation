@@ -1,5 +1,19 @@
 #include "ast.h"
+#include <algorithm>
 // #include <iostream>
+
+template <typename S>
+std::ostream &operator<<(std::ostream &os, const std::vector<S> &vector)
+{
+    // Printing all the elements
+    // using <<
+    for (auto element : vector)
+    {
+        os << element << " ";
+    }
+    os << "\n";
+    return os;
+}
 
 Node::Node()
 {
@@ -95,6 +109,7 @@ AssgnStmt::AssgnStmt(std::string name, std::optional<AssignmentOperator> op, Exp
 
 Expr::Expr()
 {
+    this->dimensions = std::vector<int>();
 }
 
 void Expr::printExpression() {}
@@ -140,7 +155,11 @@ void BinaryExpr::printExpression()
 
 void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string, SymTabItem> *symbolTable)
 {
+    std::cout << "BinaryExpr::initialize_expression_node_info: " << this->op << std::endl;
+
+    std::cout << "lhs: " << std::endl;
     this->lhs->initialize_expression_node_info(symbolTable);
+    std::cout << "rhs: " << std::endl;
     this->rhs->initialize_expression_node_info(symbolTable);
 
     if (this->op == '+' || this->op == '-')
@@ -180,23 +199,67 @@ void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string,
             }
         }
     }
-    else if (this->op == '*' || this->op == '/')
+    else if (this->op == '*')
     {
-        if (this->lhs->DataType == TypeSpecifier::TENSOR || this->rhs->DataType == TypeSpecifier::TENSOR)
+        // if both ints then int otherwise float
+        if (this->lhs->DataType == TypeSpecifier::INT && this->rhs->DataType == TypeSpecifier::INT)
         {
-            std::cout << "Fatal: * and / not supported on Tensors" << std::endl;
+            this->DataType = TypeSpecifier::INT;
+        }
+        else if (this->lhs->DataType == TypeSpecifier::FLOAT && this->rhs->DataType == TypeSpecifier::FLOAT)
+        {
+            this->DataType = TypeSpecifier::FLOAT;
+        }
+        else if (this->lhs->DataType == TypeSpecifier::TENSOR && this->rhs->DataType == TypeSpecifier::TENSOR)
+        {
+            this->DataType = TypeSpecifier::TENSOR;
+            if (this->lhs->dimensions != this->rhs->dimensions)
+            {
+                std::cout << "Fatal: Dimensions of operands for '*' do not match" << std::endl;
+                exit(1);
+            }
+            this->dimensions = this->lhs->dimensions;
+        }
+        else if (this->lhs->DataType == TypeSpecifier::TENSOR && this->rhs->DataType != TypeSpecifier::TENSOR)
+        {
+            this->DataType = TypeSpecifier::TENSOR;
+            this->dimensions = this->lhs->dimensions;
+        }
+        else if (this->lhs->DataType != TypeSpecifier::TENSOR && this->rhs->DataType == TypeSpecifier::TENSOR)
+        {
+            this->DataType = TypeSpecifier::TENSOR;
+            this->dimensions = this->rhs->dimensions;
+        }
+        else if (this->lhs->DataType == TypeSpecifier::FLOAT || this->rhs->DataType != TypeSpecifier::FLOAT)
+        {
+            this->DataType = TypeSpecifier::FLOAT;
         }
         else
         {
-            // if both ints then int otherwise float
-            if (this->lhs->DataType == TypeSpecifier::INT && this->rhs->DataType == TypeSpecifier::INT)
-            {
-                this->DataType = TypeSpecifier::INT;
-            }
-            else
-            {
-                this->DataType = TypeSpecifier::FLOAT;
-            }
+            std::cout << "Fatal: Invalid operands for '*'" << std::endl;
+            exit(1);
+        }
+    }
+    else if (this->op == '/')
+    {
+        if (this->rhs->DataType == TypeSpecifier::TENSOR)
+        {
+            std::cout << "Fatal: Anything divided by Tensor is not supported" << std::endl;
+            exit(1);
+        }
+
+        if (this->lhs->DataType == TypeSpecifier::TENSOR)
+        {
+            this->DataType = TypeSpecifier::TENSOR;
+            this->dimensions = this->lhs->dimensions;
+        }
+        else if (this->lhs->DataType == TypeSpecifier::INT && this->rhs->DataType == TypeSpecifier::INT)
+        {
+            this->DataType = TypeSpecifier::INT;
+        }
+        else
+        {
+            this->DataType = TypeSpecifier::FLOAT;
         }
     }
     else if (this->op == '@')
@@ -291,36 +354,41 @@ void UnaryExpr::printExpression()
 
 void UnaryExpr::initialize_expression_node_info(std::unordered_map<std::string, SymTabItem> *symbolTable)
 {
+    std::cout << "Entered unary expr" << std::endl;
     if (this->identifier != "")
     {
+        // Identifier
+        std::cout << "Identifier: " << this->identifier << std::endl;
         SymTabItem *symTabItem = search(symbolTable, this->identifier);
+        std::cout << "Here\n";
         if (symTabItem == NULL)
         {
             std::cout << "Fatal: Variable " << this->identifier << " not found" << std::endl;
             exit(0);
         }
 
-        if (symTabItem->dataType == "TENSOR")
+        if (symTabItem->dataType == "Tensor")
         {
             this->DataType = TypeSpecifier::TENSOR;
-            this->dimensions = this->expr->dimensions;
+            this->dimensions = symTabItem->Dims;
         }
-        else if (symTabItem->dataType == "INT")
+        else if (symTabItem->dataType == "int")
         {
             this->DataType = TypeSpecifier::INT;
         }
-        else if (symTabItem->dataType == "FLOAT")
+        else if (symTabItem->dataType == "float")
         {
             this->DataType = TypeSpecifier::FLOAT;
         }
         else
         {
-            std::cout << "Fatal: Unknown datatype" << std::endl;
+            std::cout << "Fatal: Unknown datatype of " << this->identifier << std::endl;
             exit(1);
         }
     }
     else if (this->cvalue != nullptr)
     {
+        // Constant
         if (this->cvalue->isInt)
         {
             this->DataType = TypeSpecifier::INT;
@@ -332,9 +400,19 @@ void UnaryExpr::initialize_expression_node_info(std::unordered_map<std::string, 
     }
     else
     {
+        // libfunc
         this->expr->initialize_expression_node_info(symbolTable);
         this->DataType = this->expr->DataType;
-        this->dimensions = this->expr->dimensions;
+        if (this->libfunc == LibFuncs::TRANSPOSE)
+        {
+            this->dimensions = this->expr->dimensions;
+            std::reverse(this->dimensions.begin(), this->dimensions.end());
+        }
+        else
+        {
+            // SIN COS....
+            this->dimensions = this->expr->dimensions;
+        }
     }
 }
 
@@ -366,6 +444,15 @@ void UnaryExpr::transpile(std::ostream &out, int tab) const
                 break;
             case LibFuncs::COS:
                 out << "-g._cos";
+                break;
+            case LibFuncs::TRANSPOSE:
+                out << "_g._trans";
+                break;
+            case LibFuncs::EXP:
+                out << "_g._exp";
+                break;
+            case LibFuncs::LOG:
+                out << "_g._log";
                 break;
 
             default:
@@ -424,7 +511,7 @@ std::map<AssignmentOperator, std::string> AssignmentOperatorMapCpp = {
 void Start::transpile(std::ostream &out, int tab) const
 {
     out << "#include <iostream>" << std::endl;
-    out << "#include \"Graph.h\"" << std::endl
+    out << "#include \"../include/Graph.h\"" << std::endl
         << std::endl;
     out << "using namespace std;" << std::endl
         << std::endl;
@@ -453,7 +540,7 @@ void Start::transpile(std::ostream &out, int tab) const
 void Decl::transpile(std::ostream &out, int tab) const
 {
     out << std::string("\t", tab)
-        << "Node& " << this->InitDeclaratorList->declarator->name
+        << "Node* " << this->InitDeclaratorList->declarator->name
         << " = "
         << "_g.";
 
@@ -561,7 +648,14 @@ void Expr::transpile(std::ostream &out, int tab) const
 
 void GradStmt::transpile(std::ostream &out, int tab) const
 {
-    out << std::string("\t", tab) << "_g." << GradTypeMapCpp[this->grad_type] << "(" << this->name << ");" << std::endl;
+    if (this->grad_type == GradType::GRAD)
+    {
+        out << std::string("\t", tab) << this->name << "->gradient.print();" << std::endl;
+    }
+    else
+    {
+        out << std::string("\t", tab) << "_g." << GradTypeMapCpp[this->grad_type] << "(" << this->name << ");" << std::endl;
+    }
 }
 
 // int main()

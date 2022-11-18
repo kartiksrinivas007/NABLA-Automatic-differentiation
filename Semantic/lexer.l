@@ -44,6 +44,7 @@ int yycolumn =1;
 "sin"						{ count(); return SIN;}       /* sin function as keyword */
 "exp"						{ count(); return EXP;}       /* exponential function as keyword */
 "log"						{ count(); return LOG;}       /* logarithmic function as keyword */
+"transpose"                 { count(); return TRANSPOSE;}    /* transpose function as keyword */
 "print" 					{ count(); return PRINT;}         /* print is just like print in python */
 "declare"					{ count(); return DECLARE;}       /* declare is just like declare in cpp */
 "operations"				{ count(); return OPERATIONS;}    /* operations is just like operations in cpp */

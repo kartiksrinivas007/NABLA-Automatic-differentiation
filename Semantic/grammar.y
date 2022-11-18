@@ -15,6 +15,12 @@
 #include <vector>
 #include <unordered_map>
 #include "sym.h"
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <array>
 
 extern int yylex();
 extern FILE* yyin;
@@ -87,7 +93,7 @@ std::string type;
 
 }
 
-%token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD 
+%token<string> IDENTIFIER CONSTANT STRING_LITERAL SIZEOF GRAD COS SIN EXP LOG BACKWARD TRANSPOSE
 %token<ival> INT_CONST 
 %token<fval> FLOAT_CONST 
 %token<string> CHAR_CONST 
@@ -243,6 +249,7 @@ lib_funcs
 	| COS {$$ = LibFuncs::COS;}
 	| LOG {$$ = LibFuncs::LOG;}
 	| EXP {$$ = LibFuncs::EXP;}
+	| TRANSPOSE {$$ = LibFuncs::TRANSPOSE;}
 	;
 
 // Gradient
@@ -258,6 +265,7 @@ grad_stmt_list
 grad_type
 	: BACKWARD {$$ = GradType::BACKWARD;}
 	| GRAD {$$ = GradType::GRAD;}
+	| PRINT {$$ = GradType::PRINT;}
 	;
 
 grad_stmt 
@@ -316,6 +324,7 @@ void lyyerror(YYLTYPE t,char *s,...){
 	
 }
 
+
 bool verbose = false;
 
 int main(int argc, char const *argv[])
@@ -357,7 +366,8 @@ int main(int argc, char const *argv[])
 	/* traverse_declarations2(root); */
 	
 	traverse_operations(root);
-	/* root->transpile(out); */
 	return 0;
 }
+
+
 
