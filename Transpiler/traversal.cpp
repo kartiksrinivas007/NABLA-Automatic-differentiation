@@ -238,15 +238,17 @@ void traverse_gradient(Start *root)
         if (symTabItem == NULL)
         {
             std::cout << "Fatal: Variable " << gradName << " not found" << std::endl;
+            exit(0);
             // anyError = true;
         }
         else
         {
             //Checking if variable is a constant as its gradient cannot be taken
-            if (symTabItem->type == "cns")
+            if (symTabItem->type == "cns" && gradStmt->grad_type != GradType::PRINT)
             {
                 SymTabItem *symTabItem = search(root->symbolTable, gradStmt->name);
                 std::cout << "Fatal: Cannot take gradient of a constant: " << gradName << std::endl;
+                exit(0);
                 // anyError = true;
             }
         }
@@ -256,25 +258,60 @@ void traverse_gradient(Start *root)
     // std::cout << "Gradient Semantic Analysis" << std::endl;
     if (anyError == false)
     {
-        std::map<std::string, GradType> gradMap;
-        for (auto gradStmt : *GradStmtList)
+        // std::map<std::string, GradType> gradMap;
+        bool backward = false;
+        for(auto gradStmt : *GradStmtList)
         {
-            std::string gradStmt_name = gradStmt->name;
-            GradType gradStmt_type = gradStmt->grad_type;
-            auto it = gradMap.find(gradStmt_name);
-            // std::cout <<"Here\n";
-            if (it == gradMap.end())
+            std::string gradStmtName = gradStmt->name;
+            SymTabItem *symTabItem = search(root->symbolTable, gradStmt->name);
+            GradType gradStmtType = gradStmt->grad_type;
+            if (gradStmtType == GradType::BACKWARD)
             {
-                if (gradStmt_type == GradType::GRAD)
+                if(symTabItem->type == "cns")
                 {
-                    SymTabItem *symTabItem = search(root->symbolTable, gradStmt->name);
-                    std::cout << "Fatal: Cannot take gradient of: '" << gradStmt_name << "' without taking backward first" << std::endl;
-                    anyError = true;
+                    std::cout << "Fatal: Cannot take backward of a constant: " << gradStmtName << std::endl;
+                    exit(0);
+                }
+                else{
+                    // gradient for 1x1 tensor, int, float is allowed
+                    if(symTabItem->dataType == "Tensor")
+                    {
+                        if(symTabItem->Dims != std::vector<int>(2,1))
+                        {
+                            std::cout << "Fatal: Gradient of 1x1 Tensor is supported only: " << gradStmtName << std::endl;
+                            exit(0);
+                        }
+                        else
+                        {
+                            backward = true;
+                        }
+                    }
+                    backward = true;
+                }
+                
+            }
+            else if (gradStmtType == GradType::GRAD)
+            {
+                
+                if (backward == false)
+                {
+                    // std::cout << "Fatal: Gradient cannot be taken before backward pass" << std::endl;
+                    std::cout << "Fatal: Cannot take gradient of: '" << gradStmtName << "' without taking backward first" << std::endl;
+                    // anyError = true;
                 }
                 else
                 {
-                    gradMap.insert(std::pair<std::string, GradType>(gradStmt_name, gradStmt_type));
+                    
+                    // if(symTabItem->dataType == "int" || symTabItem->dataType == "float")
+                    // {
+                    //     std::cout << "Fatal: Gradient of int or float is not supported: " << gradStmtName << std::endl;
+                    //     exit(0);
+                    // }
                 }
+            }
+            else
+            {
+                //Do nothing
             }
         }
     }
