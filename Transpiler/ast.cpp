@@ -102,6 +102,8 @@ void Initializer::printInitializerList()
 
 AssgnStmt::AssgnStmt(std::string name, std::optional<AssignmentOperator> op, Expr *expr)
 {
+    this->row_num = yylineno;
+    this->col_num = yycolumn;
     this->name = name;
     this->op = op;
     this->expr = expr;
@@ -155,11 +157,11 @@ void BinaryExpr::printExpression()
 
 void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string, SymTabItem> *symbolTable)
 {
-    std::cout << "BinaryExpr::initialize_expression_node_info: " << this->op << std::endl;
+    // std::cout << "BinaryExpr::initialize_expression_node_info: " << this->op << std::endl;
 
-    std::cout << "lhs: " << std::endl;
+    // std::cout << "lhs: " << std::endl;
     this->lhs->initialize_expression_node_info(symbolTable);
-    std::cout << "rhs: " << std::endl;
+    // std::cout << "rhs: " << std::endl;
     this->rhs->initialize_expression_node_info(symbolTable);
 
     if (this->op == '+' || this->op == '-')
@@ -354,13 +356,13 @@ void UnaryExpr::printExpression()
 
 void UnaryExpr::initialize_expression_node_info(std::unordered_map<std::string, SymTabItem> *symbolTable)
 {
-    std::cout << "Entered unary expr" << std::endl;
+    // std::cout << "Entered unary expr" << std::endl;
     if (this->identifier != "")
     {
         // Identifier
-        std::cout << "Identifier: " << this->identifier << std::endl;
+        // std::cout << "Identifier: " << this->identifier << std::endl;
         SymTabItem *symTabItem = search(symbolTable, this->identifier);
-        std::cout << "Here\n";
+        // std::cout << "Here\n";
         if (symTabItem == NULL)
         {
             std::cout << "Fatal: Variable " << this->identifier << " not found" << std::endl;
@@ -511,7 +513,7 @@ std::map<AssignmentOperator, std::string> AssignmentOperatorMapCpp = {
 void Start::transpile(std::ostream &out, int tab) const
 {
     out << "#include <iostream>" << std::endl;
-    out << "#include \"../include/Graph.h\"" << std::endl
+    out << "#include \"include/Graph.h\"" << std::endl
         << std::endl;
     out << "using namespace std;" << std::endl
         << std::endl;

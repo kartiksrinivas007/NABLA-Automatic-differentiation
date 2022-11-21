@@ -2,6 +2,8 @@
 {
 	#include "ast.h"
 	#include "traversal.h"
+
+	extern char filename[50];
 }
 %{
 #include <stdio.h>
@@ -40,7 +42,7 @@ extern int yylineno;
 extern int yycolumn;
 extern char yytext[];
 extern char linebuf[];
-extern const char* filename;
+// extern const char* filename;
 
 // extern void yyerror(char *);
 struct YYLTYPE;
@@ -176,8 +178,8 @@ declarator
 	;
 
 initializer
-	: constant {$$ = new Initializer($1); /*std::cout << "Initializer: " << $1->value.int_val << std::endl;*/}
-	| '['initializer_list ']' {$$ = new Initializer($2); $$->printInitializerList();} 
+	: constant {$$ = new Initializer($1); }
+	| '['initializer_list ']' {$$ = new Initializer($2); } 
 	;
 	// | '[' initializer_list ','initializer ']'
 
@@ -342,6 +344,30 @@ std::string exec(const char *cmd)
 
 bool verbose = false;
 
+bool generateCode(){
+	if(verbose){
+		std::cout << "Generating Code" << std::endl;
+	}
+
+	std::string basename = std::string(filename).substr(std::string(filename).find_last_of("/\\")+1);
+	std::string outputFile = "." + std::string(basename).substr(0, basename.length()-3) + ".cpp";
+	std::ofstream out(outputFile);
+	
+	root->transpile(out);
+	out.close();
+
+	if(verbose){
+		std::cout << "Code generated written to " << outputFile << std::endl;
+		std::cout << "Compiling Code" << std::endl;
+	}
+
+	std::string cmd = "g++ -std=c++17 "+ outputFile + " -L lib -lnb -o " + std::string(basename) + ".out";
+	std::cout << cmd << std::endl;
+	std::string result = exec(cmd.c_str());
+	return 0;
+	
+}
+
 int main(int argc, char const *argv[])
 {
 
@@ -352,7 +378,8 @@ int main(int argc, char const *argv[])
 			}
 			else{
 				yyin = fopen(argv[i],"r");
-				filename = argv[i];
+				strcpy(filename,argv[i]);
+				/* filename = argv[i]; */
 				if(yyin == NULL){
 					fprintf(stderr, "File %s not found\n", argv[i]);
 					return 1;
@@ -361,7 +388,8 @@ int main(int argc, char const *argv[])
 		}
 	}
 	else{
-		filename = "(stdin)";
+		strcpy(filename,"stdin");
+		/* filename = "(stdin)"; */
 	}
 
 	yyparse();
@@ -369,9 +397,6 @@ int main(int argc, char const *argv[])
 		fprintf(stderr, "\e[1;31m%d error(s) found\e[0m\n", error_count);
 		return error_count;
 	}
-
-	std::string outputFile = std::string(filename) + ".cpp";
-	std::ofstream out(outputFile);
 	
 	if(verbose){
 		printSymbTab(symbolTable);
@@ -380,13 +405,8 @@ int main(int argc, char const *argv[])
 	traverse_declarations(root);
 	traverse_gradient(root);
 	traverse_operations(root);
-	root->transpile(out);
 
-	out.close();
-
-	std::string cmd = "g++ -std=c++17 "+ outputFile + " -L lib -lnb -o " + std::string(filename) + ".out";
-	std::cout << cmd << std::endl;
-	std::string result = exec(cmd.c_str());
+	generateCode();
 
 	return 0;
 }
