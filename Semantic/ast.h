@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include "sym.h"
 
+extern int yylineno, yycolumn;
+
 // Abstract Node class
 class Node;
 
@@ -173,6 +175,7 @@ public:
 class AssgnStmt : public Node
 {
 public:
+    int row_num, col_num;
     // Declarator *declarator;
     // Initializer *initializer;
     // AssgnStmt(Declarator*, Initializer*);

@@ -7,8 +7,7 @@ operations{
     d = exp(c);
 }
 gradient{
-    backward(d);
+    backward(d);                                    // ERROR_EXPECTED: variable d is not declared
     grad(d);
-    backward(c);
     grad(c);
 }

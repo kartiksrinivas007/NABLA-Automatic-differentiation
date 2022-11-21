@@ -2,6 +2,8 @@
 {
 	#include "ast.h"
 	#include "traversal.h"
+
+	extern char filename[50];
 }
 %{
 #include <stdio.h>
@@ -40,7 +42,7 @@ extern int yylineno;
 extern int yycolumn;
 extern char yytext[];
 extern char linebuf[];
-extern const char* filename;
+// extern const char* filename;
 
 // extern void yyerror(char *);
 struct YYLTYPE;
@@ -176,8 +178,8 @@ declarator
 	;
 
 initializer
-	: constant {$$ = new Initializer($1); /*std::cout << "Initializer: " << $1->value.int_val << std::endl;*/}
-	| '['initializer_list ']' {$$ = new Initializer($2); $$->printInitializerList();} 
+	: constant {$$ = new Initializer($1); }
+	| '['initializer_list ']' {$$ = new Initializer($2); } 
 	;
 	// | '[' initializer_list ','initializer ']'
 
@@ -324,6 +326,21 @@ void lyyerror(YYLTYPE t,char *s,...){
 	
 }
 
+std::string exec(const char *cmd)
+{
+    std::array<char, 128> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    if (!pipe)
+    {
+        throw std::runtime_error("popen() failed!");
+    }
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+    {
+        result += buffer.data();
+    }
+    return result;
+}
 
 bool verbose = false;
 
@@ -337,7 +354,8 @@ int main(int argc, char const *argv[])
 			}
 			else{
 				yyin = fopen(argv[i],"r");
-				filename = argv[i];
+				strcpy(filename,argv[i]);
+				/* filename = argv[i]; */
 				if(yyin == NULL){
 					fprintf(stderr, "File %s not found\n", argv[i]);
 					return 1;
@@ -346,7 +364,8 @@ int main(int argc, char const *argv[])
 		}
 	}
 	else{
-		filename = "(stdin)";
+		strcpy(filename,"stdin");
+		/* filename = "(stdin)"; */
 	}
 
 	yyparse();
@@ -354,20 +373,15 @@ int main(int argc, char const *argv[])
 		fprintf(stderr, "\e[1;31m%d error(s) found\e[0m\n", error_count);
 		return error_count;
 	}
-
-	/* std::ofstream out("output.cpp"); */
 	
 	if(verbose){
 		printSymbTab(symbolTable);
 	}
 
-	/* traverse_gradient(root->GradStmtList); */
-	/* traverse_gradient2(root); */
-	/* traverse_declarations2(root); */
-	
+	traverse_declarations(root);
 	traverse_operations(root);
+	traverse_gradient(root);
+
 	return 0;
 }
-
-
 

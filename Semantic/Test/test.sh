@@ -12,14 +12,13 @@ then
     for file in ${CORR_TESTFILES}
     do
         ${EXEC} ${file} > log  2>&1
-        error=`grep error log -c`
-        warning=`grep warning log -c`
-        if [[ ($error -eq 0) && ($warning -eq 0) ]]
+        error=`grep Fatal log -c`
+        if [[ ($error -eq 0) ]]
         then
             echo -e "\e[32m\t [ PASSED ] \e[0m $file\n"
             passed=$(($passed+1));
         else
-            echo -e "\e[31m\t [ FAILED ] \e[0m $file \t error: ${error} \t warning: $warning\n"
+            echo -e "\e[31m\t [ FAILED ] \e[0m $file \t error: ${error}\n"
             cat log 
             failed=$(($failed+1))
         fi
@@ -42,14 +41,13 @@ do
     ${EXEC} ${file} > log  2>&1
     expected_error=`grep ERROR_EXPECTED $file -c`
     expected_warning=`grep WARNING_EXPECTED $file -c`
-    error=`grep error log -c`
-    warning=`grep warning log -c`
-    if [[ ($error -eq $expected_error) && ($warning -eq $expected_warning) ]]
+    error=`grep Fatal log -c`
+    if [[ ($error -eq $expected_error) ]]
     then
-        echo -e "\e[32m\t [ PASSED ] \e[0m $file \tfound errors: ${error}/${expected_error} \tfound warnings: ${warning}/${expected_warning}\n"
+        echo -e "\e[32m\t [ PASSED ] \e[0m $file \tfound errors: ${error}/${expected_error}\n"
         passed=$(($passed+1))
     else
-        echo -e "\e[31m\t [ FAILED ] \e[0m $file \tfound errors: ${error}/${expected_error} \tfound warnings: ${warning}/${expected_warning}\n"
+        echo -e "\e[31m\t [ FAILED ] \e[0m $file \tfound errors: ${error}/${expected_error}\n"
         failed=$(($failed+1))
     fi
     rm log

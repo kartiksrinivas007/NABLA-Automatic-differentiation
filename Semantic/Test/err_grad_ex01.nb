@@ -8,5 +8,5 @@ operations{
 }
 gradient{
     backward(c);
-    grad(c);
+    grad(c);                                // ERROR_EXPECTED:
 }
