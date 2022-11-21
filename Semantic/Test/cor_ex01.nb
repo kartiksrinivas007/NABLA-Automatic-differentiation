@@ -1,10 +1,10 @@
 declare{
     cns int a = 6;
-    cns int b = 8;
     var int c;
+    var int b=999999999999999999999999999999999999999999999;  //OVERFLOW
 }
 operations{
-    c=a*b;
+    c = a+b;
 }
 gradient{
     backward(c);
