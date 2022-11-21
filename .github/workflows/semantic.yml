@@ -1,0 +1,36 @@
+name: Semantic Analysis
+
+on:
+  push:
+    paths:
+      - 'Semantic/**'
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: sudo apt-get install flex bison
+      
+    - name: build parser
+      run: |
+        cd Semantic/
+        make
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Run check
+      run: |
+        cd Semantic/
+        make test
