@@ -7,5 +7,6 @@ operations{
     c = a+b;
 }
 gradient{
+    backward(c);
     grad(c);
 }

@@ -1,14 +1,12 @@
 declare{
     cns int a = 6;
+    cns int b = 8;
     var int c;
 }
 operations{
-    c = sin(a+cos(a));  
-    d = exp(c);
+    c=a*b;
 }
 gradient{
-    backward(d);
-    grad(d);
     backward(c);
     grad(c);
 }
