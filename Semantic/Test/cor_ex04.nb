@@ -1,0 +1,12 @@
+declare{
+    cns int a = 6;
+    cns int b = 8;
+    var int c;
+}
+operations{
+    c=a/b;
+}
+gradient{
+    backward(c);
+    grad(c);
+}

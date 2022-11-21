@@ -1,0 +1,11 @@
+declare{
+    cns Tensor a[2][2] = [[1,2],[3,4]];   
+    cns int b = 3;
+    var Tensor c[2][2];
+}
+operations{
+    c = a*b;  
+}
+gradient{
+    print(c);
+}

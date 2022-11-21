@@ -14,6 +14,7 @@ Take a look at the code below
 declare{
     cns int a = 6;
     var int c;
+    var int d;
 }
 operations{
     c = sin(a+cos(a));  
