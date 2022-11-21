@@ -22,6 +22,7 @@ operations{
 gradient{
     backward(d);
     grad(d);
+    backward(c);
     grad(c);
 }
 ```
