@@ -1,7 +1,7 @@
 declare
 {
-    var int a  // ERROR_EXPECTED  ERROR_EXPECTED
-    cns int b;
+    var int a  // ERROR_EXPECTED
+    cns int b; // ERROR_EXPECTED
 }
 operations{
     a = a + a * 1;
