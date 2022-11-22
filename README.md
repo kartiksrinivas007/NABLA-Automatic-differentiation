@@ -8,7 +8,26 @@
 Nabla is a Domain specific langauge built for the purpose of Tensor Operations and Automatic differentiation
 <br>
 It uses dynamically built computational graphs for back-propagation.
-Take a look at the code below
+<!-- Take a look at the code below -->
+
+## Table of Contents
+
+- [Nabla](#nabla)
+  - [Table of Contents](#table-of-contents)
+  - [Example](#example)
+  - [class Hierarchy](#class-hierarchy)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Stages](#stages)
+    - [Lexer](#lexer)
+    - [Parser](#parser)
+    - [Semantic Analysis](#semantic-analysis)
+    - [Transpiler](#transpiler)
+  - [Documentation](#documentation)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+## Example
 
 ```python
 declare{
@@ -43,7 +62,64 @@ doxygen
 
 The documentation for the project can be found [here](https://ganesh-rb.github.io/Nabla-documentation/)
 
-## The Class Hierarchy
+## Installation
+
+### Requirements
+
+- [Make](https://www.gnu.org/software/make/)
+- [Flex]()
+- [Bison]()
+- [g++ 9.3.0 or higher](https://gcc.gnu.org/)
+- [clang++ 10.0.0 or higher](https://clang.llvm.org/)
+- [Doxygen](https://www.doxygen.nl/download.html)
+
+### Steps
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/IITH-COMPILERS2/compilers-2-project-team-9-aug22.git
+
+```
+
+2. Run the makefile
+
+```bash
+cd compilers-2-project-team-9-aug22
+make
+```
+<!-- optional -->
+3. Run the tests (optional) 
+
+```bash
+make test
+```
+
+4. Install the Nabla compiler
+
+```bash
+make install
+```
+
+## Stages
+
+### [Lexer](Lexer/)
+
+The lexer is the first stage of the compiler. It takes the input file and converts it into a stream of tokens. The tokens are then passed to the parser.
+
+### [Parser](Parser/)
+
+The parser is the second stage of the compiler. It takes the stream of tokens from the lexer and converts it into an Abstract Syntax Tree (AST). The AST is then passed to the semantic analyzer.
+
+### [Semantic Analyzer](Semantic/)
+
+The semantic analyzer is the third stage of the compiler. It takes the AST from the parser and performs semantic analysis on it. The AST is then passed to the code generator.
+
+### [Transpilation](Transpiler/)
+
+The transpiler is the fourth stage of the compiler. It takes the AST from the semantic analyzer and converts it into a C++ file. The C++ file is then compiled and executed.
+
+## Class Hierarchy
 
 ---
 
