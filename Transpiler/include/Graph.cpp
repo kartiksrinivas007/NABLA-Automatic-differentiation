@@ -104,6 +104,13 @@ Node* Graph::_cos(Node* a){
     return c;
 }
 
+Node* Graph::_tan(Node* a){
+    Tan* t = new Tan(a, count);
+    operators.push_back(t);
+    count++;
+    return t;
+}
+
 Node* Graph::_variable(int m, int n, std::vector<std::vector<double>> vals){
     //create a variable node
     Variable *var = new Variable(m, n, vals, count);
