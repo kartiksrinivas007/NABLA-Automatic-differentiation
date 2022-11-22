@@ -1,5 +1,6 @@
 #include"Tensor.h"
 
+namespace nb{
 Tensor::Tensor (int m, int n){
     this->m = m;
     this->n = n;
@@ -121,3 +122,5 @@ double full_sum(Tensor a){ //finds the sum of all elements in a two dimesnsional
     }
     return *sum;
 }
+
+};

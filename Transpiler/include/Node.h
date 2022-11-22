@@ -4,6 +4,8 @@
 #include<string>
 #include"Tensor.h"
 
+namespace nb{
+
 class Node{
     public:
     std::string name;
@@ -19,6 +21,8 @@ class Node{
     Node(Tensor& data);
     Node& forward(const Node& a, const Node& b);
     virtual void backward(){};
+};
+
 };
 
 #endif

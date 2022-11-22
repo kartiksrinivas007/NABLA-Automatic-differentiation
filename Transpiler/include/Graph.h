@@ -5,6 +5,8 @@
 #include "Dtypes.h"
 #include <string>
 
+namespace nb{
+
 class Graph{
     public:
     int count; //making this static causes issues
@@ -31,6 +33,8 @@ class Graph{
 
     std::vector<Node*> topological_sort();
     void backward(Node* f);
+};
+
 };
 
 #endif

@@ -1,5 +1,7 @@
 #include "Graph.h"
 #include<algorithm>
+
+namespace nb{
 Graph::Graph(){
     operators.clear();
     constants.clear();
@@ -152,3 +154,5 @@ void Graph::backward(Node* f){
         reverse(operators.begin(), operators.end());
     }
 }
+
+};

@@ -1,5 +1,6 @@
 #include "Operators.h"
 
+namespace nb{
 Transpose::Transpose(Node* a, int count){
     trans_count = count;
     inputs.push_back(a);
@@ -214,3 +215,4 @@ void Mul::backward(){
     }
 }
 
+};

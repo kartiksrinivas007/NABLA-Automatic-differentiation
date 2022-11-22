@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+namespace nb{
 class Variable: public Node{
     public:
     int var_count;
@@ -57,5 +58,7 @@ class Scalar_Constant : public Scalar{
         is_scalar = true;
         name = "Scalar_Const:" + std::to_string(scl_cns_count);
     }
+};
+
 };
 #endif

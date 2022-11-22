@@ -3,6 +3,7 @@
 #include "Node.h"
 #include <vector>
 
+namespace nb{
 
 class Operator: public Node{
     public:
@@ -62,4 +63,5 @@ class Negative : public Operator{
     Node* forward(const Node* a);
 };
 
+};
 #endif

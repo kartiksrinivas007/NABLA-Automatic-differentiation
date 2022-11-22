@@ -517,6 +517,8 @@ void Start::transpile(std::ostream &out, int tab) const
         << std::endl;
     out << "using namespace std;" << std::endl
         << std::endl;
+    out << "using namespace nb;" << std::endl
+        << std::endl;
     out << "int main() {" << std::endl;
     out << std::string("\t", tab + 1) << "Graph _g;" << std::endl;
 

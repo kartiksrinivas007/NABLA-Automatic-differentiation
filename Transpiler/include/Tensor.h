@@ -8,6 +8,7 @@
 #include<map>
 #include <vector>
 
+namespace nb{
 class Tensor{
     public:
     int num_dims = 2;
@@ -29,4 +30,7 @@ Tensor add(Tensor a, Tensor b);
 Tensor mul(double a, Tensor b);
 Tensor mul(Tensor a, Tensor b);
 double full_sum(Tensor a);
+
+};
+
 #endif
