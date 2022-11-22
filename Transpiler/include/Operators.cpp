@@ -214,3 +214,31 @@ void Mul::backward(){
     }
 }
 
+Division::Division(Node* a, Node* b, int count){
+    div_count = count;
+    inputs.push_back(a);
+    inputs.push_back(b);
+    this->name = "Add:" + std::to_string(div_count);
+    this->forward(a, b); //the construction itself will do the forward pass
+}
+
+Node* Division::forward(const Node* a, const Node* b){
+    if(a->is_scalar and b->is_scalar){
+        this->ddata = a->ddata / b->ddata;
+        this->is_scalar = true;
+        return this;
+    }
+    else{
+        std::cout << "Division isn't defined on Tensors" << std::endl;
+    }
+}
+
+void Division::backward(){
+    if(inputs[0]->is_scalar and inputs[0]->is_scalar){
+        this->inputs[0]->scalar_gradient += this->scalar_gradient*(1/inputs[1]->ddata);
+        this->inputs[0]->scalar_gradient += this->scalar_gradient*(-(inputs[0]->ddata)/((inputs[1]->ddata)*(inputs[1]->ddata)));
+    }
+    else{
+        std::cout << "Division isn't defined on Tensors" << std::endl;
+    }
+}
