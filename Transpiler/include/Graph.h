@@ -4,6 +4,9 @@
 #include "Operators.h" 
 #include "Dtypes.h"
 #include <string>
+#include <algorithm>
+#include <fstream>
+#include <iostream>
 
 namespace nb{
 
@@ -37,6 +40,8 @@ class Graph{
 
     std::vector<Node*> topological_sort();
     void backward(Node* f);
+    void generate_graph(Node* f);
+    void DFS(std::ostream& out, Node* f);
 };
 
 };

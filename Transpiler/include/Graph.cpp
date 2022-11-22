@@ -1,5 +1,5 @@
 #include "Graph.h"
-#include<algorithm>
+
 
 namespace nb{
 Graph::Graph(){
@@ -156,6 +156,7 @@ std::vector<Node*> Graph::topological_sort(){
 }
 
 void Graph::backward(Node* f){
+    generate_graph(f);
     if(!f->is_scalar)
     {
         if(f->data.m!=1 || f->data.n!=1){
@@ -186,6 +187,28 @@ void Graph::backward(Node* f){
         }
         reverse(operators.begin(), operators.end());
     }
+}
+
+void Graph::DFS(std::ostream& out, Node* f){
+    
+    for(auto& n : f->inputs){
+        out << "\"" << n->name << "\"" << " -> " << "\"" << f->name << "\"" << std::endl;
+    }
+    f->is_printed = true;
+    for(auto& n : f->inputs){
+        DFS(out, n);
+    }
+}
+
+void Graph::generate_graph(Node* f){
+    std::ofstream fout;
+    fout.open("computational_graph.dot");
+    
+    fout << "digraph {" << std::endl;
+    DFS(fout, f);
+    fout << "}" << std::endl;
+
+    fout.close();
 }
 
 };

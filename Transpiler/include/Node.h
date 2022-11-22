@@ -11,6 +11,7 @@ class Node{
     std::string name;
     void print();
     bool is_visited = false;
+    bool is_printed = false;
     bool is_scalar = false;
     std::vector<Node*> inputs;
     Tensor data;
