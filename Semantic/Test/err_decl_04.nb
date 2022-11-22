@@ -1,0 +1,12 @@
+declare{
+    var Tensor a[2][3]=[[1,2,3],[4,5,6]];    
+    var Tensor c[2][2];
+    var int c;         //ERROR_EXPECTED
+}
+operations{
+    c = sin(exp(a));  
+}
+gradient{
+    backward(c);
+    grad(c);
+}

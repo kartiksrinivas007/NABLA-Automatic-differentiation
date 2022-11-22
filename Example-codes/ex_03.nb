@@ -1,0 +1,20 @@
+declare{
+  cns int a=4;
+  cns int b=7;
+  var int c;
+  var int d;
+  var int e;
+  var int x;
+}
+operations{
+    c=exp(a);
+    d=log(b);
+    e=sin(c)+cos(d);
+    x=exp(sin(d+cos(e))); 
+}
+gradient{
+     backward(x);
+     print(grad(x));
+     backward(e);
+     print(grad(e));
+}

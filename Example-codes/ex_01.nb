@@ -1,0 +1,15 @@
+declare{
+    cns int a = 6;
+    var int c;
+    var int d;
+}
+operations{
+    c = sin(a+cos(a));  
+    d = exp(c);
+}
+gradient{
+    backward(d);
+    grad(d);
+    backward(c);
+    grad(c);
+}
