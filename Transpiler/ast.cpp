@@ -582,14 +582,7 @@ void InitDeclarator::transpile(std::ostream &out, int tab) const
         if(this->declarator->Dimensions.empty())
         {
             this->initializer->transpile(out, tab);
-        }
-        else if(this->declarator->Dimensions.size() == 1)
-        {
-            out << ", ";
-            out << "{";
-            this->initializer->transpile(out, tab);
-            out << "}";
-        }    
+        }   
         else
         {
             out << ", ";
@@ -638,12 +631,22 @@ void Initializer::transpile(std::ostream &out, int tab) const
         out << "{";
         for (auto i : *this->val.InitializerList)
         {
-            i->transpile(out, tab);
-            if (i != this->val.InitializerList->back())
-            {
-                out << ", ";
+            if(i->isScalar){
+                out << "{";
+                i->transpile(out, tab);
+                out << "}";
+                if (i != this->val.InitializerList->back())
+                {
+                    out << ", ";
+                }
             }
-            // out << ",";
+            else{
+                i->transpile(out, tab);
+                if (i != this->val.InitializerList->back())
+                {
+                    out << ", ";
+                }
+            }
         }
         out << "}";
     }
