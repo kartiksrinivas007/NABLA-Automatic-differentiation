@@ -8,7 +8,7 @@ operations{
 }
 gradient{
     backward(c);
-    grad(a);
+    // grad(a);
     grad(b);
     grad(c);
 }

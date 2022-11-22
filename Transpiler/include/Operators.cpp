@@ -271,10 +271,50 @@ Node* Exponential::forward(const Node* a){
 
 void Exponential::backward(){
     if(this->is_scalar){
-        inputs[0]->scalar_gradient = this->ddata;
+        inputs[0]->scalar_gradient += this->ddata;
         return;
     }
     inputs[0]->gradient = add(inputs[0]->gradient, this->data);
 }
+
+Sin::Sin(Node* a, int count){
+    sin_count = count;
+    inputs.push_back(a);
+    this->name = "Sin:" + std::to_string(sin_count);
+    this->forward(a);
+}
+
+Node* Sin::forward(const Node* a){
+    if(a->is_scalar){
+        this->ddata = sin(a->ddata);
+        this->is_scalar = true;
+        return this;
+    }
+    Tensor* c = new Tensor(a->data.m, a->data.n);
+    for(int i=0;i<a->data.m;i++){
+        for(int j=0;j<a->data.n;j++){
+            c->data[i][j] = sin(a->data.data[i][j]);
+        }
+    }
+    this->data = *c;
+    this->gradient = Tensor(c->m, c->n);
+    return this;
+}
+
+void Sin::backward(){
+    if(this->is_scalar){
+        inputs[0]->scalar_gradient += this->ddata;
+        return;
+    }
+    Tensor* c = new Tensor(inputs[0]->data.m, inputs[0]->data.n);
+    for(int i=0;i<inputs[0]->data.m;i++){
+        for(int j=0;j<inputs[0]->data.n;j++){
+            c->data[i][j] = cos(inputs[0]->data.data[i][j]);
+        }
+    }
+    this->gradient = add(this->gradient, *c);
+    return;
+}
+
 
 };
