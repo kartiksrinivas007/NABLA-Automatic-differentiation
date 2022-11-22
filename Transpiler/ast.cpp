@@ -563,6 +563,7 @@ void Decl::transpile(std::ostream &out, int tab) const
     }
 
     out << "(";
+    out << "\"" << this->InitDeclaratorList->declarator->name << "\" ,";
 
     this->InitDeclaratorList->transpile(out, tab);
 

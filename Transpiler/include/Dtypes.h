@@ -8,28 +8,26 @@
 namespace nb{
 class Variable: public Node{
     public:
-    Variable(int m , int n, std::vector<std::vector<double>> vals, int count ){
+    Variable(int m , int n, std::vector<std::vector<double>> vals, int count, std::string name){
         data = Tensor(m, n, vals);
         gradient = Tensor(m, n);
         this->count = count;
-        name = "Var";
+        this->name = name;
     }
 };
 
 class Constant: public Node{
     public:
-    int cns_count;
-    Constant(int m, int n, std::vector<std::vector<double>> vals, int count){
+    Constant(int m, int n, std::vector<std::vector<double>> vals, int count, std::string name){
         data = Tensor(m, n, vals);
-        cns_count = count;
-        name = "Const:" + std::to_string(cns_count);
+        this->count = count;
+        this->name = name;
     }
 
 };
 
 class Scalar: public Node{
     public:
-    int scl_count;
     Scalar(double d_data, int count){
         // this->ddata = d_data;
         // scl_count = count;
@@ -39,23 +37,21 @@ class Scalar: public Node{
 
 class Scalar_Variable : public Scalar{
     public:
-    int scl_var_count;
-    Scalar_Variable(double d_data, int count): Scalar(d_data, count){
+    Scalar_Variable(std::string name, double d_data, int count): Scalar(d_data, count){
         this->ddata = d_data;
-        scl_var_count = count;
+        this->count = count;
         is_scalar = true;
-        name = "Scalar_Var:" + std::to_string(scl_var_count);
+        this->name = name;
     }
 };
 
 class Scalar_Constant : public Scalar{
     public:
-    int scl_cns_count;
-    Scalar_Constant(double d_data, int count): Scalar(d_data, count){
+    Scalar_Constant(std::string name, double d_data, int count): Scalar(d_data, count){
         this->ddata  = d_data; //this innitializes a scalar constant
-        scl_cns_count = count;
+        this->count = count;
         is_scalar = true;
-        name = "Scalar_Const:" + std::to_string(scl_cns_count);
+        this->name = name;
     }
 };
 

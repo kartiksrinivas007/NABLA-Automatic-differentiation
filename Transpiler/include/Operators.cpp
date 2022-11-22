@@ -249,7 +249,7 @@ void Division::backward(){
 Exponential::Exponential(Node* a, int count){
     this->count = count;
     inputs.push_back(a);
-    this->name = "e";
+    this->name = "exp";
     this->forward(a); //the construction itself will do the forward pass
 }
 

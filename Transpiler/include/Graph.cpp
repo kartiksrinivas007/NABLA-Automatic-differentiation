@@ -42,28 +42,28 @@ Node* Graph::_mul(Node* a, Node* b){
 }
 
 Node* Graph::_mul(Node* a, double b){
-    Mul *mul = new Mul(a, _scalar_constant(b), count);
+    Mul *mul = new Mul(a, _scalar_constant(std::to_string(b), b), count);
     operators.push_back(mul);
     count++;
     return mul;
 }
 
 Node* Graph::_mul(double a, Node* b){
-    Mul *mul = new Mul(_scalar_constant(a), b, count);
+    Mul *mul = new Mul(_scalar_constant(std::to_string(a), a), b, count);
     operators.push_back(mul);
     count++;
     return mul;
 }
 
 Node* Graph::_mul(double a, double b){
-    Mul *mul = new Mul(_scalar_constant(a), _scalar_constant(b), count);
+    Mul *mul = new Mul(_scalar_constant(std::to_string(a), a), _scalar_constant(std::to_string(b), b), count);
     operators.push_back(mul);
     count++;
     return mul;
 }
 
 Node* Graph::_div(double a, double b){
-    Division *div = new Division(_scalar_constant(a), _scalar_constant(b), count);
+    Division *div = new Division(_scalar_constant(std::to_string(a), a), _scalar_constant(std::to_string(b), b), count);
     operators.push_back(div);
     count++;
     return div;
@@ -111,39 +111,39 @@ Node* Graph::_tan(Node* a){
     return t;
 }
 
-Node* Graph::_variable(int m, int n, std::vector<std::vector<double>> vals){
+Node* Graph::_variable(std::string name, int m, int n, std::vector<std::vector<double>> vals){
     //create a variable node
-    Variable *var = new Variable(m, n, vals, count);
+    Variable *var = new Variable(m, n, vals, count, name);
     variables.push_back(var);
     count++;
     return var;
 }
-Node* Graph::_variable(int m, int n){
+Node* Graph::_variable(std::string name, int m, int n){
     //create a variable node
     std::vector<std::vector<double>> vals(m, std::vector<double>(n, 0.0));
-    Variable *var = new Variable(m, n, vals, count);
+    Variable *var = new Variable(m, n, vals, count, name);
     variables.push_back(var);
     count++;
     return var;
 }
 
-Node* Graph::_constant(int m, int n, std::vector<std::vector<double>> vals){
+Node* Graph::_constant(std::string name, int m, int n, std::vector<std::vector<double>> vals){
     //create a constant node
-    Constant *con = new Constant(m, n, vals, count);
+    Constant *con = new Constant(m, n, vals, count, name);
     constants.push_back(con);
     count++;
     return con;
 }
 
- Node* Graph::_scalar_variable(double data){
-    Scalar_Variable *scl_v = new Scalar_Variable(data, count);
+ Node* Graph::_scalar_variable(std::string name, double data){
+    Scalar_Variable *scl_v = new Scalar_Variable(name, data, count);
     scalars.push_back(scl_v);
     count++;
     return scl_v;
 }
 
-Node* Graph::_scalar_constant(double data){
-    Scalar_Constant *scl_c = new Scalar_Constant(data, count);
+Node* Graph::_scalar_constant(std::string name, double data){
+    Scalar_Constant *scl_c = new Scalar_Constant(name, data, count);
     scalars.push_back(scl_c);
     count++;
     return scl_c;

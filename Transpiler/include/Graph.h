@@ -17,11 +17,11 @@ class Graph{
     int count; //making this static causes issues
     std::vector<Node*> operators, constants, variables, scalars;
     Graph();
-    Node* _variable(int m, int n, std::vector<std::vector<double>> vals);
-    Node* _variable(int m, int n);
-    Node* _constant(int m, int n, std::vector<std::vector<double>> vals);
-    Node* _scalar_variable(double data=0);
-    Node* _scalar_constant(double data=0);
+    Node* _variable(std::string name, int m, int n, std::vector<std::vector<double>> vals);
+    Node* _variable(std::string name, int m, int n);
+    Node* _constant(std::string name, int m, int n, std::vector<std::vector<double>> vals);
+    Node* _scalar_variable(std::string name, double data=0);
+    Node* _scalar_constant(std::string name, double data=0);
 
     Node* _add(Node* a, Node* b);
     Node* _sub(Node* a, Node* b);

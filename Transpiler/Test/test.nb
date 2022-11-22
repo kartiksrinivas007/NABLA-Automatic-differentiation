@@ -9,7 +9,8 @@ declare{
     var Tensor fin[1][1];
 }
 operations{
-    fin = sin(e+cos(b))*exp(d)@a;
+    fin = sin(e+cos(2*b))*exp(d)@a;
+
 }
 gradient{
     backward(fin);
