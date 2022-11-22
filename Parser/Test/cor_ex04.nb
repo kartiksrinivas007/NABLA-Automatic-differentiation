@@ -8,5 +8,6 @@ operations{
     b = a@b;
 }
 gradient{
+    backward(a);
     grad(a);
 }

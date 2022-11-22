@@ -1,0 +1,12 @@
+declare{
+    cns int x=5;
+    cns int y=7;
+    var int z;
+}
+operations{
+    z=sin(x)+log(y*cos(y));
+}
+gradient{
+    backward(z);
+    grad(z);
+}
