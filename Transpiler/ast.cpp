@@ -563,8 +563,11 @@ void Decl::transpile(std::ostream &out, int tab) const
     }
 
     out << "(";
-    out << "\"" << this->InitDeclaratorList->declarator->name << "\" ,";
+    out << "\"" << this->InitDeclaratorList->declarator->name << "\"";
 
+    // if(this->InitDeclaratorList->declarator != nullptr || this->InitDeclaratorList->initializer!=nullptr){
+    //     out << " ,";
+    // }
     this->InitDeclaratorList->transpile(out, tab);
 
     out << ");" << std::endl;
@@ -585,7 +588,6 @@ void InitDeclarator::transpile(std::ostream &out, int tab) const
         }   
         else
         {
-            out << ", ";
             this->initializer->transpile(out, tab);
         }
     }
