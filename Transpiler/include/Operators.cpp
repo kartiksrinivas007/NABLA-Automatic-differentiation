@@ -1,4 +1,5 @@
 #include "Operators.h"
+#include <cmath>
 
 namespace nb{
 Transpose::Transpose(Node* a, int count){
@@ -213,6 +214,67 @@ void Mul::backward(){
             this->inputs[1]->gradient = add(this->inputs[1]->gradient , mul(this->inputs[0]->data,  this->gradient));
         }
     }
+}
+
+Division::Division(Node* a, Node* b, int count){
+    div_count = count;
+    inputs.push_back(a);
+    inputs.push_back(b);
+    this->name = "Div:" + std::to_string(div_count);
+    this->forward(a, b); //the construction itself will do the forward pass
+}
+
+Node* Division::forward(const Node* a, const Node* b){
+    if(a->is_scalar and b->is_scalar){
+        this->ddata = a->ddata / b->ddata;
+        this->is_scalar = true;
+        return this;
+    }
+    else{
+        std::cout << "Division isn't defined on Tensors" << std::endl;
+    }
+}
+
+void Division::backward(){
+    if(inputs[0]->is_scalar and inputs[0]->is_scalar){
+        this->inputs[0]->scalar_gradient += this->scalar_gradient*(1/inputs[1]->ddata);
+        this->inputs[0]->scalar_gradient += this->scalar_gradient*(-(inputs[0]->ddata)/((inputs[1]->ddata)*(inputs[1]->ddata)));
+    }
+    else{
+        std::cout << "Division isn't defined on Tensors" << std::endl;
+    }
+}
+
+Exponential::Exponential(Node* a, int count){
+    exp_count = count;
+    inputs.push_back(a);
+    this->name = "Exp:" + std::to_string(exp_count);
+    this->forward(a); //the construction itself will do the forward pass
+}
+
+Node* Exponential::forward(const Node* a){
+    if(a->is_scalar){
+        this->ddata = exp(a->ddata);
+        this->is_scalar = true;
+        return this;
+    }
+    Tensor* c = new Tensor(a->data.m, a->data.n);
+    for(int i=0;i<a->data.m;i++){
+        for(int j=0;j<a->data.n;j++){
+            c->data[i][j] = exp(a->data.data[i][j]);
+        }
+    }
+    this->data = *c;
+    this->gradient = Tensor(c->m, c->n);
+    return this;
+}
+
+void Exponential::backward(){
+    if(this->is_scalar){
+        inputs[0]->scalar_gradient = this->ddata;
+        return;
+    }
+    inputs[0]->gradient = add(inputs[0]->gradient, this->data);
 }
 
 };

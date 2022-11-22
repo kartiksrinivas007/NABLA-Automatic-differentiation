@@ -63,5 +63,21 @@ class Negative : public Operator{
     Node* forward(const Node* a);
 };
 
+class Exponential : public Operator{
+    public:
+    void backward();
+    int exp_count;
+    Exponential(Node* a, int count);
+    Node* forward(const Node* a);
 };
+
+class Division : public Operator{
+    public:
+    void backward();
+    int div_count;
+    Division(Node* a, Node* b, int count);
+    Node* forward(const Node* a, const Node* b);
+};
+};
+
 #endif

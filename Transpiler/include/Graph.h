@@ -23,12 +23,13 @@ class Graph{
     Node* _matmul(Node* a, Node* b);
     Node* _trans(Node* a);
     Node* _neg(Node* a);
+    Node* _exp(Node* a);
 
     Node* _mul(Node*a , Node*b);
     Node* _mul(double a, Node*b);
     Node* _mul(Node*a , double b);
     Node* _mul(double a, double b);
-
+    Node* _div(double a, double b);
 
 
     std::vector<Node*> topological_sort();

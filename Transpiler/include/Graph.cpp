@@ -62,6 +62,13 @@ Node* Graph::_mul(double a, double b){
     return mul;
 }
 
+Node* Graph::_div(double a, double b){
+    Division *div = new Division(_scalar_constant(a), _scalar_constant(b), count);
+    operators.push_back(div);
+    count++;
+    return div;
+}
+
 Node* Graph::_trans(Node* a){
     Transpose* t = new Transpose(a, count);
     operators.push_back(t);
@@ -76,7 +83,12 @@ Node* Graph::_neg(Node* a){
     return n;
 }
 
-
+Node* Graph::_exp(Node* a){
+    Exponential* e = new Exponential(a, count);
+    operators.push_back(e);
+    count++;
+    return e;
+}
 
 Node* Graph::_variable(int m, int n, std::vector<std::vector<double>> vals){
     //create a variable node
