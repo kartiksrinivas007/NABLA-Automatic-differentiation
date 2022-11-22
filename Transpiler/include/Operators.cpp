@@ -355,4 +355,43 @@ void Cos::backward(){
     return;
 }
 
+Tan::Tan(Node* a, int count){
+    tan_count = count;
+    inputs.push_back(a);
+    this->name = "Tan:" + std::to_string(tan_count);
+    this->forward(a);
+}
+
+Node* Tan::forward(const Node* a){
+    if(a->is_scalar){
+        this->ddata = tan(a->ddata);
+        this->is_scalar = true;
+        return this;
+    }
+    Tensor* c = new Tensor(a->data.m, a->data.n);
+    for(int i=0;i<a->data.m;i++){
+        for(int j=0;j<a->data.n;j++){
+            c->data[i][j] = tan(a->data.data[i][j]);
+        }
+    }
+    this->data = *c;
+    this->gradient = Tensor(c->m, c->n);
+    return this;
+}
+
+void Tan::backward(){
+    if(this->is_scalar){
+        inputs[0]->scalar_gradient += 1.0/(cos(inputs[0]->ddata)*cos(inputs[0]->ddata));
+        return;
+    }
+    Tensor* c = new Tensor(inputs[0]->data.m, inputs[0]->data.n);
+    for(int i=0;i<inputs[0]->data.m;i++){
+        for(int j=0;j<inputs[0]->data.n;j++){
+            c->data[i][j] = 1/(cos(inputs[0]->data.data[i][j])*cos(inputs[0]->data.data[i][j]));
+        }
+    }
+    this->gradient = add(this->gradient, *c);
+    return;
+}
+
 };
