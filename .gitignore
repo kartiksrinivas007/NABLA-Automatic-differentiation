@@ -16,3 +16,4 @@ Autodiff/autodiff
 **/docs/**
 **/output.cpp
 **/.*.cpp
+Transpiler/lib/libnb.a

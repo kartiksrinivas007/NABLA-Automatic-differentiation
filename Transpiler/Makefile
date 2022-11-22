@@ -39,3 +39,6 @@ clean:
 	rm -f $(BUILDDIR)/*.o
 	rm -f $(EXEC)
 
+graph: 
+	dot -Tsvg computational_graph.dot -o output.svg
+	xdg-open output.svg

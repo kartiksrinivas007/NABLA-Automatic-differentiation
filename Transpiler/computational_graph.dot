@@ -1,4 +1,5 @@
 digraph {
+rankdir="LR";
 n14[label=<@>]
 n13 -> n14
 n0 -> n14

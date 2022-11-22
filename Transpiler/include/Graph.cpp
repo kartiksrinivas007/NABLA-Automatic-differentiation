@@ -205,6 +205,7 @@ void Graph::generate_graph(Node* f){
     fout.open("computational_graph.dot");
     
     fout << "digraph {" << std::endl;
+    fout << "rankdir=\"LR\";" << std::endl;
     DFS(fout, f);
     fout << "}" << std::endl;
 
