@@ -8,12 +8,11 @@
 namespace nb{
 class Variable: public Node{
     public:
-    int var_count;
     Variable(int m , int n, std::vector<std::vector<double>> vals, int count ){
         data = Tensor(m, n, vals);
         gradient = Tensor(m, n);
-        var_count = count;
-        name = "Var:" + std::to_string(var_count);
+        this->count = count;
+        name = "Var";
     }
 };
 
