@@ -3,9 +3,9 @@
 
 namespace nb{
 Transpose::Transpose(Node* a, int count){
-    trans_count = count;
+    this->count = count;
     inputs.push_back(a);
-    this->name = "transpose" + std::to_string(trans_count);
+    this->name = "T";
     this->forward(a);
 }
 
@@ -19,9 +19,9 @@ void Transpose::backward(){
 }
 
 Negative::Negative(Node* a, int count){
-    neg_count = count;
+    this->count = count;
     inputs.push_back(a);
-    this->name = "Negative" + std::to_string(neg_count);
+    this->name = "-";
     this->forward(a);
 }
 
@@ -35,10 +35,10 @@ void Negative::backward(){
 }
 
 Sub::Sub(Node* a, Node* b, int count){
-    sub_count = count;
+    this->count = count;
     inputs.push_back(a);
     inputs.push_back(b);
-    this->name = "Sub" + std::to_string(sub_count);
+    this->name = "-";
     this->forward(a, b);
 }
 
@@ -73,10 +73,10 @@ void Sub::backward()
 
 Add::Add(Node* a, Node* b, int count){
     // ::count++;
-    add_count = count;
+    this->count = count;
     inputs.push_back(a);
     inputs.push_back(b);
-    this->name = "Add" + std::to_string(add_count);
+    this->name = "+";
     this->forward(a, b); //the construction itself will do the forward pass
 }
 
@@ -114,10 +114,10 @@ void Add::backward()
 
 
 Multiply::Multiply(Node* a , Node* b , int count){
-        mul_count = count;
+        this->count = count;
         inputs.push_back(a);
         inputs.push_back(b);
-        this->name = "Mat_Mul" + std::to_string(mul_count);
+        this->name = "@";
         this->forward(a, b);
 }
 
@@ -145,10 +145,10 @@ void Multiply :: backward(){
 }
 
 Mul::Mul(Node* a , Node* b , int count){
-        mul_count = count;
+        this->count = count;
         inputs.push_back(a);
         inputs.push_back(b);
-        this->name = "Mul" + std::to_string(mul_count);
+        this->name = "*";
         this->forward(a, b);
 }
 
@@ -217,10 +217,10 @@ void Mul::backward(){
 }
 
 Division::Division(Node* a, Node* b, int count){
-    div_count = count;
+    this->count = count;
     inputs.push_back(a);
     inputs.push_back(b);
-    this->name = "Div" + std::to_string(div_count);
+    this->name = "/";
     this->forward(a, b); //the construction itself will do the forward pass
 }
 
@@ -247,9 +247,9 @@ void Division::backward(){
 }
 
 Exponential::Exponential(Node* a, int count){
-    exp_count = count;
+    this->count = count;
     inputs.push_back(a);
-    this->name = "Exp" + std::to_string(exp_count);
+    this->name = "e";
     this->forward(a); //the construction itself will do the forward pass
 }
 
@@ -279,9 +279,9 @@ void Exponential::backward(){
 }
 
 Sin::Sin(Node* a, int count){
-    sin_count = count;
+    this->count = count;
     inputs.push_back(a);
-    this->name = "sin" + std::to_string(sin_count);
+    this->name = "sin";
     this->forward(a);
 }
 
@@ -318,9 +318,9 @@ void Sin::backward(){
 }
 
 Cos::Cos(Node* a, int count){
-    cos_count = count;
+    this->count = count;
     inputs.push_back(a);
-    this->name = "cos" + std::to_string(cos_count);
+    this->name = "cos";
     this->forward(a);
 }
 
@@ -357,9 +357,9 @@ void Cos::backward(){
 }
 
 Tan::Tan(Node* a, int count){
-    tan_count = count;
+    this->count = count;
     inputs.push_back(a);
-    this->name = "tan" + std::to_string(tan_count);
+    this->name = "tan";
     this->forward(a);
 }
 

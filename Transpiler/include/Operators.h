@@ -16,7 +16,6 @@ class Operator: public Node{
 class Add : public Operator{
     public:
     void backward();
-    int add_count;
     Add(Node* a , Node* b, int count);
     Node* forward(const Node* a, const Node* b);
 };
@@ -24,7 +23,6 @@ class Add : public Operator{
 class Sub : public Operator{
     public:
     void backward();
-    int sub_count;
     Sub(Node* a , Node* b, int count);
     Node* forward(const Node* a, const Node* b);
 };
@@ -32,7 +30,6 @@ class Sub : public Operator{
 class Multiply : public Operator{
     public:
     void backward();
-    int mul_count;
     Multiply(Node* a , Node* b , int count);
     Node* forward(const Node* a, const Node* b);
     // std::pair<Tensor, Tensor> backward(Tensor dout);
@@ -41,7 +38,6 @@ class Multiply : public Operator{
 class Mul : public Operator{
     public:
     void backward();
-    int mul_count;
     Mul(Node* a , Node* b , int count);
     Node* forward(const Node* a, const Node* b);
     // std::pair<Tensor, Tensor> backward(Tensor dout);
@@ -50,7 +46,6 @@ class Mul : public Operator{
 class Transpose : public Operator{
     public:
     void backward();
-    int trans_count;
     Transpose(Node* a, int count);
     Node* forward(const Node* a);
 };
@@ -58,7 +53,6 @@ class Transpose : public Operator{
 class Negative : public Operator{
     public:
     void backward();
-    int neg_count;
     Negative(Node* a, int count);
     Node* forward(const Node* a);
 };
@@ -66,7 +60,6 @@ class Negative : public Operator{
 class Exponential : public Operator{
     public:
     void backward();
-    int exp_count;
     Exponential(Node* a, int count);
     Node* forward(const Node* a);
 };
@@ -74,7 +67,6 @@ class Exponential : public Operator{
 class Division : public Operator{
     public:
     void backward();
-    int div_count;
     Division(Node* a, Node* b, int count);
     Node* forward(const Node* a, const Node* b);
 };
@@ -82,7 +74,6 @@ class Division : public Operator{
 class Sin : public Operator{
     public:
     void backward();
-    int sin_count;
     Sin(Node* a, int count);
     Node* forward(const Node* a);
 };
@@ -90,7 +81,6 @@ class Sin : public Operator{
 class Cos : public Operator{
     public:
     void backward();
-    int cos_count;
     Cos(Node* a, int count);
     Node* forward(const Node* a);
 };
@@ -98,7 +88,6 @@ class Cos : public Operator{
 class Tan : public Operator{
     public:
     void backward();
-    int tan_count;
     Tan(Node* a, int count);
     Node* forward(const Node* a);
 };

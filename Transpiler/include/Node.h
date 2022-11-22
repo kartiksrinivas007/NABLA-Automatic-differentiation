@@ -10,6 +10,7 @@ class Node{
     public:
     std::string name;
     void print();
+    int count;
     bool is_visited = false;
     bool is_printed = false;
     bool is_scalar = false;

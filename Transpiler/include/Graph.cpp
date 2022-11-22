@@ -190,9 +190,9 @@ void Graph::backward(Node* f){
 }
 
 void Graph::DFS(std::ostream& out, Node* f){
-    
+    out << "n" << f->count << "[label=<" << f->name << ">]" << std::endl;
     for(auto& n : f->inputs){
-        out << "\"" << n->name << "\"" << " -> " << "\"" << f->name << "\"" << std::endl;
+        out << "n" << n->count << " -> "  << "n" << f->count << std::endl;
     }
     f->is_printed = true;
     for(auto& n : f->inputs){
