@@ -162,7 +162,14 @@ void traverse_declarations(Start *root)
                     // {
                     //     std::cout << tensor_init_shape[i] << " ";
                     // }
-                    // std::cout << "\n";
+                    // std::cout << decl->InitDeclaratorList->declarator->name <<"\n";
+
+                    // for (int i = 0; i < tensor_declare_shape.size(); i++)
+                    // {
+                    //     std::cout << tensor_declare_shape[i] << " ";
+                    // }
+                    // std::cout << decl->InitDeclaratorList->declarator->name <<"\n";
+
                     if(tensor_declare_shape != tensor_init_shape)
                     {
                         SymTabItem *symTabItem = search(root->symbolTable, decl->InitDeclaratorList->declarator->name);
