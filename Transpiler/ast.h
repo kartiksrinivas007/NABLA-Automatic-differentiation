@@ -52,7 +52,7 @@ enum class LibFuncs
     EXP,
     TRANSPOSE
 };
-enum AssignmentOperator
+enum class AssignmentOperator
 {
     AST_ASSIGN, // only =
     AST_ADD_ASSIGN,
