@@ -1,0 +1,20 @@
+declare{
+    var Tensor x[2][1] = [[1],[1]];
+    var Tensor y[1][2];
+    var Tensor z[1][1];
+}
+operations{
+    y = transpose(x);
+    z = y@x;
+}
+gradient{
+    backward(z);
+    grad(x);    
+    print(x);
+}
+/* Output:
+2
+2
+1
+1
+*/

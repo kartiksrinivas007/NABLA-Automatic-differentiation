@@ -4,11 +4,15 @@ FLEX = flex
 BISON = bison
 CXX = clang++
 CXXFLAGS = -std=c++17 -g
+LIBSDIR = lib
 
 OBJECTS = $(BUILDDIR)/grammar.tab.o $(BUILDDIR)/lex.yy.o $(BUILDDIR)/ast.o $(BUILDDIR)/traversal.o $(BUILDDIR)/sym.o
 
-$(EXEC): $(OBJECTS)
+$(EXEC): $(OBJECTS) ${LIBSDIR}
 	$(CXX) $(CXXFLAGS) -o $(EXEC) $(OBJECTS)
+
+${LIBSDIR}:
+	$(MAKE) -C include/
 
 grammar.tab.c grammar.tab.h : grammar.y
 	$(BISON) -d grammar.y

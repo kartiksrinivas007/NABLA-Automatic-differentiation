@@ -7,7 +7,7 @@ declare{
 operations{
     // a = b; // Type Error
     // a = c; // Type Error
-    c = a; // Type Error
+    c = a; // Type Error ERROR_EXPECTED
 }
 gradient{
     backward(d);

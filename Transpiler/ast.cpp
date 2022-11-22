@@ -578,7 +578,6 @@ void InitDeclarator::transpile(std::ostream &out, int tab) const
 
     if (this->initializer != nullptr)
     {   
-        std::cout << this->declarator->Dimensions.size() << std::endl;
         if(this->declarator->Dimensions.empty())
         {
             this->initializer->transpile(out, tab);
@@ -689,7 +688,6 @@ void GradStmt::transpile(std::ostream &out, int tab) const
     }
     else if(this->grad_type == GradType::PRINT){
         SymTabItem *item = search(root->symbolTable, this->name);
-        std::cout << item->dataType << std::endl;
         if (item->dataType != "Tensor")
             out << std::string("\t", tab) << "std::cout << " << this->name <<"->ddata " <<" << std::endl;" << std::endl;    
         else

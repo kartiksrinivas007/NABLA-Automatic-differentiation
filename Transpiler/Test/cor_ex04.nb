@@ -1,0 +1,28 @@
+declare{
+    var Tensor a[10] = [1,2,3,4,5,6,7,8,9,10];
+    var Tensor b[10] = [1,1,1,1,1,1,1,1,1,1];
+
+    var Tensor c[1][1];
+
+}
+operations{
+    c = transpose(b) @ a;
+}
+gradient{
+    print(c);
+    backward(c);
+    grad(a);
+}
+/* Output:
+55 
+1 
+1 
+1 
+1 
+1 
+1 
+1 
+1 
+1 
+1
+*/

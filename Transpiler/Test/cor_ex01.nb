@@ -1,0 +1,16 @@
+declare{
+    var int x = 3;
+    var int y;
+}
+operations{
+    y = 6*x*x + 2*x;
+}
+gradient{
+    backward(y);
+    print(y);
+    grad(x);
+}
+/* Output:
+    60
+    38
+*/

@@ -1,14 +1,14 @@
 declare{
-    cns Tensor a[1][0];
-    var Tensor b[0][1];
+    cns Tensor a[2] = [1,2];
+    var Tensor b[1][2] = [[1,2]];
     var Tensor c[1][1];
-    cns int d=5;
 }
 operations{
-    c = a@b;
+    b = transpose(a);
 }
 gradient{
     backward(c);
     grad(b);
     grad(c);
 }
+

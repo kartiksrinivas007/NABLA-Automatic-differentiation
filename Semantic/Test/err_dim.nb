@@ -8,7 +8,7 @@ declare{
 operations{
     c = a @ b; // OK
     e = a @ sin(b @ sin(d)); // OK
-    e = e + b; // Dim Error
+    e = e + b; // Dim Error  ERROR_EXPECTED
     // c = a @ c; // Dim Error
 }
 gradient{
