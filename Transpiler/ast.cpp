@@ -548,7 +548,7 @@ void Decl::transpile(std::ostream &out, int tab) const
         << " = "
         << "_g.";
 
-    if(this->DataType == TypeSpecifier::INT){
+    if(this->DataType == TypeSpecifier::INT || this->DataType == TypeSpecifier::FLOAT){
         out << "_scalar";
     }
 
