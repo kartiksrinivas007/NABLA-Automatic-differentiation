@@ -21,12 +21,21 @@ class Graph{
     Node* _variable(std::string name, int m, int n);
     Node* _constant(std::string name, int m, int n, std::vector<std::vector<double>> vals);
     Node* _scalar_variable(std::string name, double data=0);
-    Node* _scalar_constant(std::string name, double data=0);
+    Node* _scalar_constant(std::string name, double data);
 
     Node* _add(Node* a, Node* b);
+    Node* _add(Node* a, double b);
+    Node* _add(double a, Node* b);
+    Node* _add(double a, double b);
+
     Node* _sub(Node* a, Node* b);
+    Node* _sub(Node* a, double b);
+    Node* _sub(double a, Node* b);
+    Node* _sub(double a, double b);
+    
     Node* _matmul(Node* a, Node* b);
     Node* _trans(Node* a);
+    
     Node* _neg(Node* a);
     Node* _exp(Node* a);
     Node* _sin(Node* a);
@@ -37,6 +46,7 @@ class Graph{
     Node* _mul(double a, Node*b);
     Node* _mul(Node*a , double b);
     Node* _mul(double a, double b);
+
     Node* _div(double a, double b);
 
 

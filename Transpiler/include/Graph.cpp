@@ -26,12 +26,68 @@ Node* Graph::_add(Node* a , Node* b){
     return add;
 }
 
+Node* Graph::_add(Node* a , double b){
+    //create an add node
+    if(a->is_scalar){
+        Add *add = new Add(a, _scalar_constant(std::to_string(b), b), count);
+        operators.push_back(add);
+        count++;
+        return add;
+    }
+}
+
+Node* Graph::_add(double a , double b){
+    //create an add node
+    Add *add = new Add(_scalar_constant(std::to_string(a), a), _scalar_constant(std::to_string(b), b), count);
+    operators.push_back(add);
+    count++;
+    return add;
+}
+
+Node* Graph::_add(double a , Node* b){
+    if(b->is_scalar){
+        //create an add node
+        Add *add = new Add(_scalar_constant(std::to_string(a), a), b, count);
+        operators.push_back(add);
+        count++;
+        return add;
+    }
+}
+
 Node* Graph::_sub(Node* a , Node* b){
     //create an add node
     Sub *sub = new Sub(a, b, count);
     operators.push_back(sub);
     count++;
     return sub;
+}
+
+Node* Graph::_sub(Node* a , double b){
+    //create an add node
+    if(a->is_scalar){
+        Sub *sub = new Sub(a, _scalar_constant(std::to_string(b), b), count);
+        operators.push_back(sub);
+        count++;
+        return sub;
+    }
+}
+
+Node* Graph::_sub(double a , double b){
+    //create an add node
+    Sub *sub = new Sub(_scalar_constant(std::to_string(a), a), _scalar_constant(std::to_string(b), b), count);
+    operators.push_back(sub);
+    count++;
+    return sub;
+}
+
+Node* Graph::_sub(double a , Node* b){
+    if(b->is_scalar){
+        //create an add node
+        Sub *sub = new Sub(_scalar_constant(std::to_string(a), a), b, count);
+        operators.push_back(sub);
+        count++;
+        return sub;
+    }
 }
 
 Node* Graph::_mul(Node* a, Node* b){

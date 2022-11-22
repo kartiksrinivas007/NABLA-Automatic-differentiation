@@ -1,6 +1,9 @@
 declare{
     var Tensor a[2][1] = [[1],[2]];
     var Tensor b[1][2] = [[1,2]];
+    // cns Tensor sdf[3][4] ;
+    var int ertg = 4;
+    cns float sfde = 23;
     var Tensor c[1][2] = [[1,2]];
     var Tensor d[1][2] = [[5,6]];
     var Tensor e[1][2] = [[53,64]];
