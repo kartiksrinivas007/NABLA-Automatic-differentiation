@@ -87,6 +87,30 @@ class Sin : public Operator{
     Node* forward(const Node* a);
 };
 
+class Sin : public Operator{
+    public:
+    void backward();
+    int sin_count;
+    Sin(Node* a, int count);
+    Node* forward(const Node* a);
+};
+
+class Cos : public Operator{
+    public:
+    void backward();
+    int cos_count;
+    Cos(Node* a, int count);
+    Node* forward(const Node* a);
+};
+
+class Tan : public Operator{
+    public:
+    void backward();
+    int tan_count;
+    Tan(Node* a, int count);
+    Node* forward(const Node* a);
+};
+
 };
 
 #endif

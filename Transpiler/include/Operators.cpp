@@ -303,7 +303,7 @@ Node* Sin::forward(const Node* a){
 
 void Sin::backward(){
     if(this->is_scalar){
-        inputs[0]->scalar_gradient += this->ddata;
+        inputs[0]->scalar_gradient += cos(inputs[0]->ddata);
         return;
     }
     Tensor* c = new Tensor(inputs[0]->data.m, inputs[0]->data.n);
@@ -316,5 +316,43 @@ void Sin::backward(){
     return;
 }
 
+Cos::Cos(Node* a, int count){
+    cos_count = count;
+    inputs.push_back(a);
+    this->name = "Cos:" + std::to_string(cos_count);
+    this->forward(a);
+}
+
+Node* Cos::forward(const Node* a){
+    if(a->is_scalar){
+        this->ddata = cos(a->ddata);
+        this->is_scalar = true;
+        return this;
+    }
+    Tensor* c = new Tensor(a->data.m, a->data.n);
+    for(int i=0;i<a->data.m;i++){
+        for(int j=0;j<a->data.n;j++){
+            c->data[i][j] = cos(a->data.data[i][j]);
+        }
+    }
+    this->data = *c;
+    this->gradient = Tensor(c->m, c->n);
+    return this;
+}
+
+void Cos::backward(){
+    if(this->is_scalar){
+        inputs[0]->scalar_gradient -= sin(inputs[0]->ddata);
+        return;
+    }
+    Tensor* c = new Tensor(inputs[0]->data.m, inputs[0]->data.n);
+    for(int i=0;i<inputs[0]->data.m;i++){
+        for(int j=0;j<inputs[0]->data.n;j++){
+            c->data[i][j] = -sin(inputs[0]->data.data[i][j]);
+        }
+    }
+    this->gradient = add(this->gradient, *c);
+    return;
+}
 
 };
