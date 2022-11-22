@@ -32,6 +32,16 @@ SymTabItem* search(std::unordered_map<std::string,SymTabItem>* symbolTable,std::
 	return &(it->second);
 }
 
+void TypeConv(std::unordered_map<std::string,SymTabItem>* symbolTable){
+    for ( auto &x : (*symbolTable))
+    {
+        if( x.second.Dims.size()==1)
+        {
+            x.second.Dims.push_back(1);
+        }
+    }
+}
+
 void printSymbTab(std::unordered_map<std::string,SymTabItem>* symbolTable){
     std::cout << "Symbol Table: ";
     std::cout << (*symbolTable).size() << "\n";

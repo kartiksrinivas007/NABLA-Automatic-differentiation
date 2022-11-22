@@ -19,3 +19,4 @@ void insertToSymbTab(std::unordered_map<std::string,SymTabItem>* ,char* ,int ,in
 void Undeclaration_Error(std::unordered_map<std::string,SymTabItem>* ,std::string );
 SymTabItem* search(std::unordered_map<std::string,SymTabItem>* ,std::string);
 void printSymbTab(std::unordered_map<std::string,SymTabItem>* );
+void TypeConv(std::unordered_map<std::string,SymTabItem>* );

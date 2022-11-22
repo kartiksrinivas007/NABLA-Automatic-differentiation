@@ -397,7 +397,7 @@ int main(int argc, char const *argv[])
 		fprintf(stderr, "\e[1;31m%d error(s) found\e[0m\n", error_count);
 		return error_count;
 	}
-	
+	TypeConv(symbolTable);
 	if(verbose){
 		printSymbTab(symbolTable);
 	}
