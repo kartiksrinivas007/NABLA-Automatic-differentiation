@@ -578,9 +578,23 @@ void InitDeclarator::transpile(std::ostream &out, int tab) const
 
     if (this->initializer != nullptr)
     {   
-        if(!this->declarator->Dimensions.empty())
+        std::cout << this->declarator->Dimensions.size() << std::endl;
+        if(this->declarator->Dimensions.empty())
+        {
+            this->initializer->transpile(out, tab);
+        }
+        else if(this->declarator->Dimensions.size() == 1)
+        {
             out << ", ";
-        this->initializer->transpile(out, tab);
+            out << "{";
+            this->initializer->transpile(out, tab);
+            out << "}";
+        }    
+        else
+        {
+            out << ", ";
+            this->initializer->transpile(out, tab);
+        }
     }
 }
 
@@ -588,16 +602,21 @@ void Declarator::transpile(std::ostream &out, int tab) const
 {
     // out << this->name;
     if (!this->Dimensions.empty())
-    {
-
-        for (int i = 0; i < this->Dimensions.size(); i++)
-        {
-            out << this->Dimensions[i];
-            if (i != this->Dimensions.size() - 1)
+    {   
+        if(this->Dimensions.size() == 1){
+            out << this->Dimensions[0] << ", 1 ";
+        }
+        else{
+            for (int i = 0; i < this->Dimensions.size(); i++)
             {
-                out << ", ";
+                out << this->Dimensions[i];
+                if (i != this->Dimensions.size() - 1)
+                {
+                    out << ", ";
+                }
             }
         }
+
     }
 }
 
@@ -660,14 +679,15 @@ void GradStmt::transpile(std::ostream &out, int tab) const
     if (this->grad_type == GradType::GRAD)
     {   
         SymTabItem *item = search(root->symbolTable, this->name);
-        if(item->type != "Tensor")
+        if(item->dataType != "Tensor")
             out << std::string("\t", tab) << "std::cout << " << this->name << "->scalar_gradient" << " << std::endl;" << std::endl;
         else
             out << std::string("\t", tab) << this->name << "->gradient.print();" << std::endl;
     }
     else if(this->grad_type == GradType::PRINT){
         SymTabItem *item = search(root->symbolTable, this->name);
-        if (item->type != "Tensor")
+        std::cout << item->dataType << std::endl;
+        if (item->dataType != "Tensor")
             out << std::string("\t", tab) << "std::cout << " << this->name <<"->ddata " <<" << std::endl;" << std::endl;    
         else
             out << std::string("\t", tab) << this->name << "->"<<"data.print();" << std::endl;
