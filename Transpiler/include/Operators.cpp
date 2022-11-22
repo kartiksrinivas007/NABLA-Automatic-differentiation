@@ -1,4 +1,5 @@
 #include "Operators.h"
+#include <cmath>
 
 Transpose::Transpose(Node* a, int count){
     trans_count = count;
@@ -218,7 +219,7 @@ Division::Division(Node* a, Node* b, int count){
     div_count = count;
     inputs.push_back(a);
     inputs.push_back(b);
-    this->name = "Add:" + std::to_string(div_count);
+    this->name = "Div:" + std::to_string(div_count);
     this->forward(a, b); //the construction itself will do the forward pass
 }
 
@@ -242,3 +243,36 @@ void Division::backward(){
         std::cout << "Division isn't defined on Tensors" << std::endl;
     }
 }
+
+Exponential::Exponential(Node* a, int count){
+    exp_count = count;
+    inputs.push_back(a);
+    this->name = "Exp:" + std::to_string(exp_count);
+    this->forward(a); //the construction itself will do the forward pass
+}
+
+Node* Exponential::forward(const Node* a){
+    if(a->is_scalar){
+        this->ddata = exp(a->ddata);
+        this->is_scalar = true;
+        return this;
+    }
+    Tensor* c = new Tensor(a->data.m, a->data.n);
+    for(int i=0;i<a->data.m;i++){
+        for(int j=0;j<a->data.n;j++){
+            c->data[i][j] = exp(a->data.data[i][j]);
+        }
+    }
+    this->data = *c;
+    this->gradient = Tensor(c->m, c->n);
+    return this;
+}
+
+void Exponential::backward(){
+    if(this->is_scalar){
+        inputs[0]->scalar_gradient = this->ddata;
+        return;
+    }
+    inputs[0]->gradient = add(inputs[0]->gradient, this->data);
+}
+

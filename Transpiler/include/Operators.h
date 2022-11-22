@@ -78,12 +78,4 @@ class Division : public Operator{
     Node* forward(const Node* a, const Node* b);
 };
 
-class Norm : public Operator{
-    public:
-    void backward();
-    int norm_count;
-    Norm(Node* a, int count);
-    Node* forward(const Node* a);
-};
-
 #endif

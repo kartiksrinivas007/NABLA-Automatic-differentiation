@@ -81,7 +81,12 @@ Node* Graph::_neg(Node* a){
     return n;
 }
 
-
+Node* Graph::_exp(Node* a){
+    Exponential* e = new Exponential(a, count);
+    operators.push_back(e);
+    count++;
+    return e;
+}
 
 Node* Graph::_variable(int m, int n, std::vector<std::vector<double>> vals){
     //create a variable node
