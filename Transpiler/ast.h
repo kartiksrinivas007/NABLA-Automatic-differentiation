@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include "sym.h"
 
+
 extern int yylineno, yycolumn;
 
 // Abstract Node class
@@ -17,6 +18,7 @@ class Node;
 
 // Start Class
 class Start;
+extern Start *root;
 
 // Classes that are a part of the Declare Section
 class Decl;

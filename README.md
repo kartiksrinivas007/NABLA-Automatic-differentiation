@@ -2,7 +2,7 @@
 
 [![Lexer Build Status](https://github.com/IITH-COMPILERS2/compilers-2-project-team-9-aug22/actions/workflows/lexer.yml/badge.svg)](https://github.com/IITH-COMPILERS2/compilers-2-project-team-9-aug22/actions/workflows/lexer.yml) [![Parser Build Status](https://github.com/IITH-COMPILERS2/compilers-2-project-team-9-aug22/actions/workflows/parser.yml/badge.svg)](https://github.com/IITH-COMPILERS2/compilers-2-project-team-9-aug22/actions/workflows/parser.yml) [![Semantic Build Status](https://github.com/IITH-COMPILERS2/compilers-2-project-team-9-aug22/actions/workflows/semantic.yml/badge.svg)](https://github.com/IITH-COMPILERS2/compilers-2-project-team-9-aug22/actions/workflows/semantic.yml)
 
-![alt text](Whitepaper/images/nabla.png)
+![Nabla Image](Whitepaper/images/nabla.png)
 <br>
 
 Nabla is a Domain specific langauge built for the purpose of Tensor Operations and Automatic differentiation
@@ -31,7 +31,7 @@ gradient{
 The code will be converted into a computational graph(internally) of the form:-
 After this we will be able to use the chain rule to calculate the gradients of the Final variable in terms of the beginning variables
 
-![alt text](Whitepaper/images/comp_graph2.png)
+![Computational graph](Whitepaper/images/comp_graph2.png)
 
 ## Documentation
 
@@ -48,7 +48,7 @@ The documentation for the project can be found [here](https://ganesh-rb.github.i
 ---
 
 
-![alt text](Whitepaper/images/class_hierarchy.png)
+![Class Hierarchy](Whitepaper/images/class_hierarchy.png)
 
 To see the class Hierarchy please switch to the branch `AST` and see files `ast.h` and `ast.cpp`
 

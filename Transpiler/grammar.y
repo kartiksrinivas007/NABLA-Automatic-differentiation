@@ -361,7 +361,7 @@ bool generateCode(){
 		std::cout << "Compiling Code" << std::endl;
 	}
 
-	std::string cmd = "g++ -std=c++17 "+ outputFile + " -L lib -lnb -o " + std::string(basename) + ".out";
+	std::string cmd = "g++ -std=c++17 "+ outputFile + " -L lib -lnb -o " + std::string(basename).substr(0,basename.length()-3) + ".out";
 	std::cout << cmd << std::endl;
 	std::string result = exec(cmd.c_str());
 	return 0;

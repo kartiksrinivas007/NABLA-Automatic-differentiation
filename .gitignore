@@ -15,3 +15,4 @@ Build/**
 Autodiff/autodiff
 **/docs/**
 **/output.cpp
+**/.*.cpp

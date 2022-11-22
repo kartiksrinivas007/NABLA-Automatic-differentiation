@@ -23,10 +23,11 @@ test: lexer parser semantic transpiler
 	$(MAKE) --no-print-directory -C $(LEXERDIR) test
 	$(MAKE) --no-print-directory -C $(PARSERDIR) test
 	$(MAKE) --no-print-directory -C $(SEMANTICDIR) test
-	$(MAKE) --no-print-directory -C $(TRANSPILERDIR) test
+	# $(MAKE) --no-print-directory -C $(TRANSPILERDIR) test
 
 clean:
 	$(MAKE) --no-print-directory -C $(LEXERDIR) clean
 	$(MAKE) --no-print-directory -C $(PARSERDIR) clean
 	$(MAKE) --no-print-directory -C $(SEMANTICDIR) clean
 	$(MAKE) --no-print-directory -C $(TRANSPILERDIR) clean
+	rm -f **/*.o **/*.out **/*.exe **/.*.cpp

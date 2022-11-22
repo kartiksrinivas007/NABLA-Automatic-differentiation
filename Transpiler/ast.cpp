@@ -546,6 +546,10 @@ void Decl::transpile(std::ostream &out, int tab) const
         << " = "
         << "_g.";
 
+    if(this->DataType == TypeSpecifier::INT){
+        out << "_scalar";
+    }
+
     switch (this->GradType)
     {
     case GradSpecifier::CNS:
@@ -571,8 +575,9 @@ void InitDeclarator::transpile(std::ostream &out, int tab) const
     }
 
     if (this->initializer != nullptr)
-    {
-        out << ", ";
+    {   
+        if(!this->declarator->Dimensions.empty())
+            out << ", ";
         this->initializer->transpile(out, tab);
     }
 }
@@ -651,16 +656,22 @@ void Expr::transpile(std::ostream &out, int tab) const
 void GradStmt::transpile(std::ostream &out, int tab) const
 {
     if (this->grad_type == GradType::GRAD)
-    {
-        out << std::string("\t", tab) << this->name << "->gradient.print();" << std::endl;
+    {   
+        SymTabItem *item = search(root->symbolTable, this->name);
+        if(item->type != "Tensor")
+            out << std::string("\t", tab) << "std::cout << " << this->name << "->scalar_gradient" << " << std::endl;" << std::endl;
+        else
+            out << std::string("\t", tab) << this->name << "->gradient.print();" << std::endl;
+    }
+    else if(this->grad_type == GradType::PRINT){
+        SymTabItem *item = search(root->symbolTable, this->name);
+        if (item->type != "Tensor")
+            out << std::string("\t", tab) << "std::cout << " << this->name <<"->ddata " <<" << std::endl;" << std::endl;    
+        else
+            out << std::string("\t", tab) << this->name << "->"<<"data.print();" << std::endl;
     }
     else
     {
         out << std::string("\t", tab) << "_g." << GradTypeMapCpp[this->grad_type] << "(" << this->name << ");" << std::endl;
     }
 }
-
-// int main()
-// {
-//     return 0;
-// }
