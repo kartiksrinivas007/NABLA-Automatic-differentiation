@@ -97,6 +97,13 @@ Node* Graph::_sin(Node* a){
     return s;
 }
 
+Node* Graph::_cos(Node* a){
+    Cos* c = new Cos(a, count);
+    operators.push_back(c);
+    count++;
+    return c;
+}
+
 Node* Graph::_variable(int m, int n, std::vector<std::vector<double>> vals){
     //create a variable node
     Variable *var = new Variable(m, n, vals, count);
