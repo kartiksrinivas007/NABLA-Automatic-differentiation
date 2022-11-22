@@ -24,6 +24,7 @@ class Graph{
     Node* _trans(Node* a);
     Node* _neg(Node* a);
     Node* _exp(Node* a);
+    Node* _sin(Node* a);
 
     Node* _mul(Node*a , Node*b);
     Node* _mul(double a, Node*b);

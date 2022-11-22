@@ -90,6 +90,13 @@ Node* Graph::_exp(Node* a){
     return e;
 }
 
+Node* Graph::_sin(Node* a){
+    Sin* s = new Sin(a, count);
+    operators.push_back(s);
+    count++;
+    return s;
+}
+
 Node* Graph::_variable(int m, int n, std::vector<std::vector<double>> vals){
     //create a variable node
     Variable *var = new Variable(m, n, vals, count);

@@ -78,6 +78,15 @@ class Division : public Operator{
     Division(Node* a, Node* b, int count);
     Node* forward(const Node* a, const Node* b);
 };
+
+class Sin : public Operator{
+    public:
+    void backward();
+    int sin_count;
+    Sin(Node* a, int count);
+    Node* forward(const Node* a);
+};
+
 };
 
 #endif
