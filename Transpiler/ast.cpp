@@ -445,7 +445,7 @@ void UnaryExpr::transpile(std::ostream &out, int tab) const
                 out << "_g._sin";
                 break;
             case LibFuncs::COS:
-                out << "-g._cos";
+                out << "_g._cos";
                 break;
             case LibFuncs::TRANSPOSE:
                 out << "_g._trans";

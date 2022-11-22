@@ -1,14 +1,24 @@
 declare{
-    cns Tensor a[2][1] = [[1],[2]];
+    var Tensor a[2][1] = [[1],[2]];
     var Tensor b[1][2] = [[1,2]];
-    var Tensor c[1][1];
+    var Tensor c[1][2] = [[1,2]];
+    var Tensor d[1][2] = [[5,6]];
+    var Tensor e[1][2] = [[53,64]];
+    var Tensor g[1][2] = [[53,64]];
+
+    var Tensor fin[1][1];
 }
 operations{
-    c = b@a;
+    fin = sin(e+cos(b))*exp(d)@a;
 }
 gradient{
-    backward(c);
-    // grad(a);
+    backward(fin);
+    print(a);
+    print(b);
+    print(d);
+    print(e);
+    grad(a);
     grad(b);
-    grad(c);
+    grad(d);
+    grad(e);
 }

@@ -232,6 +232,7 @@ Node* Division::forward(const Node* a, const Node* b){
     }
     else{
         std::cout << "Division isn't defined on Tensors" << std::endl;
+        return this;
     }
 }
 
@@ -312,7 +313,7 @@ void Sin::backward(){
             c->data[i][j] = cos(inputs[0]->data.data[i][j]);
         }
     }
-    this->gradient = add(this->gradient, *c);
+    inputs[0]->gradient = add(inputs[0]->gradient, *c);
     return;
 }
 
@@ -351,7 +352,7 @@ void Cos::backward(){
             c->data[i][j] = -sin(inputs[0]->data.data[i][j]);
         }
     }
-    this->gradient = add(this->gradient, *c);
+    inputs[0]->gradient = add(inputs[0]->gradient, *c);
     return;
 }
 
@@ -390,7 +391,7 @@ void Tan::backward(){
             c->data[i][j] = 1/(cos(inputs[0]->data.data[i][j])*cos(inputs[0]->data.data[i][j]));
         }
     }
-    this->gradient = add(this->gradient, *c);
+    inputs[0]->gradient = add(inputs[0]->gradient, *c);
     return;
 }
 
