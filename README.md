@@ -15,52 +15,56 @@ It uses dynamically built computational graphs for back-propagation.
 - [Nabla](#nabla)
   - [Table of Contents](#table-of-contents)
   - [Example](#example)
-  - [class Hierarchy](#class-hierarchy)
   - [Installation](#installation)
+  - [Documentation](#documentation)
   - [Usage](#usage)
   - [Stages](#stages)
     - [Lexer](#lexer)
     - [Parser](#parser)
-    - [Semantic Analysis](#semantic-analysis)
-    - [Transpiler](#transpiler)
-  - [Documentation](#documentation)
+    - [Semantic Analysis](#semantic-analyzer)
+    - [Transpiler](#transpilation)
+  - [class Hierarchy](#class-hierarchy)
   - [Contributing](#contributing)
   - [License](#license)
+  - [Acknowledgements](#acknowledgements)
 
 ## Example
 
 ```python
-declare{
-    cns int a = 6;
-    var int c;
-    var int d;
+declare
+{
+    var Tensor a[2][1] = [[1],[2]];
+    var Tensor b[1][2] = [[1,2]];
+    var Tensor c[1][2] = [[1,2]];
+    var Tensor d[1][2] = [[5,6]];
+    var Tensor e[1][2] = [[53,64]];
+    var Tensor g[1][2] = [[53,64]];
+    var Tensor fin[1][1];
 }
-operations{
-    c = sin(a+cos(a));  
-    d = exp(c);
+operations
+{
+    fin = sin(e+cos(2*b))*exp(d)@a;
 }
-gradient{
-    backward(d);
+gradient
+{
+    backward(fin);
+    print(a);
+    print(b);
+    print(d);
+    print(e);
+    grad(a);
+    grad(b);
     grad(d);
-    backward(c);
-    grad(c);
+    grad(e);
 }
+
 ```
 
 The code will be converted into a computational graph(internally) of the form:-
 After this we will be able to use the chain rule to calculate the gradients of the Final variable in terms of the beginning variables
 
-![Computational graph](Whitepaper/images/comp_graph2.png)
+![Computational graph](Whitepaper/images/computational_graph.jpg)
 
-## Documentation
-
-To generate the documentation for the project, run the following command in the root directory of the project
-
-```bash
-doxygen
-```
-
-The documentation for the project can be found [here](https://ganesh-rb.github.io/Nabla-documentation/)
 
 ## Installation
 
@@ -95,11 +99,22 @@ make
 make test
 ```
 
-4. Install the Nabla compiler
+<!-- 4. Install the Nabla compiler
 
 ```bash
-make install
+make install 
 ```
+-->
+
+## Documentation
+
+To generate the documentation for the project, run the following command in the root directory of the project
+
+```bash
+doxygen
+```
+
+The documentation for the project can be found [here](https://ganesh-rb.github.io/Nabla-documentation/)
 
 ## Stages
 
@@ -149,4 +164,23 @@ Go inside the Semantic folder and run these commands to test semantic analysis
 make 
 make test
 ```
+
+## Contributing
+
+---
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## License
+
+---
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgements
+
+---
+
+- [Dr Ramakrishna Upadrasta](https://www.iith.ac.in/cse/ramakrishna) for his guidance and support
+
 
