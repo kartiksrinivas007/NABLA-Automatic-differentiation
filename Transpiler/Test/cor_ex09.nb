@@ -1,0 +1,15 @@
+declare{
+    var int x=7;
+    var int y=9;
+    var int z;
+}
+operations{
+    z=cos(x+exp(y)*sin(x));
+}
+gradient{
+    backward(z);
+    grad(x);
+}
+/* Output:
+0.136698
+*/

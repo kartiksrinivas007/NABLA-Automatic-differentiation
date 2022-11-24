@@ -1,10 +1,18 @@
 digraph {
 rankdir="LR";
-n4[label=<@>]
-n3 -> n4
-n0 -> n4
-n3[label=<T>]
-n1 -> n3
-n1[label=<b>]
-n0[label=<a>]
+n7[label=<cos>]
+n6 -> n7
+n6[label=<+>]
+n0 -> n6
+n5 -> n6
+n0[label=<x>]
+n5[label=<*>]
+n4 -> n5
+n3 -> n5
+n4[label=<exp>]
+n1 -> n4
+n1[label=<y>]
+n3[label=<sin>]
+n0 -> n3
+n0[label=<x>]
 }
