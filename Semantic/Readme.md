@@ -17,7 +17,9 @@ Semantic analysis is phase of compiler design where the program is checked for i
 ### Abstract Syntax Tree
 
 
-![Class Hierarchy](Whitepaper/images/class_hierarchy.png)
+![Class Hierarchy](../Whitepaper/images/class_hierarchy.png)
+
+Implemented in `ast.h` file. 
 
 ### Symbol Table
 
