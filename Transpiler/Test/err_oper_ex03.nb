@@ -1,0 +1,12 @@
+declare{
+    cns Tensor a[2][2]=[[1,2],[3,4]];
+    cns int b = 8;
+    var Tensor c[2][2];
+}
+operations{
+    c=a*b;   //ERROR_EXPECTED
+}
+gradient{
+    backward(c);
+    grad(c);
+}

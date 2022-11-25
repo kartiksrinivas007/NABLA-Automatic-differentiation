@@ -1,19 +1,11 @@
 declare{
-    var int a = 10;
-    var int b = 20;
-    var int c = 30;
-    var int d = 40;
-    var int e ;
+    cns Tensor a[2][2] = [[1,2],[3,4]];   
+    cns int b = 3;
+    var Tensor c[2][2];
 }
 operations{
-    e = 2*a *a + b*a + c + d;
+    c = a*b;  
 }
 gradient{
-    print(e);
-    backward(e);
-    grad(a);
+    print(c);
 }
-/*
-470
-60
-*/

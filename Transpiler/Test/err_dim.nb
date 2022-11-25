@@ -1,0 +1,16 @@
+declare{
+    var Tensor a[2][7];
+    var Tensor b[7][9];
+    var Tensor c[2][9];
+    var Tensor d[9][2];
+    var Tensor e[2][2];
+}
+operations{
+    c = a @ b; // OK
+    e = a @ sin(b @ sin(d)); // OK
+    e = e + b; // Dim Error  ERROR_EXPECTED
+    // c = a @ c; // Dim Error
+}
+gradient{
+    backward(d);
+}

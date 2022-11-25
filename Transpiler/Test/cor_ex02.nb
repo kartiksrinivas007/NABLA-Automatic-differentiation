@@ -1,20 +1,11 @@
 declare{
-    var Tensor x[2][1] = [[1],[1]];
-    var Tensor y[1][2];
-    var Tensor z[1][1];
+    cns int a = 3;   
+    var int c;
 }
 operations{
-    y = transpose(x);
-    z = y@x;
+    c = sin(a+cos(a));  
 }
 gradient{
-    backward(z);
-    grad(x);    
-    print(x);
+    backward(c);
+    grad(c);
 }
-/* Output:
-2
-2
-1
-1
-*/

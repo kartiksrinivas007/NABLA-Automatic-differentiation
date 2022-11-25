@@ -15,9 +15,8 @@ void traverse_declarations(Start *root);
 
 void traverse_operations(Start *root);
 
-int semantic_error(std::string, int a=0, int b=0, bool print_line=false);
+int semantic_error(std::string, int a = 0, int b = 0, bool print_line = false);
 
-std::string get_line( int );
-
+std::string get_line(int);
 
 #endif

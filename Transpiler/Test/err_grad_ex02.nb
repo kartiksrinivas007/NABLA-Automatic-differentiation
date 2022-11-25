@@ -1,0 +1,11 @@
+declare{
+    cns int a = 6;
+    var int c;
+    var int b=99999;
+}
+operations{
+    c = a+b;
+}
+gradient{
+    grad(c);                                // ERROR_EXPECTED : cannot take gradient without backward pass
+}

@@ -9,9 +9,10 @@
 #include <map>
 #include <unordered_map>
 #include "sym.h"
-
+// #include "traversal.h"
 
 extern int yylineno, yycolumn;
+extern int semantic_error(std::string, int a, int b, bool print_line);
 
 // Abstract Node class
 class Node;
@@ -195,6 +196,7 @@ public:
     // below two to be initialized after ast generation and before semantic analysis of operations part
     std::vector<int> dimensions;
     TypeSpecifier DataType;
+    int row_num, col_num;
 
     Expr();
     virtual void printExpression();

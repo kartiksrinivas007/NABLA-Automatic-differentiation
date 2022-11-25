@@ -1,5 +1,6 @@
 #include "ast.h"
 #include <algorithm>
+#include <string>
 // #include <iostream>
 
 template <typename S>
@@ -112,6 +113,8 @@ AssgnStmt::AssgnStmt(std::string name, std::optional<AssignmentOperator> op, Exp
 Expr::Expr()
 {
     this->dimensions = std::vector<int>();
+    this->row_num = yylineno;
+    this->col_num = yycolumn;
 }
 
 void Expr::printExpression() {}
@@ -164,6 +167,8 @@ void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string,
     // std::cout << "rhs: " << std::endl;
     this->rhs->initialize_expression_node_info(symbolTable);
 
+    std::string error_message = "Fatal: Line: " + std::to_string(this->row_num) + ":" + std::to_string(this->col_num) + "  === ";
+
     if (this->op == '+' || this->op == '-')
     {
         // First check if both are tensors
@@ -174,7 +179,8 @@ void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string,
             // both are tensors
             if (this->lhs->dimensions != this->rhs->dimensions)
             {
-                std::cout << "Fatal: Dimensions of operands for '+/-' do not match" << std::endl;
+                error_message += "Dimensions of tensors do not match";
+                std::cout << error_message << std::endl;
                 exit(1);
             }
             this->DataType = TypeSpecifier::TENSOR;
@@ -183,7 +189,8 @@ void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string,
         else if ((this->lhs->DataType == TypeSpecifier::TENSOR && this->rhs->DataType != TypeSpecifier::TENSOR) || (this->lhs->DataType != TypeSpecifier::TENSOR && this->rhs->DataType == TypeSpecifier::TENSOR))
         {
             // one is a tensor and other is a int or float
-            std::cout << "Fatal: Tensor and scalar addition/subtraction not supported" << std::endl;
+            error_message += "Tensor and scalar addition/subtraction not supported";
+            std::cout << error_message << std::endl;
             exit(1);
         }
         else
@@ -217,7 +224,8 @@ void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string,
             this->DataType = TypeSpecifier::TENSOR;
             if (this->lhs->dimensions != this->rhs->dimensions)
             {
-                std::cout << "Fatal: Dimensions of operands for '*' do not match" << std::endl;
+                error_message += "Dimensions of operands for '*' do not match";
+                std::cout << error_message << std::endl;
                 exit(1);
             }
             this->dimensions = this->lhs->dimensions;
@@ -246,7 +254,8 @@ void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string,
     {
         if (this->rhs->DataType == TypeSpecifier::TENSOR)
         {
-            std::cout << "Fatal: Anything divided by Tensor is not supported" << std::endl;
+            error_message += "Division by tensor not supported";
+            std::cout << error_message << std::endl;
             exit(1);
         }
 
@@ -268,14 +277,17 @@ void BinaryExpr::initialize_expression_node_info(std::unordered_map<std::string,
     {
         if (this->lhs->DataType != TypeSpecifier::TENSOR || this->rhs->DataType != TypeSpecifier::TENSOR)
         {
-            std::cout << "Fatal: @ only supported on Tensors" << std::endl;
+            error_message += "@ only supported on Tensors";
+            std::cout << error_message << std::endl;
             exit(1);
         }
         else
         {
             if (this->lhs->dimensions.back() != this->rhs->dimensions.front())
             {
-                std::cout << "Fatal: Dimensions of operands for '@' do not match" << std::endl;
+                error_message += "Dimensions of operands for '@' do not match";
+                semantic_error(error_message, this->row_num, this->col_num, 1);
+                // std::cout << error_message << std::endl;
                 exit(1);
             }
             this->DataType = TypeSpecifier::TENSOR;
@@ -356,6 +368,8 @@ void UnaryExpr::printExpression()
 
 void UnaryExpr::initialize_expression_node_info(std::unordered_map<std::string, SymTabItem> *symbolTable)
 {
+    std::string error_message = "Fatal: Line: " + std::to_string(this->row_num) + ":" + std::to_string(this->col_num) + "  === ";
+
     // std::cout << "Entered unary expr" << std::endl;
     if (this->identifier != "")
     {
@@ -365,7 +379,8 @@ void UnaryExpr::initialize_expression_node_info(std::unordered_map<std::string, 
         // std::cout << "Here\n";
         if (symTabItem == NULL)
         {
-            std::cout << "Fatal: Variable " << this->identifier << " not found" << std::endl;
+            error_message += "Identifier '" + this->identifier + "' not declared";
+            std::cout << error_message << std::endl;
             exit(0);
         }
 
@@ -548,7 +563,8 @@ void Decl::transpile(std::ostream &out, int tab) const
         << " = "
         << "_g.";
 
-    if(this->DataType == TypeSpecifier::INT || this->DataType == TypeSpecifier::FLOAT){
+    if (this->DataType == TypeSpecifier::INT || this->DataType == TypeSpecifier::FLOAT)
+    {
         out << "_scalar";
     }
 
@@ -565,7 +581,7 @@ void Decl::transpile(std::ostream &out, int tab) const
     out << "(";
     out << "\"" << this->InitDeclaratorList->declarator->name << "\" ";
 
-    if(!this->InitDeclaratorList->declarator->Dimensions.empty() || this->InitDeclaratorList->initializer != nullptr)
+    if (!this->InitDeclaratorList->declarator->Dimensions.empty() || this->InitDeclaratorList->initializer != nullptr)
         out << ", ";
 
     this->InitDeclaratorList->transpile(out, tab);
@@ -581,11 +597,11 @@ void InitDeclarator::transpile(std::ostream &out, int tab) const
     }
 
     if (this->initializer != nullptr)
-    {   
-        if(this->declarator->Dimensions.empty())
+    {
+        if (this->declarator->Dimensions.empty())
         {
             this->initializer->transpile(out, tab);
-        }   
+        }
         else
         {
             out << ", ";
@@ -598,11 +614,13 @@ void Declarator::transpile(std::ostream &out, int tab) const
 {
     // out << this->name;
     if (!this->Dimensions.empty())
-    {   
-        if(this->Dimensions.size() == 1){
+    {
+        if (this->Dimensions.size() == 1)
+        {
             out << this->Dimensions[0] << ", 1 ";
         }
-        else{
+        else
+        {
             for (int i = 0; i < this->Dimensions.size(); i++)
             {
                 out << this->Dimensions[i];
@@ -612,7 +630,6 @@ void Declarator::transpile(std::ostream &out, int tab) const
                 }
             }
         }
-
     }
 }
 
@@ -634,7 +651,8 @@ void Initializer::transpile(std::ostream &out, int tab) const
         out << "{";
         for (auto i : *this->val.InitializerList)
         {
-            if(i->isScalar){
+            if (i->isScalar)
+            {
                 out << "{";
                 i->transpile(out, tab);
                 out << "}";
@@ -643,7 +661,8 @@ void Initializer::transpile(std::ostream &out, int tab) const
                     out << ", ";
                 }
             }
-            else{
+            else
+            {
                 i->transpile(out, tab);
                 if (i != this->val.InitializerList->back())
                 {
@@ -683,19 +702,23 @@ void Expr::transpile(std::ostream &out, int tab) const
 void GradStmt::transpile(std::ostream &out, int tab) const
 {
     if (this->grad_type == GradType::GRAD)
-    {   
+    {
         SymTabItem *item = search(root->symbolTable, this->name);
-        if(item->dataType != "Tensor")
-            out << std::string("\t", tab) << "std::cout << " << this->name << "->scalar_gradient" << " << std::endl;" << std::endl;
+        if (item->dataType != "Tensor")
+            out << std::string("\t", tab) << "std::cout << " << this->name << "->scalar_gradient"
+                << " << std::endl;" << std::endl;
         else
             out << std::string("\t", tab) << this->name << "->gradient.print();" << std::endl;
     }
-    else if(this->grad_type == GradType::PRINT){
+    else if (this->grad_type == GradType::PRINT)
+    {
         SymTabItem *item = search(root->symbolTable, this->name);
         if (item->dataType != "Tensor")
-            out << std::string("\t", tab) << "std::cout << " << this->name <<"->ddata " <<" << std::endl;" << std::endl;    
+            out << std::string("\t", tab) << "std::cout << " << this->name << "->ddata "
+                << " << std::endl;" << std::endl;
         else
-            out << std::string("\t", tab) << this->name << "->"<<"data.print();" << std::endl;
+            out << std::string("\t", tab) << this->name << "->"
+                << "data.print();" << std::endl;
     }
     else
     {
