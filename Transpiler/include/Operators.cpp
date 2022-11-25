@@ -272,10 +272,10 @@ Node* Exponential::forward(const Node* a){
 
 void Exponential::backward(){
     if(this->is_scalar){
-        inputs[0]->scalar_gradient += this->ddata;
+        inputs[0]->scalar_gradient += this->scalar_gradient*this->ddata;
         return;
     }
-    inputs[0]->gradient = add(inputs[0]->gradient, this->data);
+    inputs[0]->gradient = add(inputs[0]->gradient, mul(this->data, this->gradient));
 }
 
 Sin::Sin(Node* a, int count){
@@ -304,7 +304,7 @@ Node* Sin::forward(const Node* a){
 
 void Sin::backward(){
     if(this->is_scalar){
-        inputs[0]->scalar_gradient += cos(inputs[0]->ddata);
+        inputs[0]->scalar_gradient += this->scalar_gradient*cos(inputs[0]->ddata);
         return;
     }
     Tensor* c = new Tensor(inputs[0]->data.m, inputs[0]->data.n);
@@ -313,7 +313,7 @@ void Sin::backward(){
             c->data[i][j] = cos(inputs[0]->data.data[i][j]);
         }
     }
-    inputs[0]->gradient = add(inputs[0]->gradient, *c);
+    inputs[0]->gradient = add(inputs[0]->gradient, mul(*c, this->gradient));
     return;
 }
 
@@ -343,7 +343,7 @@ Node* Cos::forward(const Node* a){
 
 void Cos::backward(){
     if(this->is_scalar){
-        inputs[0]->scalar_gradient -= sin(inputs[0]->ddata);
+        inputs[0]->scalar_gradient -= this->scalar_gradient*sin(inputs[0]->ddata);
         return;
     }
     Tensor* c = new Tensor(inputs[0]->data.m, inputs[0]->data.n);
@@ -352,7 +352,7 @@ void Cos::backward(){
             c->data[i][j] = -sin(inputs[0]->data.data[i][j]);
         }
     }
-    inputs[0]->gradient = add(inputs[0]->gradient, *c);
+    inputs[0]->gradient = add(inputs[0]->gradient, mul(*c, this->gradient));
     return;
 }
 
@@ -382,7 +382,7 @@ Node* Tan::forward(const Node* a){
 
 void Tan::backward(){
     if(this->is_scalar){
-        inputs[0]->scalar_gradient += 1.0/(cos(inputs[0]->ddata)*cos(inputs[0]->ddata));
+        inputs[0]->scalar_gradient += this->scalar_gradient/(cos(inputs[0]->ddata)*cos(inputs[0]->ddata));
         return;
     }
     Tensor* c = new Tensor(inputs[0]->data.m, inputs[0]->data.n);
@@ -391,7 +391,7 @@ void Tan::backward(){
             c->data[i][j] = 1/(cos(inputs[0]->data.data[i][j])*cos(inputs[0]->data.data[i][j]));
         }
     }
-    inputs[0]->gradient = add(inputs[0]->gradient, *c);
+    inputs[0]->gradient = add(inputs[0]->gradient, mul(*c, this->gradient));
     return;
 }
 
