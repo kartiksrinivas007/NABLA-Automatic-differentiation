@@ -1,0 +1,19 @@
+declare{
+    var float x = 20.08;
+    var float y = 1.001;
+    cns float pi = 3.14159;
+
+    var float z;
+}
+operations{
+    z = pi*x + y*10;
+}
+gradient{
+    backward(z);
+    print(z);
+    grad(x);
+}
+/* Output:
+73.0931
+3.14159
+*/  

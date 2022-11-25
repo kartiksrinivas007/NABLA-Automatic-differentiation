@@ -6,13 +6,15 @@ CXX = clang++
 CXXFLAGS = -std=c++17 -g
 LIBSDIR = lib
 
-OBJECTS = $(BUILDDIR)/grammar.tab.o $(BUILDDIR)/lex.yy.o $(BUILDDIR)/ast.o $(BUILDDIR)/traversal.o $(BUILDDIR)/sym.o
+OBJECTS = $(BUILDDIR)/grammar.tab.o $(BUILDDIR)/lex.yy.o $(BUILDDIR)/ast.o $(BUILDDIR)/traversal.o $(BUILDDIR)/sym.o 
+.SILENT: ${LIBSDIR}
 
 $(EXEC): $(OBJECTS) ${LIBSDIR}
 	$(CXX) $(CXXFLAGS) -o $(EXEC) $(OBJECTS)
 
 ${LIBSDIR}:
-	$(MAKE) -C include/
+	@mkdir -p ${LIBSDIR}
+	$(MAKE) -C include -no-print-directory
 
 grammar.tab.c grammar.tab.h : grammar.y
 	$(BISON) -d grammar.y
@@ -38,6 +40,7 @@ clean:
 	rm -f *.tab.h
 	rm -f $(BUILDDIR)/*.o
 	rm -f $(EXEC)
+	rm -rf $(LIBSDIR)
 
 graph: 
 	dot -Tsvg computational_graph.dot -o output.svg

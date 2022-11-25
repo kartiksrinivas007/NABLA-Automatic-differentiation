@@ -1,0 +1,19 @@
+declare{
+    var int a = 10;
+    var int b = 20;
+    var int c = 30;
+    var int d = 40;
+    var int e ;
+}
+operations{
+    e = 2*a *a + b*a + c + d;
+}
+gradient{
+    print(e);
+    backward(e);
+    grad(a);
+}
+/*
+470
+60
+*/

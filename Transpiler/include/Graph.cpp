@@ -34,6 +34,8 @@ Node* Graph::_add(Node* a , double b){
         count++;
         return add;
     }
+
+    return nullptr;
 }
 
 Node* Graph::_add(double a , double b){
@@ -52,6 +54,8 @@ Node* Graph::_add(double a , Node* b){
         count++;
         return add;
     }
+
+    return nullptr;
 }
 
 Node* Graph::_sub(Node* a , Node* b){
@@ -70,6 +74,8 @@ Node* Graph::_sub(Node* a , double b){
         count++;
         return sub;
     }
+
+    return nullptr;
 }
 
 Node* Graph::_sub(double a , double b){
@@ -88,6 +94,8 @@ Node* Graph::_sub(double a , Node* b){
         count++;
         return sub;
     }
+
+    return nullptr;
 }
 
 Node* Graph::_mul(Node* a, Node* b){

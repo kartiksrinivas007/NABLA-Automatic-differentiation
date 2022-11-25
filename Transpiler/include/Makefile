@@ -11,4 +11,5 @@ all: $(OBJECTS)
 	$(CXX) -c -fPIC -o $@ $<
 
 clean:
-	rm -f *.o
+	rm -f *.o $(LIBDIR)/libnb.a
+	rmdir $(LIBDIR)
