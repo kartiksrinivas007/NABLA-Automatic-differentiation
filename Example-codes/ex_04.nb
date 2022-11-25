@@ -1,0 +1,12 @@
+declare{
+    var int x=7;
+    cns int y=9;
+    var int z;
+}
+operations{
+    z=x*x+exp(y);
+}
+gradient{
+    backward(z);
+    grad(x);
+}
